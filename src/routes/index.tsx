@@ -1,20 +1,8 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { authMiddleware } from '@/middleware/auth'
-import { authClient } from '@/lib/auth/client'
 
 export const Route = createFileRoute('/')({
   component: HomePage,
-  beforeLoad: async ({ location }) => {
-    const session = await authClient.getSession()
-    if (!session.data) {
-      throw redirect({
-        to: '/auth/login',
-        search: {
-          redirect: location.href
-        }
-      })
-    }
-  },
   server: {
     middleware: [authMiddleware]
   }
