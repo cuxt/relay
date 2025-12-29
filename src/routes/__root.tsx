@@ -2,13 +2,15 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
-  Outlet
+  Outlet,
+  redirect
 } from '@tanstack/react-router'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { Link } from '@tanstack/react-router'
 
 import Header from '../components/Header'
 import { ThemeProvider } from '@/components/theme'
+import { auth } from '@/lib/auth/auth'
 
 import appCss from '../styles.css?url'
 
@@ -17,6 +19,9 @@ import type { QueryClient } from '@tanstack/react-query'
 interface MyRouterContext {
   queryClient: QueryClient
 }
+
+// 路由白名单
+const publicRoutes = ['/auth/login', '/auth/sign-up', '/api/auth/$']
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   head: () => ({
@@ -39,6 +44,31 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       }
     ]
   }),
+
+  beforeLoad: async ({ location }) => {
+    if (typeof window !== 'undefined') {
+      // 检查是否是公开路由
+      const isPublicRoute = publicRoutes.some(route =>
+        location.pathname.startsWith(route.replace('$', ''))
+      )
+
+      if (!isPublicRoute) {
+        try {
+          const session = await auth.api.getSession({
+            headers: new Headers()
+          })
+          if (!session) {
+            throw redirect({ to: '/auth/login' })
+          }
+        } catch (error) {
+          if (error instanceof Error && 'href' in error) {
+            throw error // 重新抛出 redirect
+          }
+          throw redirect({ to: '/auth/login' })
+        }
+      }
+    }
+  },
 
   shellComponent: RootDocument,
   notFoundComponent: NotFound
@@ -75,7 +105,7 @@ function RootDocument() {
           </main>
           <TanStackDevtools
             config={{
-              position: 'bottom-right',
+              position: 'bottom-right'
             }}
           />
           <Scripts />
