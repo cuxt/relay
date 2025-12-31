@@ -10,7 +10,7 @@ import { Link } from '@tanstack/react-router'
 
 import Header from '../components/Header'
 import { ThemeProvider } from '@/components/theme'
-import { auth } from '@/lib/auth/auth'
+import { authClient } from '@/lib/auth/client'
 
 import appCss from '../styles.css?url'
 
@@ -54,10 +54,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
       if (!isPublicRoute) {
         try {
-          const session = await auth.api.getSession({
-            headers: new Headers()
-          })
-          if (!session) {
+          const session = await authClient.getSession()
+          if (!session?.data) {
             throw redirect({ to: '/auth/login' })
           }
         } catch (error) {

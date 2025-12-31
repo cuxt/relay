@@ -22,6 +22,10 @@ const config = defineConfig({
       },
     }),
   ],
+  ssr: {
+    external: ['pg', 'drizzle-orm'],
+    noExternal: ['better-auth'],
+  },
 })
 
 export default config
