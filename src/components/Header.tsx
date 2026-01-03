@@ -1,5 +1,5 @@
 import { Link, useNavigate } from '@tanstack/react-router'
-import { Moon, Sun, Laptop, LogOut, User, Settings } from 'lucide-react'
+import { Moon, Sun, Laptop, LogOut, User, Settings, Radio } from 'lucide-react'
 import { useTheme } from '@/components/theme'
 import { useSession, signOut } from '@/lib/auth/client'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -10,17 +10,13 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 
 export default function Header() {
   const { setTheme } = useTheme()
   const { data: session, isPending } = useSession()
   const navigate = useNavigate()
-
-  const userInitials = session?.user?.name
-    ? session.user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
-    : session?.user?.email?.charAt(0).toUpperCase() || '用户'
 
   const handleSignOut = async () => {
     await signOut()
@@ -43,10 +39,30 @@ export default function Header() {
   return (
     <header className="border-b">
       <div className="flex h-14 items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2">
-          <img src="/favicon.svg" alt="Relay Logo" className="h-7 block" />
-          <span className="font-semibold text-lg">Relay</span>
-        </Link>
+        <div className="flex items-center gap-6">
+          <Link to="/" className="flex items-center gap-2">
+            <img src="/favicon.svg" alt="Relay Logo" className="h-7 block" />
+            <span className="font-semibold text-lg">Relay</span>
+          </Link>
+
+          <nav className="flex items-center gap-4">
+            <Link
+              to="/channels"
+              className="flex items-center gap-2 text-sm font-medium transition-all relative px-1 py-1"
+              activeProps={{
+                className:
+                  'flex items-center gap-2 text-sm font-medium text-foreground relative px-1 py-1 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:rounded-full'
+              }}
+              inactiveProps={{
+                className:
+                  'flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground relative px-1 py-1'
+              }}
+            >
+              <Radio className="h-4 w-4" />
+              <span>渠道管理</span>
+            </Link>
+          </nav>
+        </div>
 
         <div className="flex items-center gap-2">
           <DropdownMenu>
@@ -78,33 +94,27 @@ export default function Header() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={session.user.image ?? undefined} alt={session.user.name ?? '用户'} />
-                    <AvatarFallback>{userInitials}</AvatarFallback>
+                    <AvatarImage
+                      src={session.user.image ?? undefined}
+                      alt={session.user.name ?? '用户'}
+                    />
+                    <AvatarFallback>
+                      <User className="h-4 w-4" />
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{session.user.name}</p>
+                    <p className="text-sm font-medium leading-none">
+                      {session.user.name}
+                    </p>
                     <p className="text-xs leading-none text-muted-foreground">
                       {session.user.email}
                     </p>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/" className="cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>个人资料</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/" className="cursor-pointer">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>设置</span>
-                  </Link>
-                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={handleSignOut}

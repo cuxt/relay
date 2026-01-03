@@ -10,13 +10,21 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ChannelsIndexRouteImport } from './routes/channels/index'
 import { Route as AuthSignUpRouteImport } from './routes/auth/sign-up'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as ApiChannelsIndexRouteImport } from './routes/api/channels/index'
+import { Route as ApiChannelsIdRouteImport } from './routes/api/channels/$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChannelsIndexRoute = ChannelsIndexRouteImport.update({
+  id: '/channels/',
+  path: '/channels/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthSignUpRoute = AuthSignUpRouteImport.update({
@@ -29,6 +37,16 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiChannelsIndexRoute = ApiChannelsIndexRouteImport.update({
+  id: '/api/channels/',
+  path: '/api/channels/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChannelsIdRoute = ApiChannelsIdRouteImport.update({
+  id: '/api/channels/$id',
+  path: '/api/channels/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -39,34 +57,68 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/sign-up': typeof AuthSignUpRoute
+  '/channels': typeof ChannelsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/channels/$id': typeof ApiChannelsIdRoute
+  '/api/channels': typeof ApiChannelsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/sign-up': typeof AuthSignUpRoute
+  '/channels': typeof ChannelsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/channels/$id': typeof ApiChannelsIdRoute
+  '/api/channels': typeof ApiChannelsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/sign-up': typeof AuthSignUpRoute
+  '/channels/': typeof ChannelsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/channels/$id': typeof ApiChannelsIdRoute
+  '/api/channels/': typeof ApiChannelsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth/login' | '/auth/sign-up' | '/api/auth/$'
+  fullPaths:
+    | '/'
+    | '/auth/login'
+    | '/auth/sign-up'
+    | '/channels'
+    | '/api/auth/$'
+    | '/api/channels/$id'
+    | '/api/channels'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth/login' | '/auth/sign-up' | '/api/auth/$'
-  id: '__root__' | '/' | '/auth/login' | '/auth/sign-up' | '/api/auth/$'
+  to:
+    | '/'
+    | '/auth/login'
+    | '/auth/sign-up'
+    | '/channels'
+    | '/api/auth/$'
+    | '/api/channels/$id'
+    | '/api/channels'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth/login'
+    | '/auth/sign-up'
+    | '/channels/'
+    | '/api/auth/$'
+    | '/api/channels/$id'
+    | '/api/channels/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignUpRoute: typeof AuthSignUpRoute
+  ChannelsIndexRoute: typeof ChannelsIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiChannelsIdRoute: typeof ApiChannelsIdRoute
+  ApiChannelsIndexRoute: typeof ApiChannelsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -76,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/channels/': {
+      id: '/channels/'
+      path: '/channels'
+      fullPath: '/channels'
+      preLoaderRoute: typeof ChannelsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/sign-up': {
@@ -92,6 +151,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/channels/': {
+      id: '/api/channels/'
+      path: '/api/channels'
+      fullPath: '/api/channels'
+      preLoaderRoute: typeof ApiChannelsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/channels/$id': {
+      id: '/api/channels/$id'
+      path: '/api/channels/$id'
+      fullPath: '/api/channels/$id'
+      preLoaderRoute: typeof ApiChannelsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -106,7 +179,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignUpRoute: AuthSignUpRoute,
+  ChannelsIndexRoute: ChannelsIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiChannelsIdRoute: ApiChannelsIdRoute,
+  ApiChannelsIndexRoute: ApiChannelsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
