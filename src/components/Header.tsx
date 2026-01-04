@@ -1,5 +1,5 @@
 import { Link, useNavigate } from '@tanstack/react-router'
-import { Moon, Sun, Laptop, LogOut, User, Settings, Radio } from 'lucide-react'
+import { Moon, Sun, Laptop, LogOut, User, Radio, Network } from 'lucide-react'
 import { useTheme } from '@/components/theme'
 import { useSession, signOut } from '@/lib/auth/client'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -21,6 +21,16 @@ export default function Header() {
   const handleSignOut = async () => {
     await signOut()
     navigate({ to: '/auth/login', replace: true })
+  }
+
+  const navLinkProps = {
+    className: 'flex items-center gap-2 text-sm font-medium transition-all px-1 py-1',
+    activeProps: {
+      className: 'flex items-center gap-2 text-sm font-medium text-foreground px-1 py-1'
+    },
+    inactiveProps: {
+      className: 'flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground px-1 py-1'
+    }
   }
 
   if (isPending) {
@@ -46,18 +56,11 @@ export default function Header() {
           </Link>
 
           <nav className="flex items-center gap-4">
-            <Link
-              to="/channels"
-              className="flex items-center gap-2 text-sm font-medium transition-all relative px-1 py-1"
-              activeProps={{
-                className:
-                  'flex items-center gap-2 text-sm font-medium text-foreground relative px-1 py-1 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:rounded-full'
-              }}
-              inactiveProps={{
-                className:
-                  'flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground relative px-1 py-1'
-              }}
-            >
+            <Link to="/endpoints" {...navLinkProps}>
+              <Network className="h-4 w-4" />
+              <span>端点管理</span>
+            </Link>
+            <Link to="/channels" {...navLinkProps}>
               <Radio className="h-4 w-4" />
               <span>渠道管理</span>
             </Link>

@@ -10,16 +10,25 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EndpointsIndexRouteImport } from './routes/endpoints/index'
 import { Route as ChannelsIndexRouteImport } from './routes/channels/index'
 import { Route as AuthSignUpRouteImport } from './routes/auth/sign-up'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as ApiEndpointsIndexRouteImport } from './routes/api/endpoints/index'
 import { Route as ApiChannelsIndexRouteImport } from './routes/api/channels/index'
+import { Route as ApiPushIdRouteImport } from './routes/api/push/$id'
+import { Route as ApiEndpointsIdRouteImport } from './routes/api/endpoints/$id'
 import { Route as ApiChannelsIdRouteImport } from './routes/api/channels/$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EndpointsIndexRoute = EndpointsIndexRouteImport.update({
+  id: '/endpoints/',
+  path: '/endpoints/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChannelsIndexRoute = ChannelsIndexRouteImport.update({
@@ -37,9 +46,24 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiEndpointsIndexRoute = ApiEndpointsIndexRouteImport.update({
+  id: '/api/endpoints/',
+  path: '/api/endpoints/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiChannelsIndexRoute = ApiChannelsIndexRouteImport.update({
   id: '/api/channels/',
   path: '/api/channels/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPushIdRoute = ApiPushIdRouteImport.update({
+  id: '/api/push/$id',
+  path: '/api/push/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEndpointsIdRoute = ApiEndpointsIdRouteImport.update({
+  id: '/api/endpoints/$id',
+  path: '/api/endpoints/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChannelsIdRoute = ApiChannelsIdRouteImport.update({
@@ -58,18 +82,26 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/channels': typeof ChannelsIndexRoute
+  '/endpoints': typeof EndpointsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/channels/$id': typeof ApiChannelsIdRoute
+  '/api/endpoints/$id': typeof ApiEndpointsIdRoute
+  '/api/push/$id': typeof ApiPushIdRoute
   '/api/channels': typeof ApiChannelsIndexRoute
+  '/api/endpoints': typeof ApiEndpointsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/channels': typeof ChannelsIndexRoute
+  '/endpoints': typeof EndpointsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/channels/$id': typeof ApiChannelsIdRoute
+  '/api/endpoints/$id': typeof ApiEndpointsIdRoute
+  '/api/push/$id': typeof ApiPushIdRoute
   '/api/channels': typeof ApiChannelsIndexRoute
+  '/api/endpoints': typeof ApiEndpointsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,9 +109,13 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/channels/': typeof ChannelsIndexRoute
+  '/endpoints/': typeof EndpointsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/channels/$id': typeof ApiChannelsIdRoute
+  '/api/endpoints/$id': typeof ApiEndpointsIdRoute
+  '/api/push/$id': typeof ApiPushIdRoute
   '/api/channels/': typeof ApiChannelsIndexRoute
+  '/api/endpoints/': typeof ApiEndpointsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -88,27 +124,39 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/sign-up'
     | '/channels'
+    | '/endpoints'
     | '/api/auth/$'
     | '/api/channels/$id'
+    | '/api/endpoints/$id'
+    | '/api/push/$id'
     | '/api/channels'
+    | '/api/endpoints'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth/login'
     | '/auth/sign-up'
     | '/channels'
+    | '/endpoints'
     | '/api/auth/$'
     | '/api/channels/$id'
+    | '/api/endpoints/$id'
+    | '/api/push/$id'
     | '/api/channels'
+    | '/api/endpoints'
   id:
     | '__root__'
     | '/'
     | '/auth/login'
     | '/auth/sign-up'
     | '/channels/'
+    | '/endpoints/'
     | '/api/auth/$'
     | '/api/channels/$id'
+    | '/api/endpoints/$id'
+    | '/api/push/$id'
     | '/api/channels/'
+    | '/api/endpoints/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -116,9 +164,13 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignUpRoute: typeof AuthSignUpRoute
   ChannelsIndexRoute: typeof ChannelsIndexRoute
+  EndpointsIndexRoute: typeof EndpointsIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiChannelsIdRoute: typeof ApiChannelsIdRoute
+  ApiEndpointsIdRoute: typeof ApiEndpointsIdRoute
+  ApiPushIdRoute: typeof ApiPushIdRoute
   ApiChannelsIndexRoute: typeof ApiChannelsIndexRoute
+  ApiEndpointsIndexRoute: typeof ApiEndpointsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -128,6 +180,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/endpoints/': {
+      id: '/endpoints/'
+      path: '/endpoints'
+      fullPath: '/endpoints'
+      preLoaderRoute: typeof EndpointsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/channels/': {
@@ -151,11 +210,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/endpoints/': {
+      id: '/api/endpoints/'
+      path: '/api/endpoints'
+      fullPath: '/api/endpoints'
+      preLoaderRoute: typeof ApiEndpointsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/channels/': {
       id: '/api/channels/'
       path: '/api/channels'
       fullPath: '/api/channels'
       preLoaderRoute: typeof ApiChannelsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/push/$id': {
+      id: '/api/push/$id'
+      path: '/api/push/$id'
+      fullPath: '/api/push/$id'
+      preLoaderRoute: typeof ApiPushIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/endpoints/$id': {
+      id: '/api/endpoints/$id'
+      path: '/api/endpoints/$id'
+      fullPath: '/api/endpoints/$id'
+      preLoaderRoute: typeof ApiEndpointsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/channels/$id': {
@@ -180,9 +260,13 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthSignUpRoute: AuthSignUpRoute,
   ChannelsIndexRoute: ChannelsIndexRoute,
+  EndpointsIndexRoute: EndpointsIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiChannelsIdRoute: ApiChannelsIdRoute,
+  ApiEndpointsIdRoute: ApiEndpointsIdRoute,
+  ApiPushIdRoute: ApiPushIdRoute,
   ApiChannelsIndexRoute: ApiChannelsIndexRoute,
+  ApiEndpointsIndexRoute: ApiEndpointsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
