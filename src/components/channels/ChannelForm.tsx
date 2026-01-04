@@ -38,19 +38,31 @@ export function ChannelForm({ channel, onSubmit, onCancel }: ChannelFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
+  const handleTypeChange = (newType: string) => {
+    setType(newType as any)
+    // 切换渠道类型时清空 secret
+    if (newType !== CHANNEL_TYPES.FEISHU) {
+      setSecret('')
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setIsLoading(true)
 
     try {
+      const config: any = { webhook }
+
+      // 只有飞书需要 secret 字段
+      if (type === CHANNEL_TYPES.FEISHU && secret) {
+        config.secret = secret
+      }
+
       const data = {
         name,
         type,
-        config: {
-          webhook,
-          secret: secret || undefined
-        },
+        config,
         status
       }
 
@@ -89,7 +101,7 @@ export function ChannelForm({ channel, onSubmit, onCancel }: ChannelFormProps) {
           <Label htmlFor="type">渠道类型</Label>
           <Select
             value={type}
-            onValueChange={value => setType(value as any)}
+            onValueChange={handleTypeChange}
             disabled={isLoading}
           >
             <SelectTrigger id="type" className="w-full">
@@ -97,11 +109,9 @@ export function ChannelForm({ channel, onSubmit, onCancel }: ChannelFormProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={CHANNEL_TYPES.FEISHU}>飞书</SelectItem>
+              <SelectItem value={CHANNEL_TYPES.WECOM}>企业微信</SelectItem>
               <SelectItem value={CHANNEL_TYPES.DINGTALK} disabled>
                 钉钉（即将支持）
-              </SelectItem>
-              <SelectItem value={CHANNEL_TYPES.WECOM} disabled>
-                企业微信（即将支持）
               </SelectItem>
               <SelectItem value={CHANNEL_TYPES.TELEGRAM} disabled>
                 Telegram（即将支持）
@@ -126,23 +136,31 @@ export function ChannelForm({ channel, onSubmit, onCancel }: ChannelFormProps) {
             type="url"
             value={webhook}
             onChange={e => setWebhook(e.target.value)}
-            placeholder="https://example.com/webhook"
+            placeholder={
+              type === CHANNEL_TYPES.FEISHU
+                ? 'https://open.feishu.cn/open-apis/bot/v2/hook/...'
+                : type === CHANNEL_TYPES.WECOM
+                  ? 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=...'
+                  : 'https://example.com/webhook'
+            }
             disabled={isLoading}
             required
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="secret">签名密钥（可选）</Label>
-          <Input
-            id="secret"
-            type="password"
-            value={secret}
-            onChange={e => setSecret(e.target.value)}
-            placeholder="输入签名密钥"
-            disabled={isLoading}
-          />
-        </div>
+        {type === CHANNEL_TYPES.FEISHU && (
+          <div className="space-y-2">
+            <Label htmlFor="secret">签名密钥（可选）</Label>
+            <Input
+              id="secret"
+              type="password"
+              value={secret}
+              onChange={e => setSecret(e.target.value)}
+              placeholder="输入签名密钥"
+              disabled={isLoading}
+            />
+          </div>
+        )}
 
         <div className="flex items-center justify-between">
           <Label htmlFor="status">状态</Label>
