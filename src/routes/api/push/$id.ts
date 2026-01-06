@@ -86,11 +86,27 @@ export const Route = createFileRoute('/api/push/$id')({
             body: requestBody
           })
 
+          // 根据渠道类型构建消息参数
+          let messageOptions: any = messageContent
+
+          // 如果是企业微信渠道，添加 mentioned_list 和 mentioned_mobile_list
+          if (channelData.type === 'wecom') {
+            messageOptions = {
+              content: messageContent
+            }
+            if (endpointConfig.mentioned_list && endpointConfig.mentioned_list.length > 0) {
+              messageOptions.mentioned_list = endpointConfig.mentioned_list
+            }
+            if (endpointConfig.mentioned_mobile_list && endpointConfig.mentioned_mobile_list.length > 0) {
+              messageOptions.mentioned_mobile_list = endpointConfig.mentioned_mobile_list
+            }
+          }
+
           // 发送消息
           await sendMessage(
             channelData.type,
             channelData.config,
-            messageContent
+            messageOptions
           )
 
           // 返回成功响应

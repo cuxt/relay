@@ -42,6 +42,12 @@ export function EndpointForm({
   const [content, setContent] = useState(
     (endpoint?.config as any)?.content || ''
   )
+  const [mentionedList, setMentionedList] = useState(
+    (endpoint?.config as any)?.mentioned_list?.join(', ') || ''
+  )
+  const [mentionedMobileList, setMentionedMobileList] = useState(
+    (endpoint?.config as any)?.mentioned_mobile_list?.join(', ') || ''
+  )
   const [status, setStatus] = useState(endpoint?.status || 'active')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -64,6 +70,10 @@ export function EndpointForm({
     loadChannels()
   }, [])
 
+  // 获取当前选中的渠道信息
+  const selectedChannel = channels.find(c => c.id === channelId)
+  const isWecomChannel = selectedChannel?.type === 'wecom'
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -71,9 +81,25 @@ export function EndpointForm({
 
     try {
       // 构建配置对象
-      const config = {
+      const config: any = {
         msg_type: msgType,
         content: content
+      }
+
+      // 如果是企业微信渠道，添加 mentioned_list 和 mentioned_mobile_list
+      if (isWecomChannel) {
+        if (mentionedList.trim()) {
+          config.mentioned_list = mentionedList
+            .split(',')
+            .map((s: string) => s.trim())
+            .filter((s: string) => s.length > 0)
+        }
+        if (mentionedMobileList.trim()) {
+          config.mentioned_mobile_list = mentionedMobileList
+            .split(',')
+            .map((s: string) => s.trim())
+            .filter((s: string) => s.length > 0)
+        }
       }
 
       const data = {
@@ -171,6 +197,38 @@ export function EndpointForm({
             </code>
           </p>
         </div>
+
+        {isWecomChannel && (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="mentionedList">@提醒用户（可选）</Label>
+              <Input
+                id="mentionedList"
+                value={mentionedList}
+                onChange={e => setMentionedList(e.target.value)}
+                placeholder="userid1, userid2, @all"
+                disabled={isLoading}
+              />
+              <p className="text-xs text-muted-foreground">
+                多个用户用逗号分隔，使用 @all 提醒所有人
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="mentionedMobileList">@提醒手机号（可选）</Label>
+              <Input
+                id="mentionedMobileList"
+                value={mentionedMobileList}
+                onChange={e => setMentionedMobileList(e.target.value)}
+                placeholder="13800001111, 13900002222, @all"
+                disabled={isLoading}
+              />
+              <p className="text-xs text-muted-foreground">
+                多个手机号用逗号分隔，使用 @all 提醒所有人
+              </p>
+            </div>
+          </>
+        )}
 
         <div className="flex items-center justify-between">
           <Label htmlFor="status">状态</Label>

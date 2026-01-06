@@ -4,7 +4,10 @@ import { z } from 'zod'
 export const endpointConfigSchema = z
   .object({
     msg_type: z.string().optional(),
-    content: z.string().optional()
+    content: z.string().optional(),
+    // 企业微信专用字段
+    mentioned_list: z.array(z.string()).optional(),
+    mentioned_mobile_list: z.array(z.string()).optional()
   })
   .loose()
   .optional()
