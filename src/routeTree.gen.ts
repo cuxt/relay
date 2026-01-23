@@ -81,14 +81,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/sign-up': typeof AuthSignUpRoute
-  '/channels': typeof ChannelsIndexRoute
-  '/endpoints': typeof EndpointsIndexRoute
+  '/channels/': typeof ChannelsIndexRoute
+  '/endpoints/': typeof EndpointsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/channels/$id': typeof ApiChannelsIdRoute
   '/api/endpoints/$id': typeof ApiEndpointsIdRoute
   '/api/push/$id': typeof ApiPushIdRoute
-  '/api/channels': typeof ApiChannelsIndexRoute
-  '/api/endpoints': typeof ApiEndpointsIndexRoute
+  '/api/channels/': typeof ApiChannelsIndexRoute
+  '/api/endpoints/': typeof ApiEndpointsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -123,14 +123,14 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/login'
     | '/auth/sign-up'
-    | '/channels'
-    | '/endpoints'
+    | '/channels/'
+    | '/endpoints/'
     | '/api/auth/$'
     | '/api/channels/$id'
     | '/api/endpoints/$id'
     | '/api/push/$id'
-    | '/api/channels'
-    | '/api/endpoints'
+    | '/api/channels/'
+    | '/api/endpoints/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -185,14 +185,14 @@ declare module '@tanstack/react-router' {
     '/endpoints/': {
       id: '/endpoints/'
       path: '/endpoints'
-      fullPath: '/endpoints'
+      fullPath: '/endpoints/'
       preLoaderRoute: typeof EndpointsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/channels/': {
       id: '/channels/'
       path: '/channels'
-      fullPath: '/channels'
+      fullPath: '/channels/'
       preLoaderRoute: typeof ChannelsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -213,14 +213,14 @@ declare module '@tanstack/react-router' {
     '/api/endpoints/': {
       id: '/api/endpoints/'
       path: '/api/endpoints'
-      fullPath: '/api/endpoints'
+      fullPath: '/api/endpoints/'
       preLoaderRoute: typeof ApiEndpointsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/channels/': {
       id: '/api/channels/'
       path: '/api/channels'
-      fullPath: '/api/channels'
+      fullPath: '/api/channels/'
       preLoaderRoute: typeof ApiChannelsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
