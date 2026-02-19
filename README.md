@@ -51,10 +51,11 @@ bun run dev
 
 ### 环境变量
 
-| 变量                 | 说明                  |
-| -------------------- | --------------------- |
-| `DATABASE_URL`       | PostgreSQL 连接字符串 |
-| `BETTER_AUTH_SECRET` | 会话签名密钥          |
+| 变量                    | 说明                  |
+| ----------------------- | --------------------- |
+| `DATABASE_URL`          | PostgreSQL 连接字符串 |
+| `BETTER_AUTH_SECRET`    | 会话签名密钥          |
+| `BETTER_AUTH_BASE_URL`  | 服务访问地址          |
 
 ## 推送接口
 
