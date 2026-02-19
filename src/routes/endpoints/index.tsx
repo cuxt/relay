@@ -1,217 +1,127 @@
-import { useState, useEffect } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
-import { authMiddleware } from '@/middleware/auth'
-import { Button } from '@/components/ui/button'
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle
-} from '@/components/ui/sheet'
-import { EndpointTable } from '@/components/endpoints/EndpointTable'
-import { EndpointForm } from '@/components/endpoints/EndpointForm'
-import { DeleteEndpointDialog } from '@/components/endpoints/DeleteEndpointDialog'
-import { TestPushDialog } from '@/components/endpoints/TestPushDialog'
-import { ApiExampleDialog } from '@/components/endpoints/ApiExampleDialog'
-import {
-  getEndpoints,
-  createEndpoint,
-  updateEndpoint,
-  deleteEndpoint
-} from '@/lib/endpoint/api'
-import type {
-  EndpointWithChannel,
-  CreateEndpointDto,
-  UpdateEndpointDto
-} from '@/lib/endpoint/types'
+import { useState } from 'react'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { PageContainer } from '@/components/layout/page-container'
+import { EndpointList } from '@/components/endpoints/endpoint-list'
+import { TestPushDialog } from '@/components/endpoints/test-push-dialog'
+import { ApiExampleDialog } from '@/components/endpoints/api-example-dialog'
+import { ConfirmDialog } from '@/components/shared/confirm-dialog'
+import {
+  useEndpointList,
+  useUpdateEndpoint,
+  useDeleteEndpoint,
+  useRegenerateToken
+} from '@/hooks/use-endpoints'
 
 export const Route = createFileRoute('/endpoints/')({
-  component: EndpointsPage,
-  server: {
-    middleware: [authMiddleware]
-  }
+  component: EndpointsPage
 })
 
 function EndpointsPage() {
-  const [endpoints, setEndpoints] = useState<EndpointWithChannel[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState('')
+  const { data: endpoints, isLoading } = useEndpointList()
+  const updateEndpoint = useUpdateEndpoint()
+  const deleteEndpoint = useDeleteEndpoint()
+  const regenerateToken = useRegenerateToken()
 
-  // Sheet states
-  const [isFormOpen, setIsFormOpen] = useState(false)
-  const [editingEndpoint, setEditingEndpoint] =
-    useState<EndpointWithChannel | null>(null)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [deletingEndpoint, setDeletingEndpoint] =
-    useState<EndpointWithChannel | null>(null)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [regenerateId, setRegenerateId] = useState<string | null>(null)
+  const [testEndpoint, setTestEndpoint] = useState<any>(null)
+  const [exampleEndpoint, setExampleEndpoint] = useState<any>(null)
+  const [regeneratingId, setRegeneratingId] = useState<string | null>(null)
 
-  // Test dialog states
-  const [isTestDialogOpen, setIsTestDialogOpen] = useState(false)
-  const [testingEndpoint, setTestingEndpoint] =
-    useState<EndpointWithChannel | null>(null)
-
-  // Example dialog states
-  const [isExampleDialogOpen, setIsExampleDialogOpen] = useState(false)
-  const [exampleEndpoint, setExampleEndpoint] =
-    useState<EndpointWithChannel | null>(null)
-
-  // Load endpoints
-  useEffect(() => {
-    loadEndpoints()
-  }, [])
-
-  async function loadEndpoints() {
+  const handleToggle = async (id: string, enabled: boolean) => {
     try {
-      setIsLoading(true)
-      setError('')
-      const data = await getEndpoints()
-      setEndpoints(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '加载端点列表失败')
+      await updateEndpoint.mutateAsync({ id, data: { enabled } })
+      toast.success(enabled ? '端点已启用' : '端点已禁用')
+    } catch {
+      toast.error('操作失败')
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!deleteId) return
+    try {
+      await deleteEndpoint.mutateAsync(deleteId)
+      toast.success('端点已删除')
+      setDeleteId(null)
+    } catch {
+      toast.error('删除失败')
+    }
+  }
+
+  const handleRegenerate = async () => {
+    if (!regenerateId) return
+    setRegeneratingId(regenerateId)
+    try {
+      await regenerateToken.mutateAsync(regenerateId)
+      toast.success('Token 已重新生成')
+      setRegenerateId(null)
+    } catch {
+      toast.error('重新生成失败')
     } finally {
-      setIsLoading(false)
-    }
-  }
-
-  // Create/Update handlers
-  async function handleSubmit(data: CreateEndpointDto | UpdateEndpointDto) {
-    if (editingEndpoint) {
-      await updateEndpoint(editingEndpoint.id, data)
-      // 重新加载列表以获取最新的channel信息
-      await loadEndpoints()
-    } else {
-      await createEndpoint(data as CreateEndpointDto)
-      // 重新加载列表
-      await loadEndpoints()
-    }
-    setIsFormOpen(false)
-    setEditingEndpoint(null)
-  }
-
-  // Toggle status
-  async function handleToggleStatus(endpoint: EndpointWithChannel) {
-    try {
-      const newStatus = endpoint.status === 'active' ? 'inactive' : 'active'
-      await updateEndpoint(endpoint.id, { status: newStatus })
-      await loadEndpoints()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '切换状态失败')
-    }
-  }
-
-  // Delete handler
-  async function handleDeleteConfirm() {
-    if (!deletingEndpoint) return
-
-    try {
-      setIsDeleting(true)
-      await deleteEndpoint(deletingEndpoint.id)
-      setEndpoints(prev => prev.filter(e => e.id !== deletingEndpoint.id))
-      setIsDeleteDialogOpen(false)
-      setDeletingEndpoint(null)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '删除端点失败')
-    } finally {
-      setIsDeleting(false)
+      setRegeneratingId(null)
     }
   }
 
   return (
-    <div className="flex flex-col h-full overflow-auto p-6 px-4 w-full">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">端点管理</h1>
-          <p className="text-muted-foreground mt-1">管理您的API端点</p>
-        </div>
-        <Button
-          onClick={() => {
-            setEditingEndpoint(null)
-            setIsFormOpen(true)
-          }}
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          添加端点
+    <PageContainer
+      title="端点管理"
+      description="管理推送端点，每个端点有唯一的 Webhook URL"
+      action={
+        <Button asChild>
+          <Link to="/endpoints/new">
+            <Plus className="mr-2 h-4 w-4" />
+            新建端点
+          </Link>
         </Button>
-      </div>
-
-      {error && (
-        <div className="mb-4 p-3 rounded-md bg-destructive/10 text-destructive text-sm">
-          {error}
-        </div>
-      )}
-
-      {isLoading ? (
-        <div className="flex items-center justify-center h-64">
-          <p className="text-muted-foreground">加载中...</p>
-        </div>
-      ) : (
-        <EndpointTable
-          endpoints={endpoints}
-          onEdit={endpoint => {
-            setEditingEndpoint(endpoint)
-            setIsFormOpen(true)
-          }}
-          onDelete={endpoint => {
-            setDeletingEndpoint(endpoint)
-            setIsDeleteDialogOpen(true)
-          }}
-          onToggleStatus={handleToggleStatus}
-          onTest={endpoint => {
-            setTestingEndpoint(endpoint)
-            setIsTestDialogOpen(true)
-          }}
-          onShowExample={endpoint => {
-            setExampleEndpoint(endpoint)
-            setIsExampleDialogOpen(true)
-          }}
-        />
-      )}
-
-      {/* Add/Edit Form Sheet */}
-      <Sheet open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <SheetContent side="right">
-          <SheetHeader>
-            <SheetTitle>{editingEndpoint ? '编辑端点' : '添加端点'}</SheetTitle>
-            <SheetDescription>
-              {editingEndpoint ? '修改端点配置信息' : '填写新端点的配置信息'}
-            </SheetDescription>
-          </SheetHeader>
-          <EndpointForm
-            endpoint={editingEndpoint || undefined}
-            onSubmit={handleSubmit}
-            onCancel={() => {
-              setIsFormOpen(false)
-              setEditingEndpoint(null)
-            }}
-          />
-        </SheetContent>
-      </Sheet>
-
-      {/* Delete Confirmation Dialog */}
-      <DeleteEndpointDialog
-        endpoint={deletingEndpoint}
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        onConfirm={handleDeleteConfirm}
-        isLoading={isDeleting}
+      }
+    >
+      <EndpointList
+        endpoints={endpoints}
+        isLoading={isLoading}
+        onToggle={handleToggle}
+        onDelete={setDeleteId}
+        onTestPush={setTestEndpoint}
+        onShowExample={setExampleEndpoint}
+        onRegenerateToken={setRegenerateId}
+        regeneratingId={regeneratingId}
       />
 
-      {/* Test Push Dialog */}
+      <ConfirmDialog
+        open={!!deleteId}
+        onOpenChange={open => !open && setDeleteId(null)}
+        title="删除端点"
+        description="确定要删除该端点吗？相关的推送日志也会被删除，此操作不可撤销。"
+        confirmLabel="删除"
+        variant="destructive"
+        loading={deleteEndpoint.isPending}
+        onConfirm={handleDelete}
+      />
+
+      <ConfirmDialog
+        open={!!regenerateId}
+        onOpenChange={open => !open && setRegenerateId(null)}
+        title="重新生成 Token"
+        description="重新生成后，原有的推送地址将立即失效，所有使用旧地址的服务需要更新。确定继续？"
+        confirmLabel="重新生成"
+        variant="destructive"
+        loading={regenerateToken.isPending}
+        onConfirm={handleRegenerate}
+      />
+
       <TestPushDialog
-        endpoint={testingEndpoint}
-        open={isTestDialogOpen}
-        onOpenChange={setIsTestDialogOpen}
+        open={!!testEndpoint}
+        onOpenChange={open => !open && setTestEndpoint(null)}
+        endpoint={testEndpoint}
       />
 
-      {/* API Example Dialog */}
       <ApiExampleDialog
+        open={!!exampleEndpoint}
+        onOpenChange={open => !open && setExampleEndpoint(null)}
         endpoint={exampleEndpoint}
-        open={isExampleDialogOpen}
-        onOpenChange={setIsExampleDialogOpen}
       />
-    </div>
+    </PageContainer>
   )
 }

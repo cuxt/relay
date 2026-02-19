@@ -1,105 +1,85 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '@/db'
-import { endpoint } from '@/db/schemas/endpoint.schema'
-import { channel } from '@/db/schemas/channel.schema'
-import { auth } from '@/lib/auth/auth'
-import { getRequestHeaders } from '@tanstack/react-start/server'
-import { eq } from 'drizzle-orm'
-import { nanoid } from 'nanoid'
-import { createEndpointSchema } from '@/lib/endpoint/validation'
+import { endpoints } from '@/db/schemas/endpoints.schema'
+import { channels } from '@/db/schemas/channels.schema'
+import { eq, and } from 'drizzle-orm'
+import { requireSession } from '@/middleware/api-auth'
+import { jsonResponse, errorResponse } from '@/lib/api/response'
+import { createEndpointSchema } from '@/lib/endpoints/validation'
+import { generateEndpointToken } from '@/lib/utils'
 
 export const Route = createFileRoute('/api/endpoints/')({
   server: {
     handlers: {
       GET: async ({ request }: { request: Request }) => {
-        const headers = getRequestHeaders()
-        const session = await auth.api.getSession({ headers })
+        const { session, error } = await requireSession(request)
+        if (error) return error
 
-        if (!session?.user?.id) {
-          return new Response('Unauthorized', { status: 401 })
-        }
-
-        // 联表查询，获取endpoint及其关联的channel信息
-        const endpoints = await db
+        const list = await db
           .select({
-            id: endpoint.id,
-            name: endpoint.name,
-            config: endpoint.config,
-            status: endpoint.status,
-            userId: endpoint.userId,
-            channelId: endpoint.channelId,
-            createdAt: endpoint.createdAt,
-            updatedAt: endpoint.updatedAt,
-            channel: {
-              id: channel.id,
-              name: channel.name,
-              type: channel.type
-            }
+            id: endpoints.id,
+            name: endpoints.name,
+            token: endpoints.token,
+            enabled: endpoints.enabled,
+            channelId: endpoints.channelId,
+            messageTemplate: endpoints.messageTemplate,
+            messageType: endpoints.messageType,
+            mentionedUserIds: endpoints.mentionedUserIds,
+            mentionedMobiles: endpoints.mentionedMobiles,
+            createdAt: endpoints.createdAt,
+            updatedAt: endpoints.updatedAt,
+            channelName: channels.name,
+            channelType: channels.type,
+            channelEnabled: channels.enabled
           })
-          .from(endpoint)
-          .innerJoin(channel, eq(endpoint.channelId, channel.id))
-          .where(eq(endpoint.userId, session.user.id))
-          .orderBy(endpoint.createdAt)
+          .from(endpoints)
+          .innerJoin(channels, eq(endpoints.channelId, channels.id))
+          .where(eq(endpoints.userId, session.user.id))
+          .orderBy(endpoints.createdAt)
 
-        return new Response(JSON.stringify(endpoints), {
-          headers: { 'Content-Type': 'application/json' }
-        })
+        return jsonResponse(list)
       },
 
       POST: async ({ request }: { request: Request }) => {
-        const headers = getRequestHeaders()
-        const session = await auth.api.getSession({ headers })
+        const { session, error } = await requireSession(request)
+        if (error) return error
 
-        if (!session?.user?.id) {
-          return new Response('Unauthorized', { status: 401 })
+        const body = await request.json()
+        const parsed = createEndpointSchema.safeParse(body)
+
+        if (!parsed.success) {
+          return errorResponse(
+            'VALIDATION_ERROR',
+            parsed.error.issues.map(i => i.message).join(', '),
+            400
+          )
         }
 
-        try {
-          const body = await request.json()
-          const validatedData = createEndpointSchema.parse(body)
-
-          // 验证channel是否属于当前用户
-          const channelExists = await db
-            .select()
-            .from(channel)
-            .where(eq(channel.id, validatedData.channelId))
-            .limit(1)
-
-          if (
-            channelExists.length === 0 ||
-            channelExists[0].userId !== session.user.id
-          ) {
-            return new Response(
-              JSON.stringify({ message: '无效的渠道ID或无权限访问该渠道' }),
-              { status: 400, headers: { 'Content-Type': 'application/json' } }
+        // 验证渠道归属
+        const [ch] = await db
+          .select()
+          .from(channels)
+          .where(
+            and(
+              eq(channels.id, parsed.data.channelId),
+              eq(channels.userId, session.user.id)
             )
-          }
+          )
 
-          const newEndpoint = await db
-            .insert(endpoint)
-            .values({
-              id: nanoid(),
-              name: validatedData.name,
-              channelId: validatedData.channelId,
-              config: validatedData.config || null,
-              status: validatedData.status || 'active',
-              userId: session.user.id
-            })
-            .returning()
-
-          return new Response(JSON.stringify(newEndpoint[0]), {
-            status: 201,
-            headers: { 'Content-Type': 'application/json' }
-          })
-        } catch (error) {
-          if (error instanceof Error) {
-            return new Response(JSON.stringify({ message: error.message }), {
-              status: 400,
-              headers: { 'Content-Type': 'application/json' }
-            })
-          }
-          return new Response('Bad Request', { status: 400 })
+        if (!ch) {
+          return errorResponse('NOT_FOUND', '渠道不存在', 404)
         }
+
+        const [created] = await db
+          .insert(endpoints)
+          .values({
+            ...parsed.data,
+            token: generateEndpointToken(),
+            userId: session.user.id
+          })
+          .returning()
+
+        return jsonResponse(created, 201)
       }
     }
   }

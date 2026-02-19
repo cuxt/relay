@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '@/db'
-import { channel } from '@/db/schemas/channel.schema'
-import { auth } from '@/lib/auth/auth'
-import { getRequestHeaders } from '@tanstack/react-start/server'
+import { channels } from '@/db/schemas/channels.schema'
 import { eq, and } from 'drizzle-orm'
-import { updateChannelSchema } from '@/lib/channel/validation'
+import { requireSession } from '@/middleware/api-auth'
+import { jsonResponse, errorResponse } from '@/lib/api/response'
+import { updateChannelSchema } from '@/lib/channels/validation'
 
 export const Route = createFileRoute('/api/channels/$id')({
   server: {
@@ -16,27 +16,24 @@ export const Route = createFileRoute('/api/channels/$id')({
         request: Request
         params: { id: string }
       }) => {
-        const headers = getRequestHeaders()
-        const session = await auth.api.getSession({ headers })
+        const { session, error } = await requireSession(request)
+        if (error) return error
 
-        if (!session?.user?.id) {
-          return new Response('Unauthorized', { status: 401 })
-        }
-
-        const result = await db
+        const [channel] = await db
           .select()
-          .from(channel)
+          .from(channels)
           .where(
-            and(eq(channel.id, params.id), eq(channel.userId, session.user.id))
+            and(
+              eq(channels.id, params.id),
+              eq(channels.userId, session.user.id)
+            )
           )
 
-        if (result.length === 0) {
-          return new Response('Channel not found', { status: 404 })
+        if (!channel) {
+          return errorResponse('NOT_FOUND', '渠道不存在', 404)
         }
 
-        return new Response(JSON.stringify(result[0]), {
-          headers: { 'Content-Type': 'application/json' }
-        })
+        return jsonResponse(channel)
       },
 
       PATCH: async ({
@@ -46,44 +43,41 @@ export const Route = createFileRoute('/api/channels/$id')({
         request: Request
         params: { id: string }
       }) => {
-        const headers = getRequestHeaders()
-        const session = await auth.api.getSession({ headers })
+        const { session, error } = await requireSession(request)
+        if (error) return error
 
-        if (!session?.user?.id) {
-          return new Response('Unauthorized', { status: 401 })
+        const body = await request.json()
+        const parsed = updateChannelSchema.safeParse(body)
+
+        if (!parsed.success) {
+          return errorResponse(
+            'VALIDATION_ERROR',
+            parsed.error.issues.map(i => i.message).join(', '),
+            400
+          )
         }
 
-        try {
-          const body = await request.json()
-          const validatedData = updateChannelSchema.parse(body)
-
-          const updated = await db
-            .update(channel)
-            .set(validatedData)
-            .where(
-              and(
-                eq(channel.id, params.id),
-                eq(channel.userId, session.user.id)
-              )
+        const [existing] = await db
+          .select()
+          .from(channels)
+          .where(
+            and(
+              eq(channels.id, params.id),
+              eq(channels.userId, session.user.id)
             )
-            .returning()
+          )
 
-          if (updated.length === 0) {
-            return new Response('Channel not found', { status: 404 })
-          }
-
-          return new Response(JSON.stringify(updated[0]), {
-            headers: { 'Content-Type': 'application/json' }
-          })
-        } catch (error) {
-          if (error instanceof Error) {
-            return new Response(JSON.stringify({ message: error.message }), {
-              status: 400,
-              headers: { 'Content-Type': 'application/json' }
-            })
-          }
-          return new Response('Bad Request', { status: 400 })
+        if (!existing) {
+          return errorResponse('NOT_FOUND', '渠道不存在', 404)
         }
+
+        const [updated] = await db
+          .update(channels)
+          .set(parsed.data)
+          .where(eq(channels.id, params.id))
+          .returning()
+
+        return jsonResponse(updated)
       },
 
       DELETE: async ({
@@ -93,25 +87,26 @@ export const Route = createFileRoute('/api/channels/$id')({
         request: Request
         params: { id: string }
       }) => {
-        const headers = getRequestHeaders()
-        const session = await auth.api.getSession({ headers })
+        const { session, error } = await requireSession(request)
+        if (error) return error
 
-        if (!session?.user?.id) {
-          return new Response('Unauthorized', { status: 401 })
-        }
-
-        const deleted = await db
-          .delete(channel)
+        const [existing] = await db
+          .select()
+          .from(channels)
           .where(
-            and(eq(channel.id, params.id), eq(channel.userId, session.user.id))
+            and(
+              eq(channels.id, params.id),
+              eq(channels.userId, session.user.id)
+            )
           )
-          .returning()
 
-        if (deleted.length === 0) {
-          return new Response('Channel not found', { status: 404 })
+        if (!existing) {
+          return errorResponse('NOT_FOUND', '渠道不存在', 404)
         }
 
-        return new Response(null, { status: 204 })
+        await db.delete(channels).where(eq(channels.id, params.id))
+
+        return jsonResponse(null, 204)
       }
     }
   }

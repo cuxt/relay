@@ -1,11 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '@/db'
-import { endpoint } from '@/db/schemas/endpoint.schema'
-import { channel } from '@/db/schemas/channel.schema'
-import { auth } from '@/lib/auth/auth'
-import { getRequestHeaders } from '@tanstack/react-start/server'
+import { endpoints } from '@/db/schemas/endpoints.schema'
+import { channels } from '@/db/schemas/channels.schema'
 import { eq, and } from 'drizzle-orm'
-import { updateEndpointSchema } from '@/lib/endpoint/validation'
+import { requireSession } from '@/middleware/api-auth'
+import { jsonResponse, errorResponse } from '@/lib/api/response'
+import { updateEndpointSchema } from '@/lib/endpoints/validation'
 
 export const Route = createFileRoute('/api/endpoints/$id')({
   server: {
@@ -17,45 +17,39 @@ export const Route = createFileRoute('/api/endpoints/$id')({
         request: Request
         params: { id: string }
       }) => {
-        const headers = getRequestHeaders()
-        const session = await auth.api.getSession({ headers })
-
-        if (!session?.user?.id) {
-          return new Response('Unauthorized', { status: 401 })
-        }
+        const { session, error } = await requireSession(request)
+        if (error) return error
 
         const result = await db
           .select({
-            id: endpoint.id,
-            name: endpoint.name,
-            config: endpoint.config,
-            status: endpoint.status,
-            userId: endpoint.userId,
-            channelId: endpoint.channelId,
-            createdAt: endpoint.createdAt,
-            updatedAt: endpoint.updatedAt,
-            channel: {
-              id: channel.id,
-              name: channel.name,
-              type: channel.type
-            }
+            id: endpoints.id,
+            name: endpoints.name,
+            token: endpoints.token,
+            enabled: endpoints.enabled,
+            channelId: endpoints.channelId,
+            messageTemplate: endpoints.messageTemplate,
+            messageType: endpoints.messageType,
+            mentionedUserIds: endpoints.mentionedUserIds,
+            mentionedMobiles: endpoints.mentionedMobiles,
+            createdAt: endpoints.createdAt,
+            updatedAt: endpoints.updatedAt,
+            channelName: channels.name,
+            channelType: channels.type
           })
-          .from(endpoint)
-          .innerJoin(channel, eq(endpoint.channelId, channel.id))
+          .from(endpoints)
+          .innerJoin(channels, eq(endpoints.channelId, channels.id))
           .where(
             and(
-              eq(endpoint.id, params.id),
-              eq(endpoint.userId, session.user.id)
+              eq(endpoints.id, params.id),
+              eq(endpoints.userId, session.user.id)
             )
           )
 
-        if (result.length === 0) {
-          return new Response('Endpoint not found', { status: 404 })
+        if (!result.length) {
+          return errorResponse('NOT_FOUND', '端点不存在', 404)
         }
 
-        return new Response(JSON.stringify(result[0]), {
-          headers: { 'Content-Type': 'application/json' }
-        })
+        return jsonResponse(result[0])
       },
 
       PATCH: async ({
@@ -65,68 +59,57 @@ export const Route = createFileRoute('/api/endpoints/$id')({
         request: Request
         params: { id: string }
       }) => {
-        const headers = getRequestHeaders()
-        const session = await auth.api.getSession({ headers })
+        const { session, error } = await requireSession(request)
+        if (error) return error
 
-        if (!session?.user?.id) {
-          return new Response('Unauthorized', { status: 401 })
+        const body = await request.json()
+        const parsed = updateEndpointSchema.safeParse(body)
+
+        if (!parsed.success) {
+          return errorResponse(
+            'VALIDATION_ERROR',
+            parsed.error.issues.map(i => i.message).join(', '),
+            400
+          )
         }
 
-        try {
-          const body = await request.json()
-          const validatedData = updateEndpointSchema.parse(body)
+        const [existing] = await db
+          .select()
+          .from(endpoints)
+          .where(
+            and(
+              eq(endpoints.id, params.id),
+              eq(endpoints.userId, session.user.id)
+            )
+          )
 
-          // 如果更新channelId，验证新channel所有权
-          if (validatedData.channelId) {
-            const channelExists = await db
-              .select()
-              .from(channel)
-              .where(eq(channel.id, validatedData.channelId))
-              .limit(1)
+        if (!existing) {
+          return errorResponse('NOT_FOUND', '端点不存在', 404)
+        }
 
-            if (
-              channelExists.length === 0 ||
-              channelExists[0].userId !== session.user.id
-            ) {
-              return new Response(
-                JSON.stringify({
-                  message: '无效的渠道ID或无权限访问该渠道'
-                }),
-                {
-                  status: 400,
-                  headers: { 'Content-Type': 'application/json' }
-                }
-              )
-            }
-          }
-
-          const updated = await db
-            .update(endpoint)
-            .set(validatedData)
+        // 如果更新了 channelId，验证渠道归属
+        if (parsed.data.channelId) {
+          const [ch] = await db
+            .select()
+            .from(channels)
             .where(
               and(
-                eq(endpoint.id, params.id),
-                eq(endpoint.userId, session.user.id)
+                eq(channels.id, parsed.data.channelId),
+                eq(channels.userId, session.user.id)
               )
             )
-            .returning()
-
-          if (updated.length === 0) {
-            return new Response('Endpoint not found', { status: 404 })
+          if (!ch) {
+            return errorResponse('NOT_FOUND', '渠道不存在', 404)
           }
-
-          return new Response(JSON.stringify(updated[0]), {
-            headers: { 'Content-Type': 'application/json' }
-          })
-        } catch (error) {
-          if (error instanceof Error) {
-            return new Response(JSON.stringify({ message: error.message }), {
-              status: 400,
-              headers: { 'Content-Type': 'application/json' }
-            })
-          }
-          return new Response('Bad Request', { status: 400 })
         }
+
+        const [updated] = await db
+          .update(endpoints)
+          .set(parsed.data)
+          .where(eq(endpoints.id, params.id))
+          .returning()
+
+        return jsonResponse(updated)
       },
 
       DELETE: async ({
@@ -136,28 +119,26 @@ export const Route = createFileRoute('/api/endpoints/$id')({
         request: Request
         params: { id: string }
       }) => {
-        const headers = getRequestHeaders()
-        const session = await auth.api.getSession({ headers })
+        const { session, error } = await requireSession(request)
+        if (error) return error
 
-        if (!session?.user?.id) {
-          return new Response('Unauthorized', { status: 401 })
-        }
-
-        const deleted = await db
-          .delete(endpoint)
+        const [existing] = await db
+          .select()
+          .from(endpoints)
           .where(
             and(
-              eq(endpoint.id, params.id),
-              eq(endpoint.userId, session.user.id)
+              eq(endpoints.id, params.id),
+              eq(endpoints.userId, session.user.id)
             )
           )
-          .returning()
 
-        if (deleted.length === 0) {
-          return new Response('Endpoint not found', { status: 404 })
+        if (!existing) {
+          return errorResponse('NOT_FOUND', '端点不存在', 404)
         }
 
-        return new Response(null, { status: 204 })
+        await db.delete(endpoints).where(eq(endpoints.id, params.id))
+
+        return jsonResponse(null, 204)
       }
     }
   }

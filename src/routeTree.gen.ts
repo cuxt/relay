@@ -10,20 +10,46 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SettingsIndexRouteImport } from './routes/settings/index'
+import { Route as LogsIndexRouteImport } from './routes/logs/index'
 import { Route as EndpointsIndexRouteImport } from './routes/endpoints/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as ChannelsIndexRouteImport } from './routes/channels/index'
+import { Route as LogsIdRouteImport } from './routes/logs/$id'
+import { Route as EndpointsNewRouteImport } from './routes/endpoints/new'
+import { Route as ChannelsNewRouteImport } from './routes/channels/new'
 import { Route as AuthSignUpRouteImport } from './routes/auth/sign-up'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as ApiStatsIndexRouteImport } from './routes/api/stats/index'
+import { Route as ApiLogsIndexRouteImport } from './routes/api/logs/index'
 import { Route as ApiEndpointsIndexRouteImport } from './routes/api/endpoints/index'
 import { Route as ApiChannelsIndexRouteImport } from './routes/api/channels/index'
-import { Route as ApiPushIdRouteImport } from './routes/api/push/$id'
+import { Route as ApiApiKeysIndexRouteImport } from './routes/api/api-keys/index'
+import { Route as EndpointsIdEditRouteImport } from './routes/endpoints/$id/edit'
+import { Route as ChannelsIdEditRouteImport } from './routes/channels/$id/edit'
+import { Route as ApiTelegramGetUpdatesRouteImport } from './routes/api/telegram/get-updates'
+import { Route as ApiStatsChartRouteImport } from './routes/api/stats/chart'
+import { Route as ApiPushTokenRouteImport } from './routes/api/push/$token'
+import { Route as ApiLogsIdRouteImport } from './routes/api/logs/$id'
 import { Route as ApiEndpointsIdRouteImport } from './routes/api/endpoints/$id'
 import { Route as ApiChannelsIdRouteImport } from './routes/api/channels/$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiApiKeysIdRouteImport } from './routes/api/api-keys/$id'
+import { Route as ApiEndpointsIdRegenerateTokenRouteImport } from './routes/api/endpoints/$id.regenerate-token'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogsIndexRoute = LogsIndexRouteImport.update({
+  id: '/logs/',
+  path: '/logs/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EndpointsIndexRoute = EndpointsIndexRouteImport.update({
@@ -31,9 +57,29 @@ const EndpointsIndexRoute = EndpointsIndexRouteImport.update({
   path: '/endpoints/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChannelsIndexRoute = ChannelsIndexRouteImport.update({
   id: '/channels/',
   path: '/channels/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogsIdRoute = LogsIdRouteImport.update({
+  id: '/logs/$id',
+  path: '/logs/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EndpointsNewRoute = EndpointsNewRouteImport.update({
+  id: '/endpoints/new',
+  path: '/endpoints/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChannelsNewRoute = ChannelsNewRouteImport.update({
+  id: '/channels/new',
+  path: '/channels/new',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthSignUpRoute = AuthSignUpRouteImport.update({
@@ -46,6 +92,16 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiStatsIndexRoute = ApiStatsIndexRouteImport.update({
+  id: '/api/stats/',
+  path: '/api/stats/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLogsIndexRoute = ApiLogsIndexRouteImport.update({
+  id: '/api/logs/',
+  path: '/api/logs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiEndpointsIndexRoute = ApiEndpointsIndexRouteImport.update({
   id: '/api/endpoints/',
   path: '/api/endpoints/',
@@ -56,9 +112,39 @@ const ApiChannelsIndexRoute = ApiChannelsIndexRouteImport.update({
   path: '/api/channels/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPushIdRoute = ApiPushIdRouteImport.update({
-  id: '/api/push/$id',
-  path: '/api/push/$id',
+const ApiApiKeysIndexRoute = ApiApiKeysIndexRouteImport.update({
+  id: '/api/api-keys/',
+  path: '/api/api-keys/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EndpointsIdEditRoute = EndpointsIdEditRouteImport.update({
+  id: '/endpoints/$id/edit',
+  path: '/endpoints/$id/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChannelsIdEditRoute = ChannelsIdEditRouteImport.update({
+  id: '/channels/$id/edit',
+  path: '/channels/$id/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTelegramGetUpdatesRoute = ApiTelegramGetUpdatesRouteImport.update({
+  id: '/api/telegram/get-updates',
+  path: '/api/telegram/get-updates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiStatsChartRoute = ApiStatsChartRouteImport.update({
+  id: '/api/stats/chart',
+  path: '/api/stats/chart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPushTokenRoute = ApiPushTokenRouteImport.update({
+  id: '/api/push/$token',
+  path: '/api/push/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLogsIdRoute = ApiLogsIdRouteImport.update({
+  id: '/api/logs/$id',
+  path: '/api/logs/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiEndpointsIdRoute = ApiEndpointsIdRouteImport.update({
@@ -76,46 +162,105 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiApiKeysIdRoute = ApiApiKeysIdRouteImport.update({
+  id: '/api/api-keys/$id',
+  path: '/api/api-keys/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEndpointsIdRegenerateTokenRoute =
+  ApiEndpointsIdRegenerateTokenRouteImport.update({
+    id: '/regenerate-token',
+    path: '/regenerate-token',
+    getParentRoute: () => ApiEndpointsIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/sign-up': typeof AuthSignUpRoute
+  '/channels/new': typeof ChannelsNewRoute
+  '/endpoints/new': typeof EndpointsNewRoute
+  '/logs/$id': typeof LogsIdRoute
   '/channels/': typeof ChannelsIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/endpoints/': typeof EndpointsIndexRoute
+  '/logs/': typeof LogsIndexRoute
+  '/settings/': typeof SettingsIndexRoute
+  '/api/api-keys/$id': typeof ApiApiKeysIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/channels/$id': typeof ApiChannelsIdRoute
-  '/api/endpoints/$id': typeof ApiEndpointsIdRoute
-  '/api/push/$id': typeof ApiPushIdRoute
+  '/api/endpoints/$id': typeof ApiEndpointsIdRouteWithChildren
+  '/api/logs/$id': typeof ApiLogsIdRoute
+  '/api/push/$token': typeof ApiPushTokenRoute
+  '/api/stats/chart': typeof ApiStatsChartRoute
+  '/api/telegram/get-updates': typeof ApiTelegramGetUpdatesRoute
+  '/channels/$id/edit': typeof ChannelsIdEditRoute
+  '/endpoints/$id/edit': typeof EndpointsIdEditRoute
+  '/api/api-keys/': typeof ApiApiKeysIndexRoute
   '/api/channels/': typeof ApiChannelsIndexRoute
   '/api/endpoints/': typeof ApiEndpointsIndexRoute
+  '/api/logs/': typeof ApiLogsIndexRoute
+  '/api/stats/': typeof ApiStatsIndexRoute
+  '/api/endpoints/$id/regenerate-token': typeof ApiEndpointsIdRegenerateTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/sign-up': typeof AuthSignUpRoute
+  '/channels/new': typeof ChannelsNewRoute
+  '/endpoints/new': typeof EndpointsNewRoute
+  '/logs/$id': typeof LogsIdRoute
   '/channels': typeof ChannelsIndexRoute
+  '/dashboard': typeof DashboardIndexRoute
   '/endpoints': typeof EndpointsIndexRoute
+  '/logs': typeof LogsIndexRoute
+  '/settings': typeof SettingsIndexRoute
+  '/api/api-keys/$id': typeof ApiApiKeysIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/channels/$id': typeof ApiChannelsIdRoute
-  '/api/endpoints/$id': typeof ApiEndpointsIdRoute
-  '/api/push/$id': typeof ApiPushIdRoute
+  '/api/endpoints/$id': typeof ApiEndpointsIdRouteWithChildren
+  '/api/logs/$id': typeof ApiLogsIdRoute
+  '/api/push/$token': typeof ApiPushTokenRoute
+  '/api/stats/chart': typeof ApiStatsChartRoute
+  '/api/telegram/get-updates': typeof ApiTelegramGetUpdatesRoute
+  '/channels/$id/edit': typeof ChannelsIdEditRoute
+  '/endpoints/$id/edit': typeof EndpointsIdEditRoute
+  '/api/api-keys': typeof ApiApiKeysIndexRoute
   '/api/channels': typeof ApiChannelsIndexRoute
   '/api/endpoints': typeof ApiEndpointsIndexRoute
+  '/api/logs': typeof ApiLogsIndexRoute
+  '/api/stats': typeof ApiStatsIndexRoute
+  '/api/endpoints/$id/regenerate-token': typeof ApiEndpointsIdRegenerateTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/sign-up': typeof AuthSignUpRoute
+  '/channels/new': typeof ChannelsNewRoute
+  '/endpoints/new': typeof EndpointsNewRoute
+  '/logs/$id': typeof LogsIdRoute
   '/channels/': typeof ChannelsIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/endpoints/': typeof EndpointsIndexRoute
+  '/logs/': typeof LogsIndexRoute
+  '/settings/': typeof SettingsIndexRoute
+  '/api/api-keys/$id': typeof ApiApiKeysIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/channels/$id': typeof ApiChannelsIdRoute
-  '/api/endpoints/$id': typeof ApiEndpointsIdRoute
-  '/api/push/$id': typeof ApiPushIdRoute
+  '/api/endpoints/$id': typeof ApiEndpointsIdRouteWithChildren
+  '/api/logs/$id': typeof ApiLogsIdRoute
+  '/api/push/$token': typeof ApiPushTokenRoute
+  '/api/stats/chart': typeof ApiStatsChartRoute
+  '/api/telegram/get-updates': typeof ApiTelegramGetUpdatesRoute
+  '/channels/$id/edit': typeof ChannelsIdEditRoute
+  '/endpoints/$id/edit': typeof EndpointsIdEditRoute
+  '/api/api-keys/': typeof ApiApiKeysIndexRoute
   '/api/channels/': typeof ApiChannelsIndexRoute
   '/api/endpoints/': typeof ApiEndpointsIndexRoute
+  '/api/logs/': typeof ApiLogsIndexRoute
+  '/api/stats/': typeof ApiStatsIndexRoute
+  '/api/endpoints/$id/regenerate-token': typeof ApiEndpointsIdRegenerateTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -123,54 +268,117 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/login'
     | '/auth/sign-up'
+    | '/channels/new'
+    | '/endpoints/new'
+    | '/logs/$id'
     | '/channels/'
+    | '/dashboard/'
     | '/endpoints/'
+    | '/logs/'
+    | '/settings/'
+    | '/api/api-keys/$id'
     | '/api/auth/$'
     | '/api/channels/$id'
     | '/api/endpoints/$id'
-    | '/api/push/$id'
+    | '/api/logs/$id'
+    | '/api/push/$token'
+    | '/api/stats/chart'
+    | '/api/telegram/get-updates'
+    | '/channels/$id/edit'
+    | '/endpoints/$id/edit'
+    | '/api/api-keys/'
     | '/api/channels/'
     | '/api/endpoints/'
+    | '/api/logs/'
+    | '/api/stats/'
+    | '/api/endpoints/$id/regenerate-token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth/login'
     | '/auth/sign-up'
+    | '/channels/new'
+    | '/endpoints/new'
+    | '/logs/$id'
     | '/channels'
+    | '/dashboard'
     | '/endpoints'
+    | '/logs'
+    | '/settings'
+    | '/api/api-keys/$id'
     | '/api/auth/$'
     | '/api/channels/$id'
     | '/api/endpoints/$id'
-    | '/api/push/$id'
+    | '/api/logs/$id'
+    | '/api/push/$token'
+    | '/api/stats/chart'
+    | '/api/telegram/get-updates'
+    | '/channels/$id/edit'
+    | '/endpoints/$id/edit'
+    | '/api/api-keys'
     | '/api/channels'
     | '/api/endpoints'
+    | '/api/logs'
+    | '/api/stats'
+    | '/api/endpoints/$id/regenerate-token'
   id:
     | '__root__'
     | '/'
     | '/auth/login'
     | '/auth/sign-up'
+    | '/channels/new'
+    | '/endpoints/new'
+    | '/logs/$id'
     | '/channels/'
+    | '/dashboard/'
     | '/endpoints/'
+    | '/logs/'
+    | '/settings/'
+    | '/api/api-keys/$id'
     | '/api/auth/$'
     | '/api/channels/$id'
     | '/api/endpoints/$id'
-    | '/api/push/$id'
+    | '/api/logs/$id'
+    | '/api/push/$token'
+    | '/api/stats/chart'
+    | '/api/telegram/get-updates'
+    | '/channels/$id/edit'
+    | '/endpoints/$id/edit'
+    | '/api/api-keys/'
     | '/api/channels/'
     | '/api/endpoints/'
+    | '/api/logs/'
+    | '/api/stats/'
+    | '/api/endpoints/$id/regenerate-token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignUpRoute: typeof AuthSignUpRoute
+  ChannelsNewRoute: typeof ChannelsNewRoute
+  EndpointsNewRoute: typeof EndpointsNewRoute
+  LogsIdRoute: typeof LogsIdRoute
   ChannelsIndexRoute: typeof ChannelsIndexRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
   EndpointsIndexRoute: typeof EndpointsIndexRoute
+  LogsIndexRoute: typeof LogsIndexRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
+  ApiApiKeysIdRoute: typeof ApiApiKeysIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiChannelsIdRoute: typeof ApiChannelsIdRoute
-  ApiEndpointsIdRoute: typeof ApiEndpointsIdRoute
-  ApiPushIdRoute: typeof ApiPushIdRoute
+  ApiEndpointsIdRoute: typeof ApiEndpointsIdRouteWithChildren
+  ApiLogsIdRoute: typeof ApiLogsIdRoute
+  ApiPushTokenRoute: typeof ApiPushTokenRoute
+  ApiStatsChartRoute: typeof ApiStatsChartRoute
+  ApiTelegramGetUpdatesRoute: typeof ApiTelegramGetUpdatesRoute
+  ChannelsIdEditRoute: typeof ChannelsIdEditRoute
+  EndpointsIdEditRoute: typeof EndpointsIdEditRoute
+  ApiApiKeysIndexRoute: typeof ApiApiKeysIndexRoute
   ApiChannelsIndexRoute: typeof ApiChannelsIndexRoute
   ApiEndpointsIndexRoute: typeof ApiEndpointsIndexRoute
+  ApiLogsIndexRoute: typeof ApiLogsIndexRoute
+  ApiStatsIndexRoute: typeof ApiStatsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -182,6 +390,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/': {
+      id: '/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logs/': {
+      id: '/logs/'
+      path: '/logs'
+      fullPath: '/logs/'
+      preLoaderRoute: typeof LogsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/endpoints/': {
       id: '/endpoints/'
       path: '/endpoints'
@@ -189,11 +411,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EndpointsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/channels/': {
       id: '/channels/'
       path: '/channels'
       fullPath: '/channels/'
       preLoaderRoute: typeof ChannelsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logs/$id': {
+      id: '/logs/$id'
+      path: '/logs/$id'
+      fullPath: '/logs/$id'
+      preLoaderRoute: typeof LogsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/endpoints/new': {
+      id: '/endpoints/new'
+      path: '/endpoints/new'
+      fullPath: '/endpoints/new'
+      preLoaderRoute: typeof EndpointsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/channels/new': {
+      id: '/channels/new'
+      path: '/channels/new'
+      fullPath: '/channels/new'
+      preLoaderRoute: typeof ChannelsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/sign-up': {
@@ -210,6 +460,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/stats/': {
+      id: '/api/stats/'
+      path: '/api/stats'
+      fullPath: '/api/stats/'
+      preLoaderRoute: typeof ApiStatsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/logs/': {
+      id: '/api/logs/'
+      path: '/api/logs'
+      fullPath: '/api/logs/'
+      preLoaderRoute: typeof ApiLogsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/endpoints/': {
       id: '/api/endpoints/'
       path: '/api/endpoints'
@@ -224,11 +488,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChannelsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/push/$id': {
-      id: '/api/push/$id'
-      path: '/api/push/$id'
-      fullPath: '/api/push/$id'
-      preLoaderRoute: typeof ApiPushIdRouteImport
+    '/api/api-keys/': {
+      id: '/api/api-keys/'
+      path: '/api/api-keys'
+      fullPath: '/api/api-keys/'
+      preLoaderRoute: typeof ApiApiKeysIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/endpoints/$id/edit': {
+      id: '/endpoints/$id/edit'
+      path: '/endpoints/$id/edit'
+      fullPath: '/endpoints/$id/edit'
+      preLoaderRoute: typeof EndpointsIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/channels/$id/edit': {
+      id: '/channels/$id/edit'
+      path: '/channels/$id/edit'
+      fullPath: '/channels/$id/edit'
+      preLoaderRoute: typeof ChannelsIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/telegram/get-updates': {
+      id: '/api/telegram/get-updates'
+      path: '/api/telegram/get-updates'
+      fullPath: '/api/telegram/get-updates'
+      preLoaderRoute: typeof ApiTelegramGetUpdatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/stats/chart': {
+      id: '/api/stats/chart'
+      path: '/api/stats/chart'
+      fullPath: '/api/stats/chart'
+      preLoaderRoute: typeof ApiStatsChartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/push/$token': {
+      id: '/api/push/$token'
+      path: '/api/push/$token'
+      fullPath: '/api/push/$token'
+      preLoaderRoute: typeof ApiPushTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/logs/$id': {
+      id: '/api/logs/$id'
+      path: '/api/logs/$id'
+      fullPath: '/api/logs/$id'
+      preLoaderRoute: typeof ApiLogsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/endpoints/$id': {
@@ -252,21 +558,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/api-keys/$id': {
+      id: '/api/api-keys/$id'
+      path: '/api/api-keys/$id'
+      fullPath: '/api/api-keys/$id'
+      preLoaderRoute: typeof ApiApiKeysIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/endpoints/$id/regenerate-token': {
+      id: '/api/endpoints/$id/regenerate-token'
+      path: '/regenerate-token'
+      fullPath: '/api/endpoints/$id/regenerate-token'
+      preLoaderRoute: typeof ApiEndpointsIdRegenerateTokenRouteImport
+      parentRoute: typeof ApiEndpointsIdRoute
+    }
   }
 }
+
+interface ApiEndpointsIdRouteChildren {
+  ApiEndpointsIdRegenerateTokenRoute: typeof ApiEndpointsIdRegenerateTokenRoute
+}
+
+const ApiEndpointsIdRouteChildren: ApiEndpointsIdRouteChildren = {
+  ApiEndpointsIdRegenerateTokenRoute: ApiEndpointsIdRegenerateTokenRoute,
+}
+
+const ApiEndpointsIdRouteWithChildren = ApiEndpointsIdRoute._addFileChildren(
+  ApiEndpointsIdRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignUpRoute: AuthSignUpRoute,
+  ChannelsNewRoute: ChannelsNewRoute,
+  EndpointsNewRoute: EndpointsNewRoute,
+  LogsIdRoute: LogsIdRoute,
   ChannelsIndexRoute: ChannelsIndexRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
   EndpointsIndexRoute: EndpointsIndexRoute,
+  LogsIndexRoute: LogsIndexRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
+  ApiApiKeysIdRoute: ApiApiKeysIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiChannelsIdRoute: ApiChannelsIdRoute,
-  ApiEndpointsIdRoute: ApiEndpointsIdRoute,
-  ApiPushIdRoute: ApiPushIdRoute,
+  ApiEndpointsIdRoute: ApiEndpointsIdRouteWithChildren,
+  ApiLogsIdRoute: ApiLogsIdRoute,
+  ApiPushTokenRoute: ApiPushTokenRoute,
+  ApiStatsChartRoute: ApiStatsChartRoute,
+  ApiTelegramGetUpdatesRoute: ApiTelegramGetUpdatesRoute,
+  ChannelsIdEditRoute: ChannelsIdEditRoute,
+  EndpointsIdEditRoute: EndpointsIdEditRoute,
+  ApiApiKeysIndexRoute: ApiApiKeysIndexRoute,
   ApiChannelsIndexRoute: ApiChannelsIndexRoute,
   ApiEndpointsIndexRoute: ApiEndpointsIndexRoute,
+  ApiLogsIndexRoute: ApiLogsIndexRoute,
+  ApiStatsIndexRoute: ApiStatsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
