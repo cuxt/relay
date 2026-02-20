@@ -9,7 +9,7 @@ import {
 import { ThemeProvider } from '@/components/theme'
 import { AppHeader } from '@/components/layout/app-header'
 import { AnimatedOutlet } from '@/components/layout/animated-outlet'
-import { getSession } from '@/lib/auth/auth.server'
+import { getSession } from '@/lib/auth/session'
 import { Toaster } from 'sonner'
 
 import appCss from '../styles.css?url'
