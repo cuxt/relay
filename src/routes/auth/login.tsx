@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Loader2 } from 'lucide-react'
+import { SiGithub } from 'react-icons/si'
 import { signIn } from '@/lib/auth/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -112,6 +113,35 @@ function LoginPage() {
             </Button>
           </motion.div>
         </form>
+
+        <motion.div variants={fieldVariants} custom={3.5}>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                或
+              </span>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div variants={fieldVariants} custom={3.7}>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            disabled={isLoading}
+            onClick={() => {
+              setIsLoading(true)
+              signIn.social({ provider: 'github', callbackURL: '/dashboard' })
+            }}
+          >
+            <SiGithub className="mr-2 h-4 w-4" />
+            GitHub 登录
+          </Button>
+        </motion.div>
 
         <motion.div
           variants={fieldVariants}

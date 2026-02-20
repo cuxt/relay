@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Loader2 } from 'lucide-react'
-import { signUp } from '@/lib/auth/client'
+import { SiGithub } from 'react-icons/si'
+import { signIn, signUp } from '@/lib/auth/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -29,6 +30,11 @@ function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+
+  const handleGitHubSignIn = () => {
+    setIsLoading(true)
+    signIn.social({ provider: 'github', callbackURL: '/dashboard' })
+  }
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault()
@@ -153,6 +159,32 @@ function SignUpPage() {
             </Button>
           </motion.div>
         </form>
+
+        <motion.div variants={fieldVariants} custom={5.5}>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                或
+              </span>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div variants={fieldVariants} custom={5.7}>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            disabled={isLoading}
+            onClick={handleGitHubSignIn}
+          >
+            <SiGithub className="mr-2 h-4 w-4" />
+            GitHub 登录
+          </Button>
+        </motion.div>
 
         <motion.div variants={fieldVariants} custom={6} className="text-center text-sm">
           <span className="text-muted-foreground">已有账户？</span>{' '}
