@@ -1,8 +1,5 @@
 import { useSession } from '@/lib/auth/client'
-import { Card, CardContent } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export function ProfileForm() {
   const { data: session } = useSession()
@@ -15,38 +12,20 @@ export function ProfileForm() {
     : user.email.slice(0, 2).toUpperCase()
 
   return (
-    <div className="space-y-4">
+    <div className="flex items-center gap-4">
+      <Avatar className="h-14 w-14">
+        <AvatarImage src={user.image || undefined} alt={user.name} />
+        <AvatarFallback className="text-lg">{initials}</AvatarFallback>
+      </Avatar>
       <div>
-        <h2 className="text-lg font-semibold">个人资料</h2>
-        <p className="text-sm text-muted-foreground">查看您的账户信息</p>
+        <p className="font-semibold">{user.name || '未设置姓名'}</p>
+        <p className="text-sm text-muted-foreground">{user.email}</p>
+        {user.createdAt && (
+          <p className="text-xs text-muted-foreground mt-0.5">
+            注册于 {new Date(user.createdAt).toLocaleDateString('zh-CN')}
+          </p>
+        )}
       </div>
-
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col items-center text-center gap-3 pb-6 border-b">
-            <Avatar className="h-20 w-20">
-              <AvatarFallback className="text-xl">{initials}</AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="font-semibold text-lg">
-                {user.name || '未设置姓名'}
-              </p>
-              <p className="text-sm text-muted-foreground">{user.email}</p>
-            </div>
-          </div>
-
-          <div className="grid gap-4 pt-6">
-            <div className="space-y-2">
-              <Label>姓名</Label>
-              <Input value={user.name || ''} disabled />
-            </div>
-            <div className="space-y-2">
-              <Label>邮箱</Label>
-              <Input value={user.email} disabled />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }

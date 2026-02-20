@@ -1,19 +1,15 @@
 import { useState } from 'react'
-import { Plus, Trash2, Key } from 'lucide-react'
+import { Trash2, Key } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { EmptyState } from '@/components/shared/empty-state'
 import { ConfirmDialog } from '@/components/shared/confirm-dialog'
-import { ApiKeyCreateDialog } from './api-key-create-dialog'
 import { useApiKeyList, useDeleteApiKey } from '@/hooks/use-api-keys'
 
 export function ApiKeysList() {
   const { data: keys, isLoading } = useApiKeyList()
   const deleteApiKey = useDeleteApiKey()
-  const [createOpen, setCreateOpen] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
   const handleDelete = async () => {
@@ -28,80 +24,64 @@ export function ApiKeysList() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">API 密钥</h2>
-          <p className="text-sm text-muted-foreground">
-            管理用于 API 认证的密钥
-          </p>
-        </div>
-        <Button onClick={() => setCreateOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          创建密钥
-        </Button>
-      </div>
-
+    <>
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full" />
+            <Skeleton key={i} className="h-14 w-full" />
           ))}
         </div>
       ) : !keys?.length ? (
-        <EmptyState
-          icon={<Key className="h-6 w-6" />}
-          title="暂无 API 密钥"
-          description="创建一个 API 密钥用于程序化访问"
-          action={
-            <Button onClick={() => setCreateOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              创建密钥
-            </Button>
-          }
-        />
+        <div className="flex flex-col items-center justify-center py-8 text-center">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted mb-3">
+            <Key className="h-5 w-5 text-muted-foreground" />
+          </div>
+          <p className="text-sm text-muted-foreground">暂无 API 密钥</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            创建一个密钥用于程序化访问
+          </p>
+        </div>
       ) : (
-        <div className="space-y-3">
+        <div className="divide-y">
           {keys.map((key: any) => (
-            <Card key={key.id}>
-              <CardContent className="flex items-center justify-between p-4">
-                <div className="flex items-center gap-3">
-                  <Key className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">{key.name}</p>
-                    <p className="text-xs font-mono text-muted-foreground">
-                      {key.keyPreview}
-                    </p>
-                  </div>
+            <div
+              key={key.id}
+              className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <Key className="h-4 w-4 text-muted-foreground shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium truncate">{key.name}</p>
+                  <p className="text-xs font-mono text-muted-foreground">
+                    {key.keyPreview}
+                  </p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <Badge
-                    variant={key.enabled ? 'default' : 'secondary'}
-                    className="text-xs"
-                  >
-                    {key.enabled ? '活跃' : '禁用'}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">
-                    {key.lastUsedAt
-                      ? `最近使用: ${new Date(key.lastUsedAt).toLocaleDateString('zh-CN')}`
-                      : '从未使用'}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-destructive"
-                    onClick={() => setDeleteId(key.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+              <div className="flex items-center gap-3 shrink-0 ml-4">
+                <Badge
+                  variant={key.enabled ? 'default' : 'secondary'}
+                  className="text-xs"
+                >
+                  {key.enabled ? '活跃' : '禁用'}
+                </Badge>
+                <span className="text-xs text-muted-foreground hidden sm:inline">
+                  {key.lastUsedAt
+                    ? `${new Date(key.lastUsedAt).toLocaleDateString('zh-CN')}`
+                    : '从未使用'}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-destructive hover:text-destructive"
+                  onClick={() => setDeleteId(key.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
           ))}
         </div>
       )}
-
-      <ApiKeyCreateDialog open={createOpen} onOpenChange={setCreateOpen} />
 
       <ConfirmDialog
         open={!!deleteId}
@@ -113,6 +93,6 @@ export function ApiKeysList() {
         loading={deleteApiKey.isPending}
         onConfirm={handleDelete}
       />
-    </div>
+    </>
   )
 }

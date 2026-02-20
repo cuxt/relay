@@ -7,9 +7,10 @@ export function cn(...inputs: ClassValue[]) {
 
 export function generateToken(prefix: string, length = 32): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  const bytes = crypto.getRandomValues(new Uint8Array(length))
   let result = prefix
   for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length))
+    result += chars[bytes[i] % chars.length]
   }
   return result
 }

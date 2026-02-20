@@ -15,7 +15,7 @@ import { SiGithub } from 'react-icons/si'
 import { signOut, useSession } from '@/lib/auth/client'
 import { useTheme } from '@/components/theme'
 import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -121,6 +121,7 @@ export function AppHeader() {
                 className="h-8 w-8 rounded-full"
               >
                 <Avatar className="h-8 w-8">
+                  <AvatarImage src={session.user.image || undefined} alt={session.user.name} />
                   <AvatarFallback className="text-xs">
                     {initials}
                   </AvatarFallback>
