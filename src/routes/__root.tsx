@@ -2,13 +2,14 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
-  redirect
+  redirect,
+  isRedirect
 } from '@tanstack/react-router'
 
 import { ThemeProvider } from '@/components/theme'
 import { AppHeader } from '@/components/layout/app-header'
 import { AnimatedOutlet } from '@/components/layout/animated-outlet'
-import { authClient } from '@/lib/auth/client'
+import { getSession } from '@/lib/auth/auth.server'
 import { Toaster } from 'sonner'
 
 import appCss from '../styles.css?url'
@@ -37,23 +38,21 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   }),
 
   beforeLoad: async ({ location }) => {
-    if (typeof window !== 'undefined') {
-      const isPublicRoute = publicRoutes.some(route =>
-        location.pathname.startsWith(route)
-      )
+    const isPublicRoute = publicRoutes.some(route =>
+      location.pathname.startsWith(route)
+    )
 
-      if (!isPublicRoute) {
-        try {
-          const session = await authClient.getSession()
-          if (!session?.data) {
-            throw redirect({ to: '/auth/login' })
-          }
-        } catch (error) {
-          if (error instanceof Error && 'href' in error) {
-            throw error
-          }
+    if (!isPublicRoute) {
+      try {
+        const session = await getSession()
+        if (!session) {
           throw redirect({ to: '/auth/login' })
         }
+      } catch (error) {
+        if (isRedirect(error)) {
+          throw error
+        }
+        throw redirect({ to: '/auth/login' })
       }
     }
   },
