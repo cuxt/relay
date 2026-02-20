@@ -22,6 +22,20 @@
       "when": 1771511690537,
       "tag": "0002_sparkling_tarantula",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1771569071915,
+      "tag": "0003_smooth_payback",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1771573318889,
+      "tag": "0004_sudden_gwen_stacy",
+      "breakpoints": true
     }
   ]
 }

@@ -46,6 +46,7 @@ export const Route = createFileRoute('/api/push/$token')({
         // 支持 GET 请求推送（将 query params 作为 body）
         const url = new URL(request.url)
         const body: Record<string, string> = {}
+
         url.searchParams.forEach((value, key) => {
           body[key] = value
         })

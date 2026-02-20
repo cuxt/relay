@@ -2,9 +2,12 @@ import { db } from '@/db'
 import { endpoints } from '@/db/schemas/endpoints.schema'
 import { channels } from '@/db/schemas/channels.schema'
 import { pushLogs } from '@/db/schemas/push-logs.schema'
-import { eq } from 'drizzle-orm'
+import { aiPresets } from '@/db/schemas/ai-presets.schema'
+import { eq, and } from 'drizzle-orm'
 import { sendMessage } from '@/lib/channels/sender'
-import { replaceTemplate } from './template'
+import { parse, hasAiCalls, resolveSync, resolve } from './template'
+import type { ResolveContext, AiResolver, AiCallMeta } from './template'
+import { processMessageWithAi } from '@/lib/ai/process'
 import type { ChannelType } from '@/lib/channels/constants'
 
 interface PushRequest {
@@ -18,6 +21,29 @@ interface PushResponse {
   success: boolean
   message: string
   logId?: string
+}
+
+function buildAiLogFields(aiMeta: AiCallMeta[]) {
+  if (aiMeta.length === 0) {
+    return {
+      aiPresetId: null,
+      aiProcessedMessage: null,
+      aiLatencyMs: null,
+      aiError: null
+    }
+  }
+
+  const totalLatency = aiMeta.reduce((sum, m) => sum + m.latencyMs, 0)
+  const errors = aiMeta
+    .filter(m => m.error)
+    .map(m => `${m.presetKey}: ${m.error}`)
+
+  return {
+    aiPresetId: null,
+    aiProcessedMessage: JSON.stringify(aiMeta),
+    aiLatencyMs: totalLatency,
+    aiError: errors.length > 0 ? errors.join('; ') : null
+  }
 }
 
 export async function executePush(req: PushRequest): Promise<PushResponse> {
@@ -49,18 +75,52 @@ export async function executePush(req: PushRequest): Promise<PushResponse> {
     return { success: false, message: '渠道已禁用' }
   }
 
-  // 解析消息
-  let message: string
+  // 构建消息
   const bodyStr =
     typeof req.body === 'string' ? req.body : JSON.stringify(req.body)
 
+  const ctx: ResolveContext = {
+    body: req.body,
+    ip: req.ip,
+    userAgent: req.userAgent
+  }
+
+  let message: string
+  let aiMeta: AiCallMeta[] = []
+
   if (ep.messageTemplate) {
-    message = replaceTemplate(ep.messageTemplate, req.body, {
-      ip: req.ip,
-      userAgent: req.userAgent
-    })
+    const nodes = parse(ep.messageTemplate)
+
+    if (hasAiCalls(nodes)) {
+      // 构建 aiResolver
+      const presetCache = new Map<string, string>()
+      const aiResolver: AiResolver = async (presetKey, input) => {
+        let presetId = presetCache.get(presetKey)
+        if (!presetId) {
+          const [found] = await db
+            .select({ id: aiPresets.id })
+            .from(aiPresets)
+            .where(
+              and(eq(aiPresets.key, presetKey), eq(aiPresets.userId, ep.userId))
+            )
+          if (!found) throw new Error(`AI 预设 "${presetKey}" 不存在`)
+          presetId = found.id
+          presetCache.set(presetKey, presetId)
+        }
+        const result = await processMessageWithAi(presetId, input)
+        if (result.success && result.processedMessage)
+          return result.processedMessage
+        throw new Error(result.errorMessage || 'AI 处理失败')
+      }
+
+      const resolved = await resolve(nodes, ctx, aiResolver)
+      message = resolved.message
+      aiMeta = resolved.aiMeta
+    } else {
+      message = resolveSync(nodes, ctx)
+    }
   } else {
-    // 尝试直接使用 body.content 或整个 body
+    // 无模板：用 body.content 或整个 body
     const bodyObj =
       typeof req.body === 'object' && req.body !== null
         ? (req.body as Record<string, unknown>)
@@ -72,7 +132,8 @@ export async function executePush(req: PushRequest): Promise<PushResponse> {
     }
   }
 
-  // 创建日志记录（状态 pending）
+  // 日志 + 发送 + 更新
+  const aiLogFields = buildAiLogFields(aiMeta)
   const [log] = await db
     .insert(pushLogs)
     .values({
@@ -83,22 +144,19 @@ export async function executePush(req: PushRequest): Promise<PushResponse> {
       requestIp: req.ip || null,
       requestUserAgent: req.userAgent || null,
       resolvedMessage: message,
-      status: 'pending'
+      status: 'pending',
+      ...aiLogFields
     })
     .returning()
 
-  // 执行发送
   const startTime = Date.now()
-
   const result = await sendMessage(ch.type as ChannelType, {
     message,
     channel: ch,
     endpoint: ep
   })
-
   const latencyMs = Date.now() - startTime
 
-  // 更新日志
   await db
     .update(pushLogs)
     .set({

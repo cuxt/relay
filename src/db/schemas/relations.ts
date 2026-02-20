@@ -4,6 +4,8 @@ import { channels } from './channels.schema'
 import { endpoints } from './endpoints.schema'
 import { pushLogs } from './push-logs.schema'
 import { apiKeys } from './api-keys.schema'
+import { aiProviders } from './ai-providers.schema'
+import { aiPresets } from './ai-presets.schema'
 
 // Auth relations
 export const userRelations = relations(user, ({ many }) => ({
@@ -12,7 +14,9 @@ export const userRelations = relations(user, ({ many }) => ({
   channels: many(channels),
   endpoints: many(endpoints),
   pushLogs: many(pushLogs),
-  apiKeys: many(apiKeys)
+  apiKeys: many(apiKeys),
+  aiProviders: many(aiProviders),
+  aiPresets: many(aiPresets)
 }))
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -73,5 +77,26 @@ export const apiKeysRelations = relations(apiKeys, ({ one }) => ({
   user: one(user, {
     fields: [apiKeys.userId],
     references: [user.id]
+  })
+}))
+
+// AI Provider relations
+export const aiProvidersRelations = relations(aiProviders, ({ one, many }) => ({
+  user: one(user, {
+    fields: [aiProviders.userId],
+    references: [user.id]
+  }),
+  presets: many(aiPresets)
+}))
+
+// AI Preset relations
+export const aiPresetsRelations = relations(aiPresets, ({ one }) => ({
+  user: one(user, {
+    fields: [aiPresets.userId],
+    references: [user.id]
+  }),
+  provider: one(aiProviders, {
+    fields: [aiPresets.providerId],
+    references: [aiProviders.id]
   })
 }))

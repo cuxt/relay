@@ -47,7 +47,15 @@ export const pushLogs = pgTable(
     // 性能
     latencyMs: integer('latency_ms'),
 
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull()
+    // AI 处理
+    aiPresetId: text('ai_preset_id'),
+    aiProcessedMessage: text('ai_processed_message'),
+    aiLatencyMs: integer('ai_latency_ms'),
+    aiError: text('ai_error'),
+
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull()
   },
   table => [
     index('push_logs_endpoint_id_idx').on(table.endpointId),

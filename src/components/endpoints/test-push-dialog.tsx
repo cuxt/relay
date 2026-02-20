@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import { parse, extractBodyPaths } from '@/lib/push/template'
 
 interface TestPushDialogProps {
   open: boolean
@@ -23,31 +24,22 @@ interface TestPushDialogProps {
 
 /**
  * 从消息模板中提取字段路径，生成示例请求体
- * 例如 "${body.title}: ${body.content}" → { title: "测试标题", content: "测试内容" }
  */
 function generateExampleBody(template?: string | null): string {
   if (!template) {
     return JSON.stringify({ content: 'Hello from Relay!' }, null, 2)
   }
 
-  const regex = /\$\{body\.([^}]+)\}/g
-  const fields = new Map<string, string>()
-  let match: RegExpExecArray | null
+  const nodes = parse(template)
+  const paths = extractBodyPaths(nodes)
 
-  while ((match = regex.exec(template)) !== null) {
-    const path = match[1].trim()
-    if (!fields.has(path)) {
-      fields.set(path, `测试${path}`)
-    }
-  }
-
-  if (fields.size === 0) {
+  if (paths.length === 0) {
     return JSON.stringify({ content: 'Hello from Relay!' }, null, 2)
   }
 
-  // 支持嵌套路径，如 body.data.title → { data: { title: "..." } }
+  // 支持嵌套路径，如 data.title → { data: { title: "..." } }
   const result: Record<string, unknown> = {}
-  for (const [path, value] of fields) {
+  for (const path of paths) {
     const keys = path.split('.')
     let current: Record<string, unknown> = result
     for (let i = 0; i < keys.length - 1; i++) {
@@ -56,7 +48,7 @@ function generateExampleBody(template?: string | null): string {
       }
       current = current[keys[i]] as Record<string, unknown>
     }
-    current[keys[keys.length - 1]] = value
+    current[keys[keys.length - 1]] = `测试${path}`
   }
 
   return JSON.stringify(result, null, 2)
@@ -130,11 +122,11 @@ export function TestPushDialog({
           <DialogTitle>测试推送 - {endpoint?.name}</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 min-w-0">
           {endpoint?.messageTemplate && (
-            <div className="rounded-md bg-muted/50 border px-3 py-2">
+            <div className="rounded-md bg-muted/50 border px-3 py-2 overflow-hidden">
               <p className="text-xs text-muted-foreground mb-1">消息模板</p>
-              <code className="text-xs font-mono">
+              <code className="text-xs font-mono break-all">
                 {endpoint.messageTemplate}
               </code>
             </div>
@@ -146,7 +138,7 @@ export function TestPushDialog({
               value={body}
               onChange={e => setBody(e.target.value)}
               rows={6}
-              className="font-mono text-sm"
+              className="font-mono text-sm max-h-52"
               disabled={loading}
             />
           </div>

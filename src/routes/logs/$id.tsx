@@ -17,7 +17,8 @@ import {
   AlertTriangle,
   MonitorSmartphone,
   Eye,
-  Code
+  Code,
+  Bot
 } from 'lucide-react'
 
 export const Route = createFileRoute('/logs/$id')({
@@ -218,12 +219,53 @@ function LogDetailPage() {
           </motion.div>
         )}
 
+        {/* AI 处理 */}
+        {(log.aiProcessedMessage || log.aiError) && (
+          <motion.div
+            variants={fadeUp}
+            custom={
+              (log.errorMessage ? 2 : 1) + (log.resolvedMessage ? 1 : 0)
+            }
+          >
+            <Card>
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <Bot className="h-4 w-4" />
+                    AI 处理
+                  </CardTitle>
+                  {log.aiLatencyMs != null && (
+                    <span className="text-xs text-muted-foreground">
+                      总耗时 {log.aiLatencyMs}ms
+                    </span>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {log.aiError && (
+                  <div>
+                    <p className="text-xs text-destructive mb-1">错误摘要</p>
+                    <pre className="rounded-md bg-destructive/5 p-3 text-xs font-mono whitespace-pre-wrap text-destructive">
+                      {log.aiError}
+                    </pre>
+                  </div>
+                )}
+                {log.aiProcessedMessage && (
+                  <AiCallChain raw={log.aiProcessedMessage} />
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
         {/* 请求体 */}
         {log.requestBody && (
           <motion.div
             variants={fadeUp}
             custom={
-              (log.errorMessage ? 2 : 1) + (log.resolvedMessage ? 1 : 0)
+              (log.errorMessage ? 2 : 1) +
+              (log.resolvedMessage ? 1 : 0) +
+              (log.aiProcessedMessage || log.aiError ? 1 : 0)
             }
           >
             <Card>
@@ -246,6 +288,7 @@ function LogDetailPage() {
             custom={
               (log.errorMessage ? 2 : 1) +
               (log.resolvedMessage ? 1 : 0) +
+              (log.aiProcessedMessage || log.aiError ? 1 : 0) +
               (log.requestBody ? 1 : 0)
             }
           >
@@ -269,6 +312,7 @@ function LogDetailPage() {
             custom={
               (log.errorMessage ? 2 : 1) +
               (log.resolvedMessage ? 1 : 0) +
+              (log.aiProcessedMessage || log.aiError ? 1 : 0) +
               (log.requestBody ? 1 : 0) +
               (log.responseBody ? 1 : 0)
             }
@@ -299,4 +343,62 @@ function tryFormatJson(str: string): string {
   } catch {
     return str
   }
+}
+
+interface AiCallMeta {
+  presetKey: string
+  input: string
+  output: string
+  latencyMs: number
+  error: string | null
+}
+
+function AiCallChain({ raw }: { raw: string }) {
+  let calls: AiCallMeta[]
+  try {
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) throw new Error('Invalid format')
+    calls = parsed
+  } catch {
+    return (
+      <p className="text-xs text-destructive">AI 调用数据解析失败</p>
+    )
+  }
+
+  if (calls.length === 0) return null
+
+  return (
+    <div className="space-y-2">
+      <p className="text-xs text-muted-foreground">调用链</p>
+      {calls.map((call, i) => (
+        <div key={i} className="rounded-md border p-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <code className="text-xs font-semibold">ai.{call.presetKey}()</code>
+            <span className="text-xs text-muted-foreground">{call.latencyMs}ms</span>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground mb-0.5">输入</p>
+            <pre className="rounded bg-muted p-2 text-xs font-mono whitespace-pre-wrap max-h-32 overflow-y-auto">
+              {call.input}
+            </pre>
+          </div>
+          {call.error ? (
+            <div>
+              <p className="text-xs text-destructive mb-0.5">错误</p>
+              <pre className="rounded bg-destructive/10 p-2 text-xs font-mono whitespace-pre-wrap text-destructive">
+                {call.error}
+              </pre>
+            </div>
+          ) : (
+            <div>
+              <p className="text-xs text-muted-foreground mb-0.5">输出</p>
+              <pre className="rounded bg-muted p-2 text-xs font-mono whitespace-pre-wrap max-h-32 overflow-y-auto">
+                {call.output}
+              </pre>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  )
 }

@@ -25,6 +25,8 @@ import { Route as ApiLogsIndexRouteImport } from './routes/api/logs/index'
 import { Route as ApiEndpointsIndexRouteImport } from './routes/api/endpoints/index'
 import { Route as ApiChannelsIndexRouteImport } from './routes/api/channels/index'
 import { Route as ApiApiKeysIndexRouteImport } from './routes/api/api-keys/index'
+import { Route as ApiAiProvidersIndexRouteImport } from './routes/api/ai-providers/index'
+import { Route as ApiAiPresetsIndexRouteImport } from './routes/api/ai-presets/index'
 import { Route as EndpointsIdEditRouteImport } from './routes/endpoints/$id/edit'
 import { Route as ChannelsIdEditRouteImport } from './routes/channels/$id/edit'
 import { Route as ApiTelegramGetUpdatesRouteImport } from './routes/api/telegram/get-updates'
@@ -35,7 +37,11 @@ import { Route as ApiEndpointsIdRouteImport } from './routes/api/endpoints/$id'
 import { Route as ApiChannelsIdRouteImport } from './routes/api/channels/$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiApiKeysIdRouteImport } from './routes/api/api-keys/$id'
+import { Route as ApiAiProvidersIdRouteImport } from './routes/api/ai-providers/$id'
+import { Route as ApiAiPresetsIdRouteImport } from './routes/api/ai-presets/$id'
 import { Route as ApiEndpointsIdRegenerateTokenRouteImport } from './routes/api/endpoints/$id.regenerate-token'
+import { Route as ApiAiProvidersIdModelsRouteImport } from './routes/api/ai-providers/$id.models'
+import { Route as ApiAiPresetsIdPreviewRouteImport } from './routes/api/ai-presets/$id.preview'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -117,6 +123,16 @@ const ApiApiKeysIndexRoute = ApiApiKeysIndexRouteImport.update({
   path: '/api/api-keys/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAiProvidersIndexRoute = ApiAiProvidersIndexRouteImport.update({
+  id: '/api/ai-providers/',
+  path: '/api/ai-providers/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAiPresetsIndexRoute = ApiAiPresetsIndexRouteImport.update({
+  id: '/api/ai-presets/',
+  path: '/api/ai-presets/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EndpointsIdEditRoute = EndpointsIdEditRouteImport.update({
   id: '/endpoints/$id/edit',
   path: '/endpoints/$id/edit',
@@ -167,12 +183,32 @@ const ApiApiKeysIdRoute = ApiApiKeysIdRouteImport.update({
   path: '/api/api-keys/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAiProvidersIdRoute = ApiAiProvidersIdRouteImport.update({
+  id: '/api/ai-providers/$id',
+  path: '/api/ai-providers/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAiPresetsIdRoute = ApiAiPresetsIdRouteImport.update({
+  id: '/api/ai-presets/$id',
+  path: '/api/ai-presets/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiEndpointsIdRegenerateTokenRoute =
   ApiEndpointsIdRegenerateTokenRouteImport.update({
     id: '/regenerate-token',
     path: '/regenerate-token',
     getParentRoute: () => ApiEndpointsIdRoute,
   } as any)
+const ApiAiProvidersIdModelsRoute = ApiAiProvidersIdModelsRouteImport.update({
+  id: '/models',
+  path: '/models',
+  getParentRoute: () => ApiAiProvidersIdRoute,
+} as any)
+const ApiAiPresetsIdPreviewRoute = ApiAiPresetsIdPreviewRouteImport.update({
+  id: '/preview',
+  path: '/preview',
+  getParentRoute: () => ApiAiPresetsIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -186,6 +222,8 @@ export interface FileRoutesByFullPath {
   '/endpoints/': typeof EndpointsIndexRoute
   '/logs/': typeof LogsIndexRoute
   '/settings/': typeof SettingsIndexRoute
+  '/api/ai-presets/$id': typeof ApiAiPresetsIdRouteWithChildren
+  '/api/ai-providers/$id': typeof ApiAiProvidersIdRouteWithChildren
   '/api/api-keys/$id': typeof ApiApiKeysIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/channels/$id': typeof ApiChannelsIdRoute
@@ -196,11 +234,15 @@ export interface FileRoutesByFullPath {
   '/api/telegram/get-updates': typeof ApiTelegramGetUpdatesRoute
   '/channels/$id/edit': typeof ChannelsIdEditRoute
   '/endpoints/$id/edit': typeof EndpointsIdEditRoute
+  '/api/ai-presets/': typeof ApiAiPresetsIndexRoute
+  '/api/ai-providers/': typeof ApiAiProvidersIndexRoute
   '/api/api-keys/': typeof ApiApiKeysIndexRoute
   '/api/channels/': typeof ApiChannelsIndexRoute
   '/api/endpoints/': typeof ApiEndpointsIndexRoute
   '/api/logs/': typeof ApiLogsIndexRoute
   '/api/stats/': typeof ApiStatsIndexRoute
+  '/api/ai-presets/$id/preview': typeof ApiAiPresetsIdPreviewRoute
+  '/api/ai-providers/$id/models': typeof ApiAiProvidersIdModelsRoute
   '/api/endpoints/$id/regenerate-token': typeof ApiEndpointsIdRegenerateTokenRoute
 }
 export interface FileRoutesByTo {
@@ -215,6 +257,8 @@ export interface FileRoutesByTo {
   '/endpoints': typeof EndpointsIndexRoute
   '/logs': typeof LogsIndexRoute
   '/settings': typeof SettingsIndexRoute
+  '/api/ai-presets/$id': typeof ApiAiPresetsIdRouteWithChildren
+  '/api/ai-providers/$id': typeof ApiAiProvidersIdRouteWithChildren
   '/api/api-keys/$id': typeof ApiApiKeysIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/channels/$id': typeof ApiChannelsIdRoute
@@ -225,11 +269,15 @@ export interface FileRoutesByTo {
   '/api/telegram/get-updates': typeof ApiTelegramGetUpdatesRoute
   '/channels/$id/edit': typeof ChannelsIdEditRoute
   '/endpoints/$id/edit': typeof EndpointsIdEditRoute
+  '/api/ai-presets': typeof ApiAiPresetsIndexRoute
+  '/api/ai-providers': typeof ApiAiProvidersIndexRoute
   '/api/api-keys': typeof ApiApiKeysIndexRoute
   '/api/channels': typeof ApiChannelsIndexRoute
   '/api/endpoints': typeof ApiEndpointsIndexRoute
   '/api/logs': typeof ApiLogsIndexRoute
   '/api/stats': typeof ApiStatsIndexRoute
+  '/api/ai-presets/$id/preview': typeof ApiAiPresetsIdPreviewRoute
+  '/api/ai-providers/$id/models': typeof ApiAiProvidersIdModelsRoute
   '/api/endpoints/$id/regenerate-token': typeof ApiEndpointsIdRegenerateTokenRoute
 }
 export interface FileRoutesById {
@@ -245,6 +293,8 @@ export interface FileRoutesById {
   '/endpoints/': typeof EndpointsIndexRoute
   '/logs/': typeof LogsIndexRoute
   '/settings/': typeof SettingsIndexRoute
+  '/api/ai-presets/$id': typeof ApiAiPresetsIdRouteWithChildren
+  '/api/ai-providers/$id': typeof ApiAiProvidersIdRouteWithChildren
   '/api/api-keys/$id': typeof ApiApiKeysIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/channels/$id': typeof ApiChannelsIdRoute
@@ -255,11 +305,15 @@ export interface FileRoutesById {
   '/api/telegram/get-updates': typeof ApiTelegramGetUpdatesRoute
   '/channels/$id/edit': typeof ChannelsIdEditRoute
   '/endpoints/$id/edit': typeof EndpointsIdEditRoute
+  '/api/ai-presets/': typeof ApiAiPresetsIndexRoute
+  '/api/ai-providers/': typeof ApiAiProvidersIndexRoute
   '/api/api-keys/': typeof ApiApiKeysIndexRoute
   '/api/channels/': typeof ApiChannelsIndexRoute
   '/api/endpoints/': typeof ApiEndpointsIndexRoute
   '/api/logs/': typeof ApiLogsIndexRoute
   '/api/stats/': typeof ApiStatsIndexRoute
+  '/api/ai-presets/$id/preview': typeof ApiAiPresetsIdPreviewRoute
+  '/api/ai-providers/$id/models': typeof ApiAiProvidersIdModelsRoute
   '/api/endpoints/$id/regenerate-token': typeof ApiEndpointsIdRegenerateTokenRoute
 }
 export interface FileRouteTypes {
@@ -276,6 +330,8 @@ export interface FileRouteTypes {
     | '/endpoints/'
     | '/logs/'
     | '/settings/'
+    | '/api/ai-presets/$id'
+    | '/api/ai-providers/$id'
     | '/api/api-keys/$id'
     | '/api/auth/$'
     | '/api/channels/$id'
@@ -286,11 +342,15 @@ export interface FileRouteTypes {
     | '/api/telegram/get-updates'
     | '/channels/$id/edit'
     | '/endpoints/$id/edit'
+    | '/api/ai-presets/'
+    | '/api/ai-providers/'
     | '/api/api-keys/'
     | '/api/channels/'
     | '/api/endpoints/'
     | '/api/logs/'
     | '/api/stats/'
+    | '/api/ai-presets/$id/preview'
+    | '/api/ai-providers/$id/models'
     | '/api/endpoints/$id/regenerate-token'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -305,6 +365,8 @@ export interface FileRouteTypes {
     | '/endpoints'
     | '/logs'
     | '/settings'
+    | '/api/ai-presets/$id'
+    | '/api/ai-providers/$id'
     | '/api/api-keys/$id'
     | '/api/auth/$'
     | '/api/channels/$id'
@@ -315,11 +377,15 @@ export interface FileRouteTypes {
     | '/api/telegram/get-updates'
     | '/channels/$id/edit'
     | '/endpoints/$id/edit'
+    | '/api/ai-presets'
+    | '/api/ai-providers'
     | '/api/api-keys'
     | '/api/channels'
     | '/api/endpoints'
     | '/api/logs'
     | '/api/stats'
+    | '/api/ai-presets/$id/preview'
+    | '/api/ai-providers/$id/models'
     | '/api/endpoints/$id/regenerate-token'
   id:
     | '__root__'
@@ -334,6 +400,8 @@ export interface FileRouteTypes {
     | '/endpoints/'
     | '/logs/'
     | '/settings/'
+    | '/api/ai-presets/$id'
+    | '/api/ai-providers/$id'
     | '/api/api-keys/$id'
     | '/api/auth/$'
     | '/api/channels/$id'
@@ -344,11 +412,15 @@ export interface FileRouteTypes {
     | '/api/telegram/get-updates'
     | '/channels/$id/edit'
     | '/endpoints/$id/edit'
+    | '/api/ai-presets/'
+    | '/api/ai-providers/'
     | '/api/api-keys/'
     | '/api/channels/'
     | '/api/endpoints/'
     | '/api/logs/'
     | '/api/stats/'
+    | '/api/ai-presets/$id/preview'
+    | '/api/ai-providers/$id/models'
     | '/api/endpoints/$id/regenerate-token'
   fileRoutesById: FileRoutesById
 }
@@ -364,6 +436,8 @@ export interface RootRouteChildren {
   EndpointsIndexRoute: typeof EndpointsIndexRoute
   LogsIndexRoute: typeof LogsIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
+  ApiAiPresetsIdRoute: typeof ApiAiPresetsIdRouteWithChildren
+  ApiAiProvidersIdRoute: typeof ApiAiProvidersIdRouteWithChildren
   ApiApiKeysIdRoute: typeof ApiApiKeysIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiChannelsIdRoute: typeof ApiChannelsIdRoute
@@ -374,6 +448,8 @@ export interface RootRouteChildren {
   ApiTelegramGetUpdatesRoute: typeof ApiTelegramGetUpdatesRoute
   ChannelsIdEditRoute: typeof ChannelsIdEditRoute
   EndpointsIdEditRoute: typeof EndpointsIdEditRoute
+  ApiAiPresetsIndexRoute: typeof ApiAiPresetsIndexRoute
+  ApiAiProvidersIndexRoute: typeof ApiAiProvidersIndexRoute
   ApiApiKeysIndexRoute: typeof ApiApiKeysIndexRoute
   ApiChannelsIndexRoute: typeof ApiChannelsIndexRoute
   ApiEndpointsIndexRoute: typeof ApiEndpointsIndexRoute
@@ -495,6 +571,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiApiKeysIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/ai-providers/': {
+      id: '/api/ai-providers/'
+      path: '/api/ai-providers'
+      fullPath: '/api/ai-providers/'
+      preLoaderRoute: typeof ApiAiProvidersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ai-presets/': {
+      id: '/api/ai-presets/'
+      path: '/api/ai-presets'
+      fullPath: '/api/ai-presets/'
+      preLoaderRoute: typeof ApiAiPresetsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/endpoints/$id/edit': {
       id: '/endpoints/$id/edit'
       path: '/endpoints/$id/edit'
@@ -565,6 +655,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiApiKeysIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/ai-providers/$id': {
+      id: '/api/ai-providers/$id'
+      path: '/api/ai-providers/$id'
+      fullPath: '/api/ai-providers/$id'
+      preLoaderRoute: typeof ApiAiProvidersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ai-presets/$id': {
+      id: '/api/ai-presets/$id'
+      path: '/api/ai-presets/$id'
+      fullPath: '/api/ai-presets/$id'
+      preLoaderRoute: typeof ApiAiPresetsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/endpoints/$id/regenerate-token': {
       id: '/api/endpoints/$id/regenerate-token'
       path: '/regenerate-token'
@@ -572,8 +676,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiEndpointsIdRegenerateTokenRouteImport
       parentRoute: typeof ApiEndpointsIdRoute
     }
+    '/api/ai-providers/$id/models': {
+      id: '/api/ai-providers/$id/models'
+      path: '/models'
+      fullPath: '/api/ai-providers/$id/models'
+      preLoaderRoute: typeof ApiAiProvidersIdModelsRouteImport
+      parentRoute: typeof ApiAiProvidersIdRoute
+    }
+    '/api/ai-presets/$id/preview': {
+      id: '/api/ai-presets/$id/preview'
+      path: '/preview'
+      fullPath: '/api/ai-presets/$id/preview'
+      preLoaderRoute: typeof ApiAiPresetsIdPreviewRouteImport
+      parentRoute: typeof ApiAiPresetsIdRoute
+    }
   }
 }
+
+interface ApiAiPresetsIdRouteChildren {
+  ApiAiPresetsIdPreviewRoute: typeof ApiAiPresetsIdPreviewRoute
+}
+
+const ApiAiPresetsIdRouteChildren: ApiAiPresetsIdRouteChildren = {
+  ApiAiPresetsIdPreviewRoute: ApiAiPresetsIdPreviewRoute,
+}
+
+const ApiAiPresetsIdRouteWithChildren = ApiAiPresetsIdRoute._addFileChildren(
+  ApiAiPresetsIdRouteChildren,
+)
+
+interface ApiAiProvidersIdRouteChildren {
+  ApiAiProvidersIdModelsRoute: typeof ApiAiProvidersIdModelsRoute
+}
+
+const ApiAiProvidersIdRouteChildren: ApiAiProvidersIdRouteChildren = {
+  ApiAiProvidersIdModelsRoute: ApiAiProvidersIdModelsRoute,
+}
+
+const ApiAiProvidersIdRouteWithChildren =
+  ApiAiProvidersIdRoute._addFileChildren(ApiAiProvidersIdRouteChildren)
 
 interface ApiEndpointsIdRouteChildren {
   ApiEndpointsIdRegenerateTokenRoute: typeof ApiEndpointsIdRegenerateTokenRoute
@@ -599,6 +740,8 @@ const rootRouteChildren: RootRouteChildren = {
   EndpointsIndexRoute: EndpointsIndexRoute,
   LogsIndexRoute: LogsIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
+  ApiAiPresetsIdRoute: ApiAiPresetsIdRouteWithChildren,
+  ApiAiProvidersIdRoute: ApiAiProvidersIdRouteWithChildren,
   ApiApiKeysIdRoute: ApiApiKeysIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiChannelsIdRoute: ApiChannelsIdRoute,
@@ -609,6 +752,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiTelegramGetUpdatesRoute: ApiTelegramGetUpdatesRoute,
   ChannelsIdEditRoute: ChannelsIdEditRoute,
   EndpointsIdEditRoute: EndpointsIdEditRoute,
+  ApiAiPresetsIndexRoute: ApiAiPresetsIndexRoute,
+  ApiAiProvidersIndexRoute: ApiAiProvidersIndexRoute,
   ApiApiKeysIndexRoute: ApiApiKeysIndexRoute,
   ApiChannelsIndexRoute: ApiChannelsIndexRoute,
   ApiEndpointsIndexRoute: ApiEndpointsIndexRoute,

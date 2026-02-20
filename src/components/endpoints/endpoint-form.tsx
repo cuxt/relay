@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,11 +16,20 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator
+} from '@/components/ui/dropdown-menu'
 import { ChannelIcon } from '@/components/shared/channel-icon'
 import { useChannelList } from '@/hooks/use-channels'
 import { useCreateEndpoint, useUpdateEndpoint } from '@/hooks/use-endpoints'
+import { useAiPresetList } from '@/hooks/use-ai-presets'
 import { CHANNEL_TYPES, type ChannelType } from '@/lib/channels/constants'
-import { TEMPLATE_BUILTINS } from '@/lib/push/template'
+import { TEMPLATE_TOKENS } from '@/lib/push/template'
 
 interface EndpointFormProps {
   mode: 'create' | 'edit'
@@ -39,6 +48,7 @@ interface EndpointFormProps {
 export function EndpointForm({ mode, defaultValues }: EndpointFormProps) {
   const navigate = useNavigate()
   const { data: channelsList } = useChannelList()
+  const { data: presetsList } = useAiPresetList()
   const createEndpoint = useCreateEndpoint()
   const updateEndpoint = useUpdateEndpoint()
 
@@ -59,7 +69,7 @@ export function EndpointForm({ mode, defaultValues }: EndpointFormProps) {
   )
   const templateRef = useRef<HTMLTextAreaElement>(null)
 
-  const insertToken = (token: string) => {
+  const insertToken = (token: string, cursorOffset?: number) => {
     const el = templateRef.current
     if (!el) {
       setMessageTemplate(prev => prev + token)
@@ -71,9 +81,12 @@ export function EndpointForm({ mode, defaultValues }: EndpointFormProps) {
     const after = messageTemplate.slice(end)
     setMessageTemplate(before + token + after)
     // 恢复光标位置
+    const cursorPos = cursorOffset
+      ? start + token.length - cursorOffset
+      : start + token.length
     requestAnimationFrame(() => {
       el.focus()
-      el.selectionStart = el.selectionEnd = start + token.length
+      el.selectionStart = el.selectionEnd = cursorPos
     })
   }
 
@@ -232,17 +245,69 @@ export function EndpointForm({ mode, defaultValues }: EndpointFormProps) {
                 留空则使用整个请求体作为消息内容。点击下方变量快捷插入到模板中。
               </p>
               <div className="flex flex-wrap gap-1.5">
-                {TEMPLATE_BUILTINS.map(item => (
-                  <button
-                    key={item.token}
-                    type="button"
-                    title={item.description}
-                    onClick={() => insertToken(item.token)}
-                    className="inline-flex items-center rounded-md border bg-muted/40 px-2 py-0.5 text-xs font-mono text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
-                  >
-                    {item.label}
-                  </button>
-                ))}
+                {TEMPLATE_TOKENS.filter(t => t.category === 'builtin').map(
+                  item => (
+                    <button
+                      key={item.token}
+                      type="button"
+                      title={item.description}
+                      onClick={() => insertToken(item.token, item.cursorOffset)}
+                      className="inline-flex items-center rounded-md border bg-muted/40 px-2 py-0.5 text-xs font-mono text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
+                    >
+                      {item.label}
+                    </button>
+                  )
+                )}
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      title="插入 AI 调用"
+                      className="inline-flex items-center gap-1 rounded-md border bg-muted/40 px-2 py-0.5 text-xs font-mono text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
+                    >
+                      <Sparkles className="h-3 w-3" />
+                      ai()
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start">
+                    {presetsList?.length ? (
+                      <>
+                        <DropdownMenuLabel>选择 AI 预设</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {presetsList.map((p: any) => (
+                          <DropdownMenuItem
+                            key={p.id}
+                            onClick={() => {
+                              const token = `\${ai.${p.key}()}`
+                              // cursorOffset = 2 → 光标在 )} 之前，即 () 内
+                              insertToken(token, 2)
+                            }}
+                          >
+                            <div className="flex flex-col gap-0.5">
+                              <div className="flex items-center gap-2">
+                                <code className="text-xs font-semibold">
+                                  {p.key}
+                                </code>
+                                <span className="text-xs text-muted-foreground">
+                                  {p.name}
+                                </span>
+                              </div>
+                            </div>
+                          </DropdownMenuItem>
+                        ))}
+                      </>
+                    ) : (
+                      <div className="px-2 py-3 text-center">
+                        <p className="text-xs text-muted-foreground">
+                          暂无 AI 预设
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          请先在设置中创建
+                        </p>
+                      </div>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </div>
