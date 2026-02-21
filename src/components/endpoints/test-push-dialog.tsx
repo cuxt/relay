@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { parse, extractBodyPaths } from '@/lib/push/template'
+import { extractBodyPaths } from '@/lib/push/template'
 
 interface TestPushDialogProps {
   open: boolean
@@ -30,8 +30,7 @@ function generateExampleBody(template?: string | null): string {
     return JSON.stringify({ content: 'Hello from Relay!' }, null, 2)
   }
 
-  const nodes = parse(template)
-  const paths = extractBodyPaths(nodes)
+  const paths = extractBodyPaths(template)
 
   if (paths.length === 0) {
     return JSON.stringify({ content: 'Hello from Relay!' }, null, 2)
@@ -126,9 +125,9 @@ export function TestPushDialog({
           {endpoint?.messageTemplate && (
             <div className="rounded-md bg-muted/50 border px-3 py-2 overflow-hidden">
               <p className="text-xs text-muted-foreground mb-1">消息模板</p>
-              <code className="text-xs font-mono break-all">
+              <pre className="text-xs font-mono break-all whitespace-pre-wrap max-h-32 overflow-y-auto">
                 {endpoint.messageTemplate}
-              </code>
+              </pre>
             </div>
           )}
 

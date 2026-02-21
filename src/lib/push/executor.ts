@@ -5,8 +5,8 @@ import { pushLogs } from '@/db/schemas/push-logs.schema'
 import { aiPresets } from '@/db/schemas/ai-presets.schema'
 import { eq, and } from 'drizzle-orm'
 import { sendMessage } from '@/lib/channels/sender'
-import { parse, hasAiCalls, resolveSync, resolve } from './template'
-import type { ResolveContext, AiResolver, AiCallMeta } from './template'
+import { evaluate } from './template.server'
+import type { AiResolver, AiCallMeta } from './template'
 import { processMessageWithAi } from '@/lib/ai/process'
 import type { ChannelType } from '@/lib/channels/constants'
 
@@ -79,46 +79,38 @@ export async function executePush(req: PushRequest): Promise<PushResponse> {
   const bodyStr =
     typeof req.body === 'string' ? req.body : JSON.stringify(req.body)
 
-  const ctx: ResolveContext = {
-    body: req.body,
-    ip: req.ip,
-    userAgent: req.userAgent
-  }
-
   let message: string
   let aiMeta: AiCallMeta[] = []
 
   if (ep.messageTemplate) {
-    const nodes = parse(ep.messageTemplate)
-
-    if (hasAiCalls(nodes)) {
-      // 构建 aiResolver
-      const presetCache = new Map<string, string>()
-      const aiResolver: AiResolver = async (presetKey, input) => {
-        let presetId = presetCache.get(presetKey)
-        if (!presetId) {
-          const [found] = await db
-            .select({ id: aiPresets.id })
-            .from(aiPresets)
-            .where(
-              and(eq(aiPresets.key, presetKey), eq(aiPresets.userId, ep.userId))
-            )
-          if (!found) throw new Error(`AI 预设 "${presetKey}" 不存在`)
-          presetId = found.id
-          presetCache.set(presetKey, presetId)
-        }
-        const result = await processMessageWithAi(presetId, input)
-        if (result.success && result.processedMessage)
-          return result.processedMessage
-        throw new Error(result.errorMessage || 'AI 处理失败')
+    // 构建 aiResolver
+    const presetCache = new Map<string, string>()
+    const aiResolver: AiResolver = async (presetKey, input) => {
+      let presetId = presetCache.get(presetKey)
+      if (!presetId) {
+        const [found] = await db
+          .select({ id: aiPresets.id })
+          .from(aiPresets)
+          .where(
+            and(eq(aiPresets.key, presetKey), eq(aiPresets.userId, ep.userId))
+          )
+        if (!found) throw new Error(`AI 预设 "${presetKey}" 不存在`)
+        presetId = found.id
+        presetCache.set(presetKey, presetId)
       }
-
-      const resolved = await resolve(nodes, ctx, aiResolver)
-      message = resolved.message
-      aiMeta = resolved.aiMeta
-    } else {
-      message = resolveSync(nodes, ctx)
+      const result = await processMessageWithAi(presetId, input)
+      if (result.success && result.processedMessage)
+        return result.processedMessage
+      throw new Error(result.errorMessage || 'AI 处理失败')
     }
+
+    const resolved = await evaluate(
+      ep.messageTemplate,
+      { payload: req.body, ip: req.ip, userAgent: req.userAgent },
+      aiResolver
+    )
+    message = resolved.message
+    aiMeta = resolved.aiMeta
   } else {
     // 无模板：用 body.content 或整个 body
     const bodyObj =

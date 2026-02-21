@@ -232,7 +232,7 @@ export function EndpointForm({ mode, defaultValues }: EndpointFormProps) {
               ref={templateRef}
               id="messageTemplate"
               placeholder={
-                '使用 ${body.xxx} 引用请求体中的字段\n例如：${body.content}'
+                '使用 ${payload.xxx} 引用请求体中的字段\n例如：${payload.content}'
               }
               value={messageTemplate}
               onChange={e => setMessageTemplate(e.target.value)}
@@ -278,8 +278,8 @@ export function EndpointForm({ mode, defaultValues }: EndpointFormProps) {
                           <DropdownMenuItem
                             key={p.id}
                             onClick={() => {
-                              const token = `\${ai.${p.key}()}`
-                              // cursorOffset = 2 → 光标在 )} 之前，即 () 内
+                              const token = `\${await ai('${p.key}', )}`
+                              // cursorOffset = 2 → 光标在 )} 之前，即第二个参数位置
                               insertToken(token, 2)
                             }}
                           >
