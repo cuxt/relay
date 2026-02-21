@@ -2,7 +2,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import { db } from '@/db'
 import { pushLogs } from '@/db/schemas/push-logs.schema'
 import { channels } from '@/db/schemas/channels.schema'
-import { eq, and, gte, sql, count } from 'drizzle-orm'
+import { endpoints } from '@/db/schemas/endpoints.schema'
+import { eq, and, gte, sql, count, desc } from 'drizzle-orm'
 import { requireSession } from '@/middleware/api-auth'
 import { jsonResponse } from '@/lib/api/response'
 
@@ -61,7 +62,33 @@ export const Route = createFileRoute('/api/stats/chart')({
           )
           .groupBy(channels.type)
 
-        return jsonResponse({ trend, distribution })
+        // 端点调用排行
+        const endpointRanking = await db
+          .select({
+            name: endpoints.name,
+            total: count().as('total'),
+            success:
+              sql<number>`COUNT(CASE WHEN ${pushLogs.status} = 'success' THEN 1 END)`.as(
+                'success'
+              ),
+            failed:
+              sql<number>`COUNT(CASE WHEN ${pushLogs.status} = 'failed' THEN 1 END)`.as(
+                'failed'
+              )
+          })
+          .from(pushLogs)
+          .innerJoin(endpoints, eq(pushLogs.endpointId, endpoints.id))
+          .where(
+            and(
+              eq(pushLogs.userId, session.user.id),
+              gte(pushLogs.createdAt, since)
+            )
+          )
+          .groupBy(endpoints.id, endpoints.name)
+          .orderBy(desc(count()))
+          .limit(10)
+
+        return jsonResponse({ trend, distribution, endpointRanking })
       }
     }
   }

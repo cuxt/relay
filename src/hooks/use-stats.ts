@@ -37,6 +37,12 @@ export function useStatsChart(range: '7d' | '30d' | '90d' = '7d') {
           failed: number
         }>
         distribution: Array<{ type: string; count: number }>
+        endpointRanking: Array<{
+          name: string
+          total: number
+          success: number
+          failed: number
+        }>
       }>(`/api/stats/chart?range=${range}`)
   })
 }
