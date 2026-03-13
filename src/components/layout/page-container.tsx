@@ -34,21 +34,19 @@ export function PageContainer({
   backTo,
   backLabel = '返回'
 }: PageContainerProps) {
-
   return (
     <div className={cn('flex-1 overflow-auto', className)}>
-      <div className={cn('mx-auto px-6 py-8', widthClasses[width])}>
+      <div className={cn('mx-auto px-4 sm:px-6 py-8', widthClasses[width])}>
         {backTo && (
           <Button
             variant="ghost"
             size="sm"
-            asChild
+            nativeButton={false}
+            render={<Link to={backTo} />}
             className="mb-4 -ml-2 text-muted-foreground"
           >
-            <Link to={backTo}>
-              <ArrowLeft className="mr-1.5 h-4 w-4" />
-              {backLabel}
-            </Link>
+            <ArrowLeft className="mr-1.5 h-4 w-4" />
+            {backLabel}
           </Button>
         )}
         <div className="flex items-center justify-between mb-8">

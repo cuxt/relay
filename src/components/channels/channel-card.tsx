@@ -78,9 +78,9 @@ export function ChannelCard({
       transition={{ delay: index * 0.05, duration: 0.3 }}
       whileHover={{ y: -2, transition: { type: 'spring', stiffness: 300 } }}
     >
-      <Card className="group relative overflow-hidden transition-shadow hover:shadow-md h-full">
+      <Card className="relative transition-shadow hover:shadow-md h-full">
         <CardContent className="p-5 flex flex-col h-full">
-          {/* Header: icon + name + menu */}
+          {/* Header: icon + name + actions */}
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3 min-w-0">
               <ChannelIcon type={channel.type} size="lg" showBackground />
@@ -94,42 +94,54 @@ export function ChannelCard({
               </div>
             </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+            <div className="flex items-center gap-1 shrink-0">
+              <Switch
+                checked={channel.enabled}
+                onCheckedChange={checked => onToggle(channel.id, checked)}
+              />
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                    />
+                  }
                 >
                   <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <Link to="/channels/$id/edit" params={{ id: channel.id }}>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    render={
+                      <Link to="/channels/$id/edit" params={{ id: channel.id }} />
+                    }
+                  >
                     <Pencil className="mr-2 h-4 w-4" />
                     编辑
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-destructive"
-                  onClick={() => onDelete(channel.id)}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  删除
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="text-destructive"
+                    onClick={() => onDelete(channel.id)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    删除
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
 
           {/* Config preview */}
           {configPreview && (
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger asChild>
-                  <p className="text-xs font-mono text-muted-foreground mt-3 truncate cursor-default">
-                    {configPreview}
-                  </p>
+                <TooltipTrigger
+                  render={
+                    <p className="text-xs font-mono text-muted-foreground mt-3 truncate cursor-default" />
+                  }
+                >
+                  {configPreview}
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="max-w-xs">
                   <p className="font-mono text-xs break-all">{configPreview}</p>
@@ -138,24 +150,18 @@ export function ChannelCard({
             </TooltipProvider>
           )}
 
-          {/* Footer: status + date + toggle */}
+          {/* Footer: status + date */}
           <div className="flex items-center justify-between mt-auto pt-4 border-t">
-            <div className="flex items-center gap-2">
-              <Badge
-                variant={channel.enabled ? 'default' : 'secondary'}
-                className="text-xs"
-              >
-                {channel.enabled ? '已启用' : '已禁用'}
-              </Badge>
-              <span className="text-xs text-muted-foreground flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                {createdDate}
-              </span>
-            </div>
-            <Switch
-              checked={channel.enabled}
-              onCheckedChange={checked => onToggle(channel.id, checked)}
-            />
+            <Badge
+              variant={channel.enabled ? 'default' : 'secondary'}
+              className="text-xs"
+            >
+              {channel.enabled ? '已启用' : '已禁用'}
+            </Badge>
+            <span className="text-xs text-muted-foreground flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              {createdDate}
+            </span>
           </div>
         </CardContent>
       </Card>

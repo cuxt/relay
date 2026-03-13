@@ -47,11 +47,9 @@ function ChannelsPage() {
       title="渠道管理"
       description="管理消息通知渠道，支持飞书、企微、钉钉等平台"
       action={
-        <Button asChild>
-          <Link to="/channels/new">
-            <Plus className="mr-2 h-4 w-4" />
-            新建渠道
-          </Link>
+        <Button nativeButton={false} render={<Link to="/channels/new" />}>
+          <Plus className="mr-2 h-4 w-4" />
+          新建渠道
         </Button>
       }
     >

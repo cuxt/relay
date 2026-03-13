@@ -67,11 +67,7 @@ function SignUpPage() {
 
   return (
     <AuthLayout>
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        className="space-y-6"
-      >
+      <motion.div initial="hidden" animate="visible" className="space-y-6">
         <motion.div variants={fieldVariants} custom={0} className="space-y-2">
           <h1 className="text-2xl font-bold tracking-tight">创建账户</h1>
           <p className="text-sm text-muted-foreground">
@@ -186,9 +182,16 @@ function SignUpPage() {
           </Button>
         </motion.div>
 
-        <motion.div variants={fieldVariants} custom={6} className="text-center text-sm">
+        <motion.div
+          variants={fieldVariants}
+          custom={6}
+          className="text-center text-sm"
+        >
           <span className="text-muted-foreground">已有账户？</span>{' '}
-          <Link to="/auth/login" className="text-primary font-medium hover:underline">
+          <Link
+            to="/auth/login"
+            className="text-primary font-medium hover:underline"
+          >
             立即登录
           </Link>
         </motion.div>

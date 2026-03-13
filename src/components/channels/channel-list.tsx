@@ -45,11 +45,9 @@ export function ChannelList({
         title="暂无渠道"
         description="创建一个通知渠道，将消息转发到飞书、企微等平台"
         action={
-          <Button asChild>
-            <Link to="/channels/new">
-              <Plus className="mr-2 h-4 w-4" />
-              创建渠道
-            </Link>
+          <Button nativeButton={false} render={<Link to="/channels/new" />}>
+            <Plus className="mr-2 h-4 w-4" />
+            创建渠道
           </Button>
         }
       />

@@ -12,20 +12,20 @@ const config = defineConfig({
     nitro(),
     // this is the plugin that enables path aliases
     viteTsConfigPaths({
-      projects: ['./tsconfig.json'],
+      projects: ['./tsconfig.json']
     }),
     tailwindcss(),
     tanstackStart(),
     viteReact({
       babel: {
-        plugins: ['babel-plugin-react-compiler'],
-      },
-    }),
+        plugins: ['babel-plugin-react-compiler']
+      }
+    })
   ],
   ssr: {
     external: ['pg', 'drizzle-orm'],
-    noExternal: ['better-auth'],
-  },
+    noExternal: ['better-auth']
+  }
 })
 
 export default config

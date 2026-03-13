@@ -1,6 +1,11 @@
 import vm from 'node:vm'
 import dayjs from 'dayjs'
-import type { ResolveContext, AiResolver, AiCallMeta, ResolveResult } from './template'
+import type {
+  ResolveContext,
+  AiResolver,
+  AiCallMeta,
+  ResolveResult
+} from './template'
 
 /**
  * 使用 vm 沙箱执行模板字符串。
@@ -80,7 +85,9 @@ export async function evaluate(
   const code = `(async () => \`${escaped}\`)()`
 
   try {
-    const raw = String(await vm.runInNewContext(code, sandbox, { timeout: 300000 }))
+    const raw = String(
+      await vm.runInNewContext(code, sandbox, { timeout: 300000 })
+    )
     // 折叠连续空行为最多一个空行，并去除首尾空白
     const message = raw.replace(/\n{3,}/g, '\n\n').trim()
     return { message, aiMeta }

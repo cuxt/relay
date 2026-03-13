@@ -53,11 +53,7 @@ export function LinkedAccounts() {
         <div>
           <p className="text-sm font-medium">GitHub</p>
           <p className="text-xs text-muted-foreground">
-            {loading
-              ? '加载中...'
-              : githubLinked
-                ? '已绑定'
-                : '未绑定'}
+            {loading ? '加载中...' : githubLinked ? '已绑定' : '未绑定'}
           </p>
         </div>
       </div>

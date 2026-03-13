@@ -70,11 +70,9 @@ function EndpointsPage() {
       title="端点管理"
       description="管理推送端点，每个端点有唯一的 Webhook URL"
       action={
-        <Button asChild>
-          <Link to="/endpoints/new">
-            <Plus className="mr-2 h-4 w-4" />
-            新建端点
-          </Link>
+        <Button nativeButton={false} render={<Link to="/endpoints/new" />}>
+          <Plus className="mr-2 h-4 w-4" />
+          新建端点
         </Button>
       }
     >

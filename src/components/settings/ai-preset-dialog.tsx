@@ -35,7 +35,10 @@ import {
   CommandList
 } from '@/components/ui/command'
 import { cn } from '@/lib/utils'
-import { useAiProviderList, useAiProviderModels } from '@/hooks/use-ai-providers'
+import {
+  useAiProviderList,
+  useAiProviderModels
+} from '@/hooks/use-ai-providers'
 import { useCreateAiPreset, useUpdateAiPreset } from '@/hooks/use-ai-presets'
 
 interface AiPresetDialogProps {
@@ -184,14 +187,20 @@ export function AiPresetDialog({
             <Select
               value={providerId}
               onValueChange={v => {
-                setProviderId(v)
+                setProviderId(v ?? '')
                 setModel('')
                 setModelSearch('')
               }}
               disabled={isLoading}
             >
               <SelectTrigger>
-                <SelectValue placeholder="选择 AI 服务" />
+                <SelectValue placeholder="选择 AI 服务">
+                  {(value: string | null) => {
+                    if (!value) return '选择 AI 服务'
+                    const p = providers?.find((p: any) => p.id === value)
+                    return p?.name ?? value
+                  }}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {providers?.map((p: any) => (
@@ -206,25 +215,28 @@ export function AiPresetDialog({
           <div className="space-y-2">
             <Label>模型</Label>
             <Popover open={modelOpen} onOpenChange={setModelOpen} modal>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={modelOpen}
-                  className="w-full justify-between font-mono text-xs"
-                  disabled={!providerId || isLoading}
-                >
-                  <span className="truncate">
-                    {model || (providerId ? '搜索或输入模型...' : '请先选择 AI 服务')}
-                  </span>
-                  {modelsLoading ? (
-                    <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin opacity-50" />
-                  ) : (
-                    <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 opacity-50" />
-                  )}
-                </Button>
+              <PopoverTrigger
+                render={
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={modelOpen}
+                    className="w-full justify-between font-mono text-xs"
+                    disabled={!providerId || isLoading}
+                  />
+                }
+              >
+                <span className="truncate">
+                  {model ||
+                    (providerId ? '搜索或输入模型...' : '请先选择 AI 服务')}
+                </span>
+                {modelsLoading ? (
+                  <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin opacity-50" />
+                ) : (
+                  <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 opacity-50" />
+                )}
               </PopoverTrigger>
-              <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
+              <PopoverContent className="w-(--anchor-width) p-0" align="start">
                 <Command shouldFilter={false}>
                   <CommandInput
                     placeholder="搜索或输入模型名称..."
@@ -234,8 +246,12 @@ export function AiPresetDialog({
                   <CommandList>
                     {modelsError ? (
                       <div className="px-3 py-4 text-center">
-                        <p className="text-xs text-destructive mb-2">获取模型列表失败</p>
-                        <p className="text-xs text-muted-foreground">可直接输入模型名称后回车</p>
+                        <p className="text-xs text-destructive mb-2">
+                          获取模型列表失败
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          可直接输入模型名称后回车
+                        </p>
                       </div>
                     ) : modelsLoading ? (
                       <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
@@ -247,7 +263,9 @@ export function AiPresetDialog({
                         {/* 手动输入项：当搜索词不在列表中时显示 */}
                         {modelSearch.trim() &&
                           !models?.some(
-                            (m: string) => m.toLowerCase() === modelSearch.trim().toLowerCase()
+                            (m: string) =>
+                              m.toLowerCase() ===
+                              modelSearch.trim().toLowerCase()
                           ) && (
                             <CommandGroup heading="手动输入">
                               <CommandItem

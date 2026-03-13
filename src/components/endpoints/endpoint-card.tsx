@@ -89,10 +89,12 @@ export function EndpointCard({
                 onCheckedChange={checked => onToggle(endpoint.id, checked)}
               />
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
+                <DropdownMenuTrigger
+                  render={
+                    <Button variant="ghost" size="icon" className="h-8 w-8" />
+                  }
+                >
+                  <MoreVertical className="h-4 w-4" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => onTestPush(endpoint)}>
@@ -104,11 +106,16 @@ export function EndpointCard({
                     API 示例
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/endpoints/$id/edit" params={{ id: endpoint.id }}>
-                      <Pencil className="mr-2 h-4 w-4" />
-                      编辑
-                    </Link>
+                  <DropdownMenuItem
+                    render={
+                      <Link
+                        to="/endpoints/$id/edit"
+                        params={{ id: endpoint.id }}
+                      />
+                    }
+                  >
+                    <Pencil className="mr-2 h-4 w-4" />
+                    编辑
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-destructive"

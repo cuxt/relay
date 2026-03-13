@@ -43,11 +43,9 @@ export function EndpointList({
         title="暂无端点"
         description="创建一个推送端点，获取 Webhook URL 用于接收外部消息"
         action={
-          <Button asChild>
-            <Link to="/endpoints/new">
-              <Plus className="mr-2 h-4 w-4" />
-              创建端点
-            </Link>
+          <Button nativeButton={false} render={<Link to="/endpoints/new" />}>
+            <Plus className="mr-2 h-4 w-4" />
+            创建端点
           </Button>
         }
       />

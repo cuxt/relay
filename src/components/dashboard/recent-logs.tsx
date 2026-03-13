@@ -21,11 +21,14 @@ export function RecentLogs() {
       <CardHeader>
         <CardTitle className="text-base">最近推送</CardTitle>
         <CardAction>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/logs">
-              查看全部
-              <ArrowRight className="ml-1 h-3.5 w-3.5" />
-            </Link>
+          <Button
+            variant="ghost"
+            size="sm"
+            nativeButton={false}
+            render={<Link to="/logs" />}
+          >
+            查看全部
+            <ArrowRight className="ml-1 h-3.5 w-3.5" />
           </Button>
         </CardAction>
       </CardHeader>

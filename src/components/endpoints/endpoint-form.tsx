@@ -164,11 +164,17 @@ export function EndpointForm({ mode, defaultValues }: EndpointFormProps) {
               <Label htmlFor="channel">关联渠道</Label>
               <Select
                 value={channelId}
-                onValueChange={setChannelId}
+                onValueChange={value => setChannelId(value ?? '')}
                 disabled={isLoading}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="选择渠道" />
+                  <SelectValue placeholder="选择渠道">
+                    {(value: string | null) => {
+                      if (!value) return '选择渠道'
+                      const ch = channelsList?.find((c: any) => c.id === value)
+                      return ch?.name ?? value
+                    }}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {channelsList?.map((ch: any) => (
@@ -213,7 +219,7 @@ export function EndpointForm({ mode, defaultValues }: EndpointFormProps) {
             <Label htmlFor="messageType">消息格式</Label>
             <Select
               value={messageType}
-              onValueChange={setMessageType}
+              onValueChange={value => setMessageType(value ?? 'text')}
               disabled={isLoading}
             >
               <SelectTrigger className="w-50">
@@ -259,15 +265,17 @@ export function EndpointForm({ mode, defaultValues }: EndpointFormProps) {
                   )
                 )}
                 <DropdownMenu modal={false}>
-                  <DropdownMenuTrigger asChild>
-                    <button
-                      type="button"
-                      title="插入 AI 调用"
-                      className="inline-flex items-center gap-1 rounded-md border bg-muted/40 px-2 py-0.5 text-xs font-mono text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
-                    >
-                      <Sparkles className="h-3 w-3" />
-                      ai()
-                    </button>
+                  <DropdownMenuTrigger
+                    render={
+                      <button
+                        type="button"
+                        title="插入 AI 调用"
+                        className="inline-flex items-center gap-1 rounded-md border bg-muted/40 px-2 py-0.5 text-xs font-mono text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
+                      />
+                    }
+                  >
+                    <Sparkles className="h-3 w-3" />
+                    ai()
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start">
                     {presetsList?.length ? (

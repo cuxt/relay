@@ -19,7 +19,7 @@ type ThemeProviderState = {
 const initialState: ThemeProviderState = {
   theme: 'system',
   setTheme: () => null,
-  resolvedTheme: 'light',
+  resolvedTheme: 'light'
 }
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
@@ -27,7 +27,7 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 export function ThemeProvider({
   children,
   defaultTheme = 'system',
-  storageKey = 'relay-theme',
+  storageKey = 'relay-theme'
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(defaultTheme)
   const [resolvedTheme, setResolvedTheme] = useState<'dark' | 'light'>('light')
@@ -78,7 +78,7 @@ export function ThemeProvider({
       localStorage.setItem(storageKey, theme)
       setTheme(theme)
     },
-    resolvedTheme,
+    resolvedTheme
   }
 
   return (

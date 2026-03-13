@@ -530,7 +530,7 @@ export function ChannelForm({ mode, defaultValues }: ChannelFormProps) {
                                     onValueChange={v =>
                                       setFields(prev => ({
                                         ...prev,
-                                        chatId: v
+                                        chatId: v ?? ''
                                       }))
                                     }
                                   >

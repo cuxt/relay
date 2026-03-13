@@ -59,7 +59,8 @@ export function useUpdateAiProvider() {
 export function useAiProviderModels(providerId: string) {
   return useQuery({
     queryKey: aiProviderKeys.models(providerId),
-    queryFn: () => fetchJson<string[]>(`/api/ai-providers/${providerId}/models`),
+    queryFn: () =>
+      fetchJson<string[]>(`/api/ai-providers/${providerId}/models`),
     enabled: !!providerId,
     staleTime: 5 * 60 * 1000,
     retry: false

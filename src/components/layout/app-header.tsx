@@ -48,13 +48,13 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
-      <div className="flex h-14 items-center px-6 gap-6">
+      <div className="flex h-14 items-center px-4 sm:px-6 gap-2 sm:gap-6">
         {/* Logo */}
         <Link to="/dashboard" className="flex items-center gap-2 shrink-0">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Zap className="h-4 w-4" />
           </div>
-          <span className="font-bold text-lg tracking-tight">Relay</span>
+          <span className="font-bold text-lg tracking-tight hidden sm:inline">Relay</span>
         </Link>
 
         {/* Navigation */}
@@ -85,16 +85,18 @@ export function AppHeader() {
         <div className="ml-auto flex items-center gap-2">
           {/* Theme switcher */}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                {theme === 'dark' ? (
-                  <Moon className="h-4 w-4" />
-                ) : theme === 'light' ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Monitor className="h-4 w-4" />
-                )}
-              </Button>
+            <DropdownMenuTrigger
+              render={
+                <Button variant="ghost" size="icon" className="h-8 w-8" />
+              }
+            >
+              {theme === 'dark' ? (
+                <Moon className="h-4 w-4" />
+              ) : theme === 'light' ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Monitor className="h-4 w-4" />
+              )}
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setTheme('light')}>
@@ -114,19 +116,22 @@ export function AppHeader() {
 
           {/* User menu */}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-full"
-              >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={session.user.image || undefined} alt={session.user.name} />
-                  <AvatarFallback className="text-xs">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 rounded-full"
+                />
+              }
+            >
+              <Avatar className="h-8 w-8">
+                <AvatarImage
+                  src={session.user.image || undefined}
+                  alt={session.user.name}
+                />
+                <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+              </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
               <div className="px-2 py-1.5">
@@ -138,21 +143,21 @@ export function AppHeader() {
                 </p>
               </div>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link to="/settings">
-                  <Settings className="mr-2 h-4 w-4" />
-                  设置
-                </Link>
+              <DropdownMenuItem render={<Link to="/settings" />}>
+                <Settings className="mr-2 h-4 w-4" />
+                设置
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <a
-                  href="https://github.com/cuxt/relay"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <SiGithub className="mr-2 h-4 w-4" />
-                  GitHub
-                </a>
+              <DropdownMenuItem
+                render={
+                  <a
+                    href="https://github.com/cuxt/relay"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
+                }
+              >
+                <SiGithub className="mr-2 h-4 w-4" />
+                GitHub
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem

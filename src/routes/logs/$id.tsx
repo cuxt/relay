@@ -10,6 +10,7 @@ import { usePushLogDetail } from '@/hooks/use-push-logs'
 import { CHANNEL_TYPES } from '@/lib/channels/constants'
 import type { ChannelType } from '@/lib/channels/constants'
 import { ChannelIcon } from '@/components/shared/channel-icon'
+import { cn } from '@/lib/utils'
 import {
   Clock,
   Gauge,
@@ -81,66 +82,76 @@ function LogDetailPage() {
 
   return (
     <PageContainer title="推送详情" backTo="/logs" backLabel="返回日志">
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        className="space-y-6"
-      >
+      <motion.div initial="hidden" animate="visible" className="space-y-6">
         {/* 概览信息 */}
         <motion.div variants={fadeUp} custom={0}>
-          <Card>
-            <CardContent className="p-5">
-              <div className="flex items-center gap-3 mb-4">
+          <Card className={cn(
+              'py-0 border-l-2',
+              log.status === 'success' && 'border-l-emerald-500 dark:border-l-emerald-400',
+              log.status === 'failed' && 'border-l-red-500 dark:border-l-red-400',
+              log.status === 'pending' && 'border-l-amber-500 dark:border-l-amber-400'
+            )}>
+            <CardContent className="p-0">
+              {/* Status + metrics */}
+              <div className="flex flex-wrap items-center gap-2 px-4 py-3 sm:px-5 sm:py-4">
                 <Badge variant={statusVariant} className="text-sm px-3 py-1">
                   {statusLabel}
                 </Badge>
                 {log.latencyMs != null && (
-                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <Gauge className="h-3.5 w-3.5" />
+                  <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground bg-muted rounded-full px-2.5 py-0.5">
+                    <Gauge className="h-3 w-3" />
                     {log.latencyMs}ms
-                  </div>
+                  </span>
                 )}
                 {log.responseStatus && (
-                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <Server className="h-3.5 w-3.5" />
+                  <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground bg-muted rounded-full px-2.5 py-0.5">
+                    <Server className="h-3 w-3" />
                     HTTP {log.responseStatus}
-                  </div>
+                  </span>
                 )}
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div>
-                  <p className="text-muted-foreground mb-0.5">端点</p>
-                  <p className="font-medium">{log.endpointName || '-'}</p>
+
+              {/* Detail info: horizontal KV rows on mobile, grid on desktop */}
+              <div className="border-t divide-y sm:divide-y-0 sm:grid sm:grid-cols-2 md:grid-cols-4 sm:gap-4 sm:px-5 sm:py-4 text-sm">
+                <div className="flex items-center justify-between px-4 py-2.5 sm:p-0 sm:block min-w-0">
+                  <span className="text-muted-foreground shrink-0">端点</span>
+                  <span className="font-medium truncate ml-4 sm:ml-0 sm:mt-1 sm:block">
+                    {log.endpointName || '-'}
+                  </span>
                 </div>
-                <div>
-                  <p className="text-muted-foreground mb-0.5">渠道</p>
-                  <div className="flex items-center gap-1.5 font-medium">
+
+                <div className="flex items-start justify-between px-4 py-2.5 sm:p-0 sm:block min-w-0">
+                  <span className="text-muted-foreground shrink-0 leading-6">渠道</span>
+                  <div className="ml-4 sm:ml-0 sm:mt-1 min-w-0">
+                    <div className="font-medium inline-flex items-center gap-1.5">
+                      {log.channelType && (
+                        <ChannelIcon
+                          type={log.channelType as ChannelType}
+                          size="sm"
+                        />
+                      )}
+                      <span className="truncate">{log.channelName || '-'}</span>
+                    </div>
                     {log.channelType && (
-                      <ChannelIcon
-                        type={log.channelType as ChannelType}
-                        size="sm"
-                      />
-                    )}
-                    {log.channelName || '-'}
-                    {log.channelType && (
-                      <span className="text-muted-foreground font-normal">
-                        ({CHANNEL_TYPES[log.channelType as ChannelType]?.label})
-                      </span>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {CHANNEL_TYPES[log.channelType as ChannelType]?.label}
+                      </p>
                     )}
                   </div>
                 </div>
-                <div>
-                  <p className="text-muted-foreground mb-0.5">来源 IP</p>
-                  <p className="font-mono text-xs">{log.requestIp || '-'}</p>
+
+                <div className="flex items-center justify-between px-4 py-2.5 sm:p-0 sm:block min-w-0">
+                  <span className="text-muted-foreground shrink-0">来源 IP</span>
+                  <span className="font-mono text-xs ml-4 sm:ml-0 sm:mt-1 sm:block">
+                    {log.requestIp || '-'}
+                  </span>
                 </div>
-                <div>
-                  <p className="text-muted-foreground mb-0.5">时间</p>
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span className="text-xs">
-                      {new Date(log.createdAt).toLocaleString('zh-CN')}
-                    </span>
-                  </div>
+
+                <div className="flex items-center justify-between px-4 py-2.5 sm:p-0 sm:block min-w-0">
+                  <span className="text-muted-foreground shrink-0">时间</span>
+                  <span className="text-xs ml-4 sm:ml-0 sm:mt-1 sm:block">
+                    {new Date(log.createdAt).toLocaleString('zh-CN')}
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -172,7 +183,9 @@ function LogDetailPage() {
             <Card>
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium">发送消息</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    发送消息
+                  </CardTitle>
                   <div className="inline-flex items-center rounded-md bg-muted p-0.5 text-muted-foreground">
                     <button
                       type="button"
@@ -223,9 +236,7 @@ function LogDetailPage() {
         {(log.aiProcessedMessage || log.aiError) && (
           <motion.div
             variants={fadeUp}
-            custom={
-              (log.errorMessage ? 2 : 1) + (log.resolvedMessage ? 1 : 0)
-            }
+            custom={(log.errorMessage ? 2 : 1) + (log.resolvedMessage ? 1 : 0)}
           >
             <Card>
               <CardHeader className="pb-2">
@@ -360,9 +371,7 @@ function AiCallChain({ raw }: { raw: string }) {
     if (!Array.isArray(parsed)) throw new Error('Invalid format')
     calls = parsed
   } catch {
-    return (
-      <p className="text-xs text-destructive">AI 调用数据解析失败</p>
-    )
+    return <p className="text-xs text-destructive">AI 调用数据解析失败</p>
   }
 
   if (calls.length === 0) return null
@@ -374,7 +383,9 @@ function AiCallChain({ raw }: { raw: string }) {
         <div key={i} className="rounded-md border p-3 space-y-2">
           <div className="flex items-center justify-between">
             <code className="text-xs font-semibold">ai.{call.presetKey}()</code>
-            <span className="text-xs text-muted-foreground">{call.latencyMs}ms</span>
+            <span className="text-xs text-muted-foreground">
+              {call.latencyMs}ms
+            </span>
           </div>
           <div>
             <p className="text-xs text-muted-foreground mb-0.5">输入</p>

@@ -73,7 +73,7 @@ function LogsPage() {
             <Select
               value={status}
               onValueChange={v => {
-                setStatus(v === 'all' ? '' : v)
+                setStatus(!v || v === 'all' ? '' : v)
                 setPage(1)
               }}
             >
@@ -90,12 +90,18 @@ function LogsPage() {
             <Select
               value={endpointId}
               onValueChange={v => {
-                setEndpointId(v === 'all' ? '' : v)
+                setEndpointId(!v || v === 'all' ? '' : v)
                 setPage(1)
               }}
             >
               <SelectTrigger className="w-40">
-                <SelectValue placeholder="端点" />
+                <SelectValue placeholder="端点">
+                  {(value: string | null) => {
+                    if (!value || value === 'all') return '所有端点'
+                    const ep = endpointsList?.find((e: any) => e.id === value)
+                    return ep?.name ?? value
+                  }}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">所有端点</SelectItem>
@@ -109,7 +115,7 @@ function LogsPage() {
             <Select
               value={channelType}
               onValueChange={v => {
-                setChannelType(v === 'all' ? '' : v)
+                setChannelType(!v || v === 'all' ? '' : v)
                 setPage(1)
               }}
             >
@@ -168,7 +174,9 @@ function LogsPage() {
                   <TableRow
                     key={log.id}
                     className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => navigate({ to: '/logs/$id', params: { id: log.id } })}
+                    onClick={() =>
+                      navigate({ to: '/logs/$id', params: { id: log.id } })
+                    }
                   >
                     <TableCell>
                       <Badge
@@ -239,7 +247,6 @@ function LogsPage() {
           )}
         </>
       )}
-
     </PageContainer>
   )
 }
