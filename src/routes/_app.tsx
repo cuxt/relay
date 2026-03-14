@@ -14,26 +14,20 @@ import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/_app')({
   beforeLoad: async () => {
-    const [session, siteConfig] = await Promise.all([
-      getSession(),
-      getSiteConfig(),
-    ])
+    const [session, siteConfig] = await Promise.all([getSession(), getSiteConfig()])
     if (!session) {
       throw redirect({ to: '/login' })
     }
     return { user: session.user, session: session.session, siteConfig }
   },
-  component: AppLayout
+  component: AppLayout,
 })
 
 function AppLayout() {
   const { user, session, siteConfig } = Route.useRouteContext()
   const [collapsed, setCollapsed] = useState(false)
 
-  const filteredMainItems = filterMenuByRole(
-    mainMenuItems,
-    user.role ?? undefined
-  )
+  const filteredMainItems = filterMenuByRole(mainMenuItems, user.role ?? undefined)
 
   return (
     <div className="flex min-h-screen">
@@ -46,10 +40,7 @@ function AppLayout() {
       >
         <AppLogo collapsed={collapsed} siteConfig={siteConfig} />
         <div
-          className={cn(
-            'flex flex-1 flex-col',
-            collapsed ? 'overflow-visible' : 'overflow-y-auto'
-          )}
+          className={cn('flex flex-1 flex-col', collapsed ? 'overflow-visible' : 'overflow-y-auto')}
         >
           <SidebarNav items={filteredMainItems} collapsed={collapsed} />
         </div>
@@ -67,16 +58,8 @@ function AppLayout() {
       >
         {/* Header */}
         <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-3 border-b border-border bg-background/95 px-6 backdrop-blur-sm">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setCollapsed(!collapsed)}
-          >
-            {collapsed ? (
-              <PanelLeft className="h-5 w-5" />
-            ) : (
-              <PanelLeftClose className="h-5 w-5" />
-            )}
+          <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)}>
+            {collapsed ? <PanelLeft className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
           </Button>
           <div className="flex items-center gap-3">
             <ThemeToggle />

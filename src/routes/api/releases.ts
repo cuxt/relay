@@ -25,10 +25,10 @@ export const Route = createFileRoute('/api/releases')({
         const githubRepo = process.env.GITHUB_REPO
 
         if (!githubRepo) {
-          return new Response(
-            JSON.stringify({ error: 'GITHUB_REPO is not configured' }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } },
-          )
+          return new Response(JSON.stringify({ error: 'GITHUB_REPO is not configured' }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          })
         }
 
         const headers: Record<string, string> = {
@@ -41,16 +41,15 @@ export const Route = createFileRoute('/api/releases')({
         }
 
         try {
-          const response = await fetch(
-            `https://api.github.com/repos/${githubRepo}/releases`,
-            { headers },
-          )
+          const response = await fetch(`https://api.github.com/repos/${githubRepo}/releases`, {
+            headers,
+          })
 
           if (!response.ok) {
-            return new Response(
-              JSON.stringify({ error: `GitHub API error: ${response.status}` }),
-              { status: response.status, headers: { 'Content-Type': 'application/json' } },
-            )
+            return new Response(JSON.stringify({ error: `GitHub API error: ${response.status}` }), {
+              status: response.status,
+              headers: { 'Content-Type': 'application/json' },
+            })
           }
 
           const releases: GitHubRelease[] = await response.json()
@@ -76,10 +75,10 @@ export const Route = createFileRoute('/api/releases')({
             headers: { 'Content-Type': 'application/json' },
           })
         } catch {
-          return new Response(
-            JSON.stringify({ error: 'Failed to fetch releases' }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } },
-          )
+          return new Response(JSON.stringify({ error: 'Failed to fetch releases' }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          })
         }
       },
     },

@@ -13,7 +13,7 @@ export const Route = createFileRoute('/_public/release')({
     await queryClient.ensureQueryData(releasesQueryOptions())
   },
   pendingComponent: ReleasePending,
-  component: ReleasePage
+  component: ReleasePage,
 })
 
 function ReleasePending() {
@@ -76,9 +76,7 @@ function ReleasePage() {
                             {release.name}
                           </a>
                         </h4>
-                        <Badge
-                          variant={release.prerelease ? 'secondary' : 'default'}
-                        >
+                        <Badge variant={release.prerelease ? 'secondary' : 'default'}>
                           {release.tag}
                         </Badge>
                       </div>

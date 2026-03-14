@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogDescription
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -31,25 +31,15 @@ interface ResetPasswordModalProps {
   onSuccess: () => void
 }
 
-export function ResetPasswordModal({
-  user,
-  onClose,
-  onSuccess
-}: ResetPasswordModalProps) {
+export function ResetPasswordModal({ user, onClose, onSuccess }: ResetPasswordModalProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [visible, setVisible] = useState(false)
 
   const resetMutation = useMutation({
-    mutationFn: async ({
-      userId,
-      newPassword
-    }: {
-      userId: string
-      newPassword: string
-    }) => {
+    mutationFn: async ({ userId, newPassword }: { userId: string; newPassword: string }) => {
       const res = await authClient.admin.setUserPassword({
         userId,
-        newPassword
+        newPassword,
       })
       if (res.error) throw res.error
     },
@@ -81,20 +71,18 @@ export function ResetPasswordModal({
     toast.success('已复制到剪贴板')
   }
 
-  const handleSubmit = (
-    e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>
-  ) => {
+  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
     e.preventDefault()
     if (!user) return
     const formData = new FormData(e.currentTarget)
     resetMutation.mutate({
       userId: user.id,
-      newPassword: formData.get('password') as string
+      newPassword: formData.get('password') as string,
     })
   }
 
   return (
-    <Dialog open={!!user} onOpenChange={v => !v && onClose()}>
+    <Dialog open={!!user} onOpenChange={(v) => !v && onClose()}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>重置密码</DialogTitle>
@@ -120,14 +108,10 @@ export function ResetPasswordModal({
                 <button
                   type="button"
                   className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  onClick={() => setVisible(v => !v)}
+                  onClick={() => setVisible((v) => !v)}
                   tabIndex={-1}
                 >
-                  {visible ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
+                  {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               <Button
@@ -157,9 +141,7 @@ export function ResetPasswordModal({
               取消
             </Button>
             <Button type="submit" disabled={resetMutation.isPending}>
-              {resetMutation.isPending && (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              )}
+              {resetMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               确认重置
             </Button>
           </DialogFooter>

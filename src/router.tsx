@@ -8,14 +8,14 @@ export function createRouter() {
     defaultOptions: {
       queries: {
         staleTime: 1000 * 60 * 5,
-        retry: 1
-      }
+        retry: 1,
+      },
     },
     mutationCache: new MutationCache({
-      onError: error => {
+      onError: (error) => {
         toast.error(error?.message || '操作失败')
-      }
-    })
+      },
+    }),
   })
 
   const router = createTanStackRouter({
@@ -23,7 +23,7 @@ export function createRouter() {
     scrollRestoration: true,
     defaultPreload: 'intent',
     defaultPreloadStaleTime: 0,
-    context: { queryClient }
+    context: { queryClient },
   })
 
   return router

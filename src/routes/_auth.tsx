@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_auth')({
       throw redirect({ to: '/dashboard' })
     }
   },
-  component: AuthLayout
+  component: AuthLayout,
 })
 
 function AuthLayout() {
@@ -32,9 +32,7 @@ function AuthLayout() {
             <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mx-auto mb-8">
               <Bubbles className="h-9 w-9 text-white" />
             </div>
-            <h2 className="text-3xl font-bold text-white mb-2">
-              TanStack Start Template
-            </h2>
+            <h2 className="text-3xl font-bold text-white mb-2">TanStack Start Template</h2>
             <p className="text-white/85 text-base max-w-100">
               通用全栈起步模板，快速启动你的下一个项目
             </p>

@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogDescription
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
   SelectContent,
-  SelectItem
+  SelectItem,
 } from '@/components/ui/select'
 
 interface CreateUserModalProps {
@@ -29,11 +29,7 @@ interface CreateUserModalProps {
   onSuccess: () => void
 }
 
-export function CreateUserModal({
-  open,
-  onClose,
-  onSuccess
-}: CreateUserModalProps) {
+export function CreateUserModal({ open, onClose, onSuccess }: CreateUserModalProps) {
   const formRef = useRef<HTMLFormElement>(null)
 
   const createMutation = useMutation({
@@ -54,21 +50,19 @@ export function CreateUserModal({
     },
   })
 
-  const handleSubmit = (
-    e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>
-  ) => {
+  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     createMutation.mutate({
       name: formData.get('name') as string,
       email: formData.get('email') as string,
       password: formData.get('password') as string,
-      role: (formData.get('role') as 'user' | 'admin') || 'user'
+      role: (formData.get('role') as 'user' | 'admin') || 'user',
     })
   }
 
   return (
-    <Dialog open={open} onOpenChange={v => !v && onClose()}>
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>创建用户</DialogTitle>
@@ -77,12 +71,7 @@ export function CreateUserModal({
         <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="create-name">姓名</Label>
-            <Input
-              id="create-name"
-              name="name"
-              placeholder="用户姓名"
-              required
-            />
+            <Input id="create-name" name="name" placeholder="用户姓名" required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="create-email">邮箱</Label>
@@ -122,9 +111,7 @@ export function CreateUserModal({
               取消
             </Button>
             <Button type="submit" disabled={createMutation.isPending}>
-              {createMutation.isPending && (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              )}
+              {createMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               创建
             </Button>
           </DialogFooter>

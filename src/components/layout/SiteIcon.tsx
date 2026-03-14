@@ -15,30 +15,16 @@ interface SiteIconProps {
   containerClassName?: string
 }
 
-export function SiteIcon({
-  iconType,
-  iconValue,
-  className,
-  containerClassName,
-}: SiteIconProps) {
+export function SiteIcon({ iconType, iconValue, className, containerClassName }: SiteIconProps) {
   const renderLucideIcon = () => {
     const name = kebabToPascal(iconValue) as keyof typeof icons
     const Icon = icons[name]
     if (!Icon) return null
-    return (
-      <Icon
-        className={cn('h-4.5 w-4.5 text-primary-foreground', className)}
-      />
-    )
+    return <Icon className={cn('h-4.5 w-4.5 text-primary-foreground', className)} />
   }
 
   return (
-    <div
-      className={cn(
-        'flex items-center justify-center shrink-0',
-        containerClassName,
-      )}
-    >
+    <div className={cn('flex items-center justify-center shrink-0', containerClassName)}>
       {iconType === 'lucide' && renderLucideIcon()}
       {iconType === 'url' && (
         <img

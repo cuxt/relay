@@ -9,7 +9,7 @@ const modes = ['light', 'system', 'dark'] as const
 const icons = {
   light: Sun,
   system: Monitor,
-  dark: Moon
+  dark: Moon,
 }
 
 export function ThemeToggle() {
@@ -34,10 +34,7 @@ export function ThemeToggle() {
 
     const x = e.clientX
     const y = e.clientY
-    const maxR = Math.hypot(
-      Math.max(x, window.innerWidth - x),
-      Math.max(y, window.innerHeight - y)
-    )
+    const maxR = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
 
     // light→dark: shrink old view; dark→light: expand new view
     const isDarkening = resolvedMode === 'light'
@@ -54,14 +51,8 @@ export function ThemeToggle() {
       document.documentElement.animate(
         {
           clipPath: isDarkening
-            ? [
-                `circle(${maxR}px at ${x}px ${y}px)`,
-                `circle(0px at ${x}px ${y}px)`
-              ]
-            : [
-                `circle(0px at ${x}px ${y}px)`,
-                `circle(${maxR}px at ${x}px ${y}px)`
-              ]
+            ? [`circle(${maxR}px at ${x}px ${y}px)`, `circle(0px at ${x}px ${y}px)`]
+            : [`circle(0px at ${x}px ${y}px)`, `circle(${maxR}px at ${x}px ${y}px)`],
         },
         {
           duration: 500,
@@ -69,7 +60,7 @@ export function ThemeToggle() {
           fill: 'forwards',
           pseudoElement: isDarkening
             ? '::view-transition-old(root)'
-            : '::view-transition-new(root)'
+            : '::view-transition-new(root)',
         }
       )
     })

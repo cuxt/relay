@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogDescription
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -24,16 +24,12 @@ interface EditUserModalProps {
   onSuccess: () => void
 }
 
-export function EditUserModal({
-  user,
-  onClose,
-  onSuccess
-}: EditUserModalProps) {
+export function EditUserModal({ user, onClose, onSuccess }: EditUserModalProps) {
   const editMutation = useMutation({
     mutationFn: async ({
       userId,
       name,
-      email
+      email,
     }: {
       userId: string
       name: string
@@ -41,7 +37,7 @@ export function EditUserModal({
     }) => {
       const res = await authClient.admin.updateUser({
         userId,
-        data: { name, email }
+        data: { name, email },
       })
       if (res.error) throw res.error
     },
@@ -52,21 +48,19 @@ export function EditUserModal({
     },
   })
 
-  const handleSubmit = (
-    e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>
-  ) => {
+  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
     e.preventDefault()
     if (!user) return
     const formData = new FormData(e.currentTarget)
     editMutation.mutate({
       userId: user.id,
       name: formData.get('name') as string,
-      email: formData.get('email') as string
+      email: formData.get('email') as string,
     })
   }
 
   return (
-    <Dialog open={!!user} onOpenChange={v => !v && onClose()}>
+    <Dialog open={!!user} onOpenChange={(v) => !v && onClose()}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>编辑用户</DialogTitle>
@@ -75,12 +69,7 @@ export function EditUserModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="edit-name">姓名</Label>
-            <Input
-              id="edit-name"
-              name="name"
-              defaultValue={user?.name ?? ''}
-              required
-            />
+            <Input id="edit-name" name="name" defaultValue={user?.name ?? ''} required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="edit-email">邮箱</Label>
@@ -97,9 +86,7 @@ export function EditUserModal({
               取消
             </Button>
             <Button type="submit" disabled={editMutation.isPending}>
-              {editMutation.isPending && (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              )}
+              {editMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               保存
             </Button>
           </DialogFooter>

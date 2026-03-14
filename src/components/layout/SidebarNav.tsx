@@ -14,9 +14,7 @@ export function SidebarNav({ items, collapsed }: SidebarNavProps) {
   const [openGroups, setOpenGroups] = useState<string[]>(['settings'])
 
   const toggleGroup = (key: string) => {
-    setOpenGroups(prev =>
-      prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
-    )
+    setOpenGroups((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]))
   }
 
   const isActive = (to?: string) => {
@@ -26,10 +24,10 @@ export function SidebarNav({ items, collapsed }: SidebarNavProps) {
 
   return (
     <nav className="flex flex-col gap-1 px-2">
-      {items.map(item => {
+      {items.map((item) => {
         if (item.children) {
           const isOpen = openGroups.includes(item.key)
-          const hasActiveChild = item.children.some(child => isActive(child.to))
+          const hasActiveChild = item.children.some((child) => isActive(child.to))
 
           return (
             <div key={item.key} className="relative group/menu">
@@ -47,22 +45,15 @@ export function SidebarNav({ items, collapsed }: SidebarNavProps) {
                   <>
                     <span className="flex-1 text-left">{item.label}</span>
                     <ChevronDown
-                      className={cn(
-                        'h-4 w-4 transition-transform',
-                        isOpen && 'rotate-180'
-                      )}
+                      className={cn('h-4 w-4 transition-transform', isOpen && 'rotate-180')}
                     />
                   </>
                 )}
               </button>
               {!collapsed && isOpen && (
                 <div className="ml-4 mt-1 flex flex-col gap-1 border-l border-sidebar-border pl-3">
-                  {item.children.map(child => (
-                    <NavLink
-                      key={child.key}
-                      item={child}
-                      active={isActive(child.to)}
-                    />
+                  {item.children.map((child) => (
+                    <NavLink key={child.key} item={child} active={isActive(child.to)} />
                   ))}
                 </div>
               )}
@@ -71,12 +62,8 @@ export function SidebarNav({ items, collapsed }: SidebarNavProps) {
                   <p className="px-3 py-1.5 text-xs font-medium text-muted-foreground">
                     {item.label}
                   </p>
-                  {item.children.map(child => (
-                    <NavLink
-                      key={child.key}
-                      item={child}
-                      active={isActive(child.to)}
-                    />
+                  {item.children.map((child) => (
+                    <NavLink key={child.key} item={child} active={isActive(child.to)} />
                   ))}
                 </div>
               )}
@@ -85,12 +72,7 @@ export function SidebarNav({ items, collapsed }: SidebarNavProps) {
         }
 
         return (
-          <NavLink
-            key={item.key}
-            item={item}
-            active={isActive(item.to)}
-            collapsed={collapsed}
-          />
+          <NavLink key={item.key} item={item} active={isActive(item.to)} collapsed={collapsed} />
         )
       })}
     </nav>
@@ -100,7 +82,7 @@ export function SidebarNav({ items, collapsed }: SidebarNavProps) {
 function NavLink({
   item,
   active,
-  collapsed
+  collapsed,
 }: {
   item: MenuItem
   active: boolean
@@ -129,9 +111,7 @@ function NavLink({
       to={item.to!}
       className={cn(
         'flex items-center rounded-lg py-2 text-sm transition-colors hover:bg-sidebar-accent',
-        active
-          ? 'bg-sidebar-accent text-foreground font-medium'
-          : 'text-sidebar-foreground/70',
+        active ? 'bg-sidebar-accent text-foreground font-medium' : 'text-sidebar-foreground/70',
         collapsed ? 'justify-center px-2' : 'gap-3 px-3'
       )}
     >

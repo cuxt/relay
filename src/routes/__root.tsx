@@ -1,12 +1,7 @@
 /// <reference types="vite/client" />
 import type { ReactNode } from 'react'
 import type { QueryClient } from '@tanstack/react-query'
-import {
-  Outlet,
-  createRootRouteWithContext,
-  HeadContent,
-  Scripts
-} from '@tanstack/react-router'
+import { Outlet, createRootRouteWithContext, HeadContent, Scripts } from '@tanstack/react-router'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { Toaster as Sonner } from 'sonner'
 import { ThemeProvider, useTheme } from '@/hooks/useTheme'
@@ -29,16 +24,16 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         { charSet: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { title: siteConfig.siteName },
-        { name: 'description', content: '通用全栈起步模板' }
+        { name: 'description', content: '通用全栈起步模板' },
       ],
       links: [
         { rel: 'icon', href: '/api/favicon' },
-        { rel: 'stylesheet', href: appCSS }
-      ]
+        { rel: 'stylesheet', href: appCSS },
+      ],
     }
   },
   component: RootComponent,
-  errorComponent: RootErrorComponent
+  errorComponent: RootErrorComponent,
 })
 
 function RootComponent() {
@@ -93,10 +88,5 @@ function RootDocument({ children }: { children: ReactNode }) {
 function AppToaster() {
   const { resolvedMode } = useTheme()
 
-  return (
-    <Sonner
-      theme={resolvedMode as 'light' | 'dark' | 'system'}
-      richColors
-    />
-  )
+  return <Sonner theme={resolvedMode as 'light' | 'dark' | 'system'} richColors />
 }

@@ -46,19 +46,14 @@ export const getSiteConfig = createServerFn({ method: 'GET' }).handler(
     }
 
     return result
-  },
+  }
 )
 
 export const updateSiteConfig = createServerFn({ method: 'POST' })
-  .inputValidator(
-    (data: { siteName: string; iconType: string; iconValue: string }) => data,
-  )
+  .inputValidator((data: { siteName: string; iconType: string; iconValue: string }) => data)
   .middleware([adminMiddleware])
   .handler(async ({ data }) => {
-    const entries = Object.entries(FIELD_TO_KEY) as [
-      keyof typeof FIELD_TO_KEY,
-      string,
-    ][]
+    const entries = Object.entries(FIELD_TO_KEY) as [keyof typeof FIELD_TO_KEY, string][]
 
     await Promise.all(
       entries.map(([field, key]) =>
@@ -68,7 +63,7 @@ export const updateSiteConfig = createServerFn({ method: 'POST' })
           .onConflictDoUpdate({
             target: config.key,
             set: { value: data[field], updatedAt: new Date() },
-          }),
-      ),
+          })
+      )
     )
   })

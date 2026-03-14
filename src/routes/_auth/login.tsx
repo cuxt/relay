@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Separator } from '@/components/ui/separator'
 
 export const Route = createFileRoute('/_auth/login')({
-  component: LoginPage
+  component: LoginPage,
 })
 
 interface LoginState {
@@ -33,7 +33,7 @@ function LoginPage() {
       try {
         const result = await authClient.signIn.email({
           email,
-          password
+          password,
         })
         if (result.error) {
           return { error: result.error.message || '登录失败' }
@@ -97,12 +97,7 @@ function LoginPage() {
           </div>
         </div>
 
-        <Button
-          type="submit"
-          className="w-full rounded-full"
-          size="lg"
-          disabled={isPending}
-        >
+        <Button type="submit" className="w-full rounded-full" size="lg" disabled={isPending}>
           {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
           登录
         </Button>

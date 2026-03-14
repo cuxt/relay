@@ -1,0 +1,38 @@
+{
+  // 默认格式化工具
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+
+  // 保存时自动格式化
+  "editor.formatOnSave": true,
+
+  // 针对特定语言的格式化设置
+  "[javascript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+
+  // Oxc 扩展配置
+  "oxc.enable": true,
+  "oxc.lint.enable": true,
+  "oxc.format.enable": true,
+
+  // 排除文件
+  "files.exclude": {
+    "**/.vinxi": true,
+    "**/.output": true
+  }
+}

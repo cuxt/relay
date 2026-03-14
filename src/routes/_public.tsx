@@ -11,7 +11,7 @@ export const Route = createFileRoute('/_public')({
     const siteConfig = await getSiteConfig()
     return { siteConfig }
   },
-  component: PublicLayout
+  component: PublicLayout,
 })
 
 function PublicLayout() {
@@ -29,9 +29,7 @@ function PublicLayout() {
               className="h-4 w-4"
             />
           </div>
-          <span className="text-base font-semibold text-foreground">
-            {siteConfig.siteName}
-          </span>
+          <span className="text-base font-semibold text-foreground">{siteConfig.siteName}</span>
         </Link>
         <div className="flex items-center gap-3">
           <ThemeToggle />

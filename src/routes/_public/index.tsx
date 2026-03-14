@@ -3,7 +3,7 @@ import { HeroSection } from '@/components/landing/HeroSection'
 import { FeaturesSection } from '@/components/landing/FeaturesSection'
 
 export const Route = createFileRoute('/_public/')({
-  component: LandingPage
+  component: LandingPage,
 })
 
 function LandingPage() {

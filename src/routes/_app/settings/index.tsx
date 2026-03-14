@@ -10,7 +10,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { useMutation } from '@tanstack/react-query'
 
 export const Route = createFileRoute('/_app/settings/')({
-  component: ProfileSettings
+  component: ProfileSettings,
 })
 
 function ProfileSettings() {
@@ -21,12 +21,10 @@ function ProfileSettings() {
       const res = await authClient.updateUser({ name, image })
       if (res.error) throw res.error
     },
-    onSuccess: () => toast.success('个人资料已更新')
+    onSuccess: () => toast.success('个人资料已更新'),
   })
 
-  const handleSubmit = (
-    e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>
-  ) => {
+  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     const name = (formData.get('name') as string).trim()
@@ -44,9 +42,7 @@ function ProfileSettings() {
         <div className="flex items-center gap-4">
           <Avatar className="h-16 w-16">
             {user.image && <AvatarImage src={user.image} alt={user.name} />}
-            <AvatarFallback className="text-lg">
-              {user.name?.[0]?.toUpperCase()}
-            </AvatarFallback>
+            <AvatarFallback className="text-lg">{user.name?.[0]?.toUpperCase()}</AvatarFallback>
           </Avatar>
           <div>
             <h5 className="font-semibold">{user.name}</h5>
@@ -57,13 +53,7 @@ function ProfileSettings() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="name">姓名</Label>
-            <Input
-              id="name"
-              name="name"
-              placeholder="你的名字"
-              defaultValue={user.name}
-              required
-            />
+            <Input id="name" name="name" placeholder="你的名字" defaultValue={user.name} required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="image">头像 URL</Label>
@@ -74,14 +64,8 @@ function ProfileSettings() {
               defaultValue={user.image || ''}
             />
           </div>
-          <Button
-            type="submit"
-            className="rounded-full"
-            disabled={updateMutation.isPending}
-          >
-            {updateMutation.isPending && (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            )}
+          <Button type="submit" className="rounded-full" disabled={updateMutation.isPending}>
+            {updateMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
             保存更改
           </Button>
         </form>

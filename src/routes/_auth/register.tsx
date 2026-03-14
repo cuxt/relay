@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Separator } from '@/components/ui/separator'
 
 export const Route = createFileRoute('/_auth/register')({
-  component: RegisterPage
+  component: RegisterPage,
 })
 
 interface RegisterState {
@@ -22,10 +22,7 @@ function RegisterPage() {
   const navigate = useNavigate()
 
   const [state, submitAction, isPending] = useActionState(
-    async (
-      _prev: RegisterState,
-      formData: FormData
-    ): Promise<RegisterState> => {
+    async (_prev: RegisterState, formData: FormData): Promise<RegisterState> => {
       const name = formData.get('name') as string
       const email = formData.get('email') as string
       const password = formData.get('password') as string
@@ -47,7 +44,7 @@ function RegisterPage() {
         const result = await authClient.signUp.email({
           email,
           password,
-          name
+          name,
         })
         if (result.error) {
           return { error: result.error.message || '注册失败' }
@@ -70,9 +67,7 @@ function RegisterPage() {
     >
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold tracking-tight">创建账户</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          开始使用 TanStack Start Template
-        </p>
+        <p className="text-sm text-muted-foreground mt-1">开始使用 TanStack Start Template</p>
       </div>
 
       {state.error && (
@@ -87,13 +82,7 @@ function RegisterPage() {
           <Label htmlFor="name">姓名</Label>
           <div className="relative">
             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              id="name"
-              name="name"
-              placeholder="你的名字"
-              className="pl-9"
-              required
-            />
+            <Input id="name" name="name" placeholder="你的名字" className="pl-9" required />
           </div>
         </div>
 
@@ -143,12 +132,7 @@ function RegisterPage() {
           </div>
         </div>
 
-        <Button
-          type="submit"
-          className="w-full rounded-full"
-          size="lg"
-          disabled={isPending}
-        >
+        <Button type="submit" className="w-full rounded-full" size="lg" disabled={isPending}>
           {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
           注册
         </Button>

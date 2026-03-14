@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "react": "warn",
+    "typescript": "warn",
+    "import": "warn"
+  },
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    ".vinxi",
+    ".output",
+    "*.config.ts",
+    "*.config.js",
+    "src/components/ui"
+  ]
+}

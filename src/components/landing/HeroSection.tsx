@@ -16,7 +16,7 @@ export function HeroSection() {
         style={{
           backgroundImage:
             'radial-gradient(circle, hsl(var(--muted-foreground) / 0.15) 1px, transparent 1px)',
-          backgroundSize: '24px 24px'
+          backgroundSize: '24px 24px',
         }}
       />
       {/* Radial fade mask */}
@@ -24,7 +24,7 @@ export function HeroSection() {
         className="absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(ellipse 60% 50% at 50% 50%, transparent 20%, hsl(var(--background)) 70%)'
+            'radial-gradient(ellipse 60% 50% at 50% 50%, transparent 20%, hsl(var(--background)) 70%)',
         }}
       />
 
@@ -43,10 +43,7 @@ export function HeroSection() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, delay: 0.1 + i * 0.06, ease }}
             >
-              <Badge
-                variant="outline"
-                className="text-xs font-normal px-3 py-1"
-              >
+              <Badge variant="outline" className="text-xs font-normal px-3 py-1">
                 {tech}
               </Badge>
             </motion.div>
@@ -83,7 +80,10 @@ export function HeroSection() {
           className="flex items-center justify-center gap-3"
         >
           <Link to="/register">
-            <Button size="lg" className="rounded-full h-12 px-10 text-base shadow-lg shadow-primary/25">
+            <Button
+              size="lg"
+              className="rounded-full h-12 px-10 text-base shadow-lg shadow-primary/25"
+            >
               开始使用
             </Button>
           </Link>

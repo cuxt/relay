@@ -9,7 +9,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogCancel,
-  AlertDialogAction
+  AlertDialogAction,
 } from '@/components/ui/alert-dialog'
 import { buttonVariants } from '@/components/ui/button'
 
@@ -23,11 +23,7 @@ interface DeleteUserModalProps {
   onSuccess: () => void
 }
 
-export function DeleteUserModal({
-  user,
-  onClose,
-  onSuccess
-}: DeleteUserModalProps) {
+export function DeleteUserModal({ user, onClose, onSuccess }: DeleteUserModalProps) {
   const deleteMutation = useMutation({
     mutationFn: async (userId: string) => {
       const res = await authClient.admin.removeUser({ userId })
@@ -41,16 +37,14 @@ export function DeleteUserModal({
   })
 
   return (
-    <AlertDialog open={!!user} onOpenChange={v => !v && onClose()}>
+    <AlertDialog open={!!user} onOpenChange={(v) => !v && onClose()}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>删除用户</AlertDialogTitle>
           <AlertDialogDescription>
             确定要删除用户 <strong>{user?.name}</strong> ({user?.email}) 吗？
             <br />
-            <span className="text-destructive">
-              此操作不可撤销，用户的所有数据将被永久删除。
-            </span>
+            <span className="text-destructive">此操作不可撤销，用户的所有数据将被永久删除。</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -14,11 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { AppLogo } from '@/components/layout/AppLogo'
 import { updateSiteConfig } from '@/lib/site-config/queries'
 
@@ -51,14 +47,11 @@ function SystemSettings() {
 
   const filteredIcons = useMemo(() => {
     const search = iconSearch.toLowerCase()
-    return allIcons
-      .filter(({ kebab }) => !search || kebab.includes(search))
-      .slice(0, 50)
+    return allIcons.filter(({ kebab }) => !search || kebab.includes(search)).slice(0, 50)
   }, [iconSearch])
 
   const saveMutation = useMutation({
-    mutationFn: () =>
-      updateSiteConfig({ data: { siteName, iconType, iconValue } }),
+    mutationFn: () => updateSiteConfig({ data: { siteName, iconType, iconValue } }),
     onSuccess: () => {
       toast.success('保存成功，正在刷新…')
       setTimeout(() => window.location.reload(), 500)
@@ -135,9 +128,7 @@ function SystemSettings() {
             <Label htmlFor="iconValue">图标值</Label>
             {iconType === 'lucide' ? (
               <Popover open={iconPickerOpen} onOpenChange={setIconPickerOpen}>
-                <PopoverTrigger
-                  className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs hover:bg-accent hover:text-accent-foreground"
-                >
+                <PopoverTrigger className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs hover:bg-accent hover:text-accent-foreground">
                   {iconValue ? (
                     <span className="flex items-center gap-2">
                       {(() => {
@@ -164,9 +155,7 @@ function SystemSettings() {
                   </div>
                   <div className="no-scrollbar max-h-72 overflow-y-auto p-1">
                     {filteredIcons.length === 0 ? (
-                      <p className="py-6 text-center text-sm text-muted-foreground">
-                        未找到图标
-                      </p>
+                      <p className="py-6 text-center text-sm text-muted-foreground">未找到图标</p>
                     ) : (
                       filteredIcons.map(({ pascal, kebab }) => {
                         const Icon = icons[pascal as keyof typeof icons]
@@ -185,9 +174,7 @@ function SystemSettings() {
                           >
                             <Icon className="h-4 w-4" />
                             <span>{kebab}</span>
-                            {selected && (
-                              <Check className="ml-auto h-4 w-4" />
-                            )}
+                            {selected && <Check className="ml-auto h-4 w-4" />}
                           </button>
                         )
                       })
@@ -217,15 +204,10 @@ function SystemSettings() {
           <Button
             onClick={() => saveMutation.mutate()}
             disabled={
-              saveMutation.isPending ||
-              !siteName.trim() ||
-              !iconValue.trim() ||
-              !hasChanges
+              saveMutation.isPending || !siteName.trim() || !iconValue.trim() || !hasChanges
             }
           >
-            {saveMutation.isPending && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
+            {saveMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             保存
           </Button>
         </CardContent>

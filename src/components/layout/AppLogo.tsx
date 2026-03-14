@@ -19,10 +19,7 @@ export function AppLogo({ collapsed, siteConfig }: AppLogoProps) {
     >
       {siteConfig.iconType === 'lucide' ? (
         <div className="w-9 h-9 rounded-[10px] bg-primary flex items-center justify-center shrink-0">
-          <SiteIcon
-            iconType={siteConfig.iconType}
-            iconValue={siteConfig.iconValue}
-          />
+          <SiteIcon iconType={siteConfig.iconType} iconValue={siteConfig.iconValue} />
         </div>
       ) : (
         <SiteIcon
@@ -31,9 +28,7 @@ export function AppLogo({ collapsed, siteConfig }: AppLogoProps) {
           className="h-9 w-9"
         />
       )}
-      {!collapsed && (
-        <span className="text-base font-semibold">{siteConfig.siteName}</span>
-      )}
+      {!collapsed && <span className="text-base font-semibold">{siteConfig.siteName}</span>}
     </Link>
   )
 }

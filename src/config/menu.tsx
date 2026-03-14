@@ -7,7 +7,7 @@ import {
   Wrench,
   Bubbles,
   MessageCircle,
-  HelpCircle
+  HelpCircle,
 } from 'lucide-react'
 import type { ReactNode } from 'react'
 
@@ -26,7 +26,7 @@ export const mainMenuItems: MenuItem[] = [
     key: 'dashboard',
     label: '首页',
     icon: <Home className="h-4 w-4" />,
-    to: '/dashboard'
+    to: '/dashboard',
   },
   {
     key: 'settings',
@@ -37,30 +37,30 @@ export const mainMenuItems: MenuItem[] = [
         key: 'settings-profile',
         label: '个人资料',
         icon: <User className="h-4 w-4" />,
-        to: '/settings'
+        to: '/settings',
       },
       {
         key: 'settings-security',
         label: '安全',
         icon: <Lock className="h-4 w-4" />,
-        to: '/settings/security'
+        to: '/settings/security',
       },
       {
         key: 'settings-users',
         label: '用户管理',
         icon: <Users className="h-4 w-4" />,
         to: '/settings/users',
-        role: 'admin'
+        role: 'admin',
       },
       {
         key: 'settings-system',
         label: '系统配置',
         icon: <Wrench className="h-4 w-4" />,
         to: '/settings/system',
-        role: 'admin'
-      }
-    ]
-  }
+        role: 'admin',
+      },
+    ],
+  },
 ]
 
 export const footerMenuItems: MenuItem[] = [
@@ -68,34 +68,29 @@ export const footerMenuItems: MenuItem[] = [
     key: 'release',
     label: '更新日志',
     icon: <Bubbles className="h-4 w-4" />,
-    to: '/release'
+    to: '/release',
   },
   {
     key: 'feedback',
     label: '反馈',
     icon: <MessageCircle className="h-4 w-4" />,
     to: 'https://github.com',
-    external: true
+    external: true,
   },
   {
     key: 'help',
     label: '帮助与支持',
     icon: <HelpCircle className="h-4 w-4" />,
     to: 'https://github.com',
-    external: true
-  }
+    external: true,
+  },
 ]
 
-export function filterMenuByRole(
-  items: MenuItem[],
-  userRole?: string
-): MenuItem[] {
+export function filterMenuByRole(items: MenuItem[], userRole?: string): MenuItem[] {
   return items
-    .filter(item => !item.role || item.role === userRole)
-    .map(item => ({
+    .filter((item) => !item.role || item.role === userRole)
+    .map((item) => ({
       ...item,
-      children: item.children
-        ? filterMenuByRole(item.children, userRole)
-        : undefined
+      children: item.children ? filterMenuByRole(item.children, userRole) : undefined,
     }))
 }

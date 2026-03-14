@@ -13,7 +13,7 @@ import {
   ChevronRight,
   Loader2,
   KeyRound,
-  Shield
+  Shield,
 } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -30,7 +30,7 @@ import {
   TableBody,
   TableRow,
   TableHead,
-  TableCell
+  TableCell,
 } from '@/components/ui/table'
 import {
   DropdownMenu,
@@ -42,7 +42,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
   DropdownMenuRadioGroup,
-  DropdownMenuRadioItem
+  DropdownMenuRadioItem,
 } from '@/components/ui/dropdown-menu'
 import { CreateUserModal } from '@/components/settings/CreateUserModal'
 import { EditUserModal } from '@/components/settings/EditUserModal'
@@ -57,7 +57,7 @@ export const Route = createFileRoute('/_app/settings/users')({
       throw redirect({ to: '/dashboard' })
     }
   },
-  component: UsersSettings
+  component: UsersSettings,
 })
 
 interface UserRecord {
@@ -85,9 +85,7 @@ function UsersSettings() {
   const [banUser, setBanUser] = useState<UserRecord | null>(null)
   const [deleteUser, setDeleteUser] = useState<UserRecord | null>(null)
   const [sessionsUser, setSessionsUser] = useState<UserRecord | null>(null)
-  const [resetPasswordUser, setResetPasswordUser] = useState<UserRecord | null>(
-    null
-  )
+  const [resetPasswordUser, setResetPasswordUser] = useState<UserRecord | null>(null)
 
   const usersQueryKey = [
     'admin',
@@ -95,8 +93,8 @@ function UsersSettings() {
     {
       page: pagination.current,
       pageSize: pagination.pageSize,
-      search: searchText
-    }
+      search: searchText,
+    },
   ]
 
   const { data: usersData, isLoading } = useQuery({
@@ -110,13 +108,13 @@ function UsersSettings() {
             ? {
                 searchField: 'email' as const,
                 searchValue: searchText,
-                searchOperator: 'contains' as const
+                searchOperator: 'contains' as const,
               }
-            : {})
-        }
+            : {}),
+        },
       })
       return res.data
-    }
+    },
   })
 
   const users = (usersData?.users ?? []) as unknown as UserRecord[]
@@ -131,7 +129,7 @@ function UsersSettings() {
     onSuccess: () => {
       toast.success('已切换到目标用户视角')
       window.location.reload()
-    }
+    },
   })
 
   const unbanMutation = useMutation({
@@ -142,24 +140,18 @@ function UsersSettings() {
     onSuccess: () => {
       toast.success('已解封用户')
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
-    }
+    },
   })
 
   const setRoleMutation = useMutation({
-    mutationFn: async ({
-      userId,
-      role
-    }: {
-      userId: string
-      role: 'user' | 'admin'
-    }) => {
+    mutationFn: async ({ userId, role }: { userId: string; role: 'user' | 'admin' }) => {
       const res = await authClient.admin.setRole({ userId, role })
       if (res.error) throw res.error
     },
     onSuccess: () => {
       toast.success('角色已更新')
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
-    }
+    },
   })
 
   const invalidateUsers = () => {
@@ -176,17 +168,14 @@ function UsersSettings() {
               <Input
                 placeholder="搜索邮箱..."
                 value={searchText}
-                onChange={e => {
+                onChange={(e) => {
                   setSearchText(e.target.value)
-                  setPagination(prev => ({ ...prev, current: 1 }))
+                  setPagination((prev) => ({ ...prev, current: 1 }))
                 }}
                 className="pl-9"
               />
             </div>
-            <Button
-              className="rounded-full"
-              onClick={() => setCreateOpen(true)}
-            >
+            <Button className="rounded-full" onClick={() => setCreateOpen(true)}>
               <Plus className="h-4 w-4 mr-1" />
               创建用户
             </Button>
@@ -209,7 +198,7 @@ function UsersSettings() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.map(record => (
+                  {users.map((record) => (
                     <TableRow key={record.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
@@ -221,25 +210,17 @@ function UsersSettings() {
                           </Avatar>
                           <div>
                             <p className="text-sm font-medium">{record.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {record.email}
-                            </p>
+                            <p className="text-xs text-muted-foreground">{record.email}</p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant={
-                            record.role === 'admin' ? 'default' : 'secondary'
-                          }
-                        >
+                        <Badge variant={record.role === 'admin' ? 'default' : 'secondary'}>
                           {record.role === 'admin' ? '管理员' : '用户'}
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant={record.banned ? 'destructive' : 'secondary'}
-                        >
+                        <Badge variant={record.banned ? 'destructive' : 'secondary'}>
                           {record.banned ? '已封禁' : '正常'}
                         </Badge>
                       </TableCell>
@@ -249,20 +230,12 @@ function UsersSettings() {
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger
-                            render={
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                              />
-                            }
+                            render={<Button variant="ghost" size="icon" className="h-8 w-8" />}
                           >
                             <MoreHorizontal className="h-4 w-4" />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => setEditUser(record)}
-                            >
+                            <DropdownMenuItem onClick={() => setEditUser(record)}>
                               <Pencil className="mr-2 h-4 w-4" />
                               编辑资料
                             </DropdownMenuItem>
@@ -274,40 +247,32 @@ function UsersSettings() {
                               <DropdownMenuSubContent>
                                 <DropdownMenuRadioGroup
                                   value={record.role || 'user'}
-                                  onValueChange={role => {
+                                  onValueChange={(role) => {
                                     if (role !== (record.role || 'user')) {
                                       setRoleMutation.mutate({
                                         userId: record.id,
-                                        role: role as 'user' | 'admin'
+                                        role: role as 'user' | 'admin',
                                       })
                                     }
                                   }}
                                 >
-                                  <DropdownMenuRadioItem value="user">
-                                    用户
-                                  </DropdownMenuRadioItem>
+                                  <DropdownMenuRadioItem value="user">用户</DropdownMenuRadioItem>
                                   <DropdownMenuRadioItem value="admin">
                                     管理员
                                   </DropdownMenuRadioItem>
                                 </DropdownMenuRadioGroup>
                               </DropdownMenuSubContent>
                             </DropdownMenuSub>
-                            <DropdownMenuItem
-                              onClick={() => setResetPasswordUser(record)}
-                            >
+                            <DropdownMenuItem onClick={() => setResetPasswordUser(record)}>
                               <KeyRound className="mr-2 h-4 w-4" />
                               重置密码
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => setSessionsUser(record)}
-                            >
+                            <DropdownMenuItem onClick={() => setSessionsUser(record)}>
                               <Eye className="mr-2 h-4 w-4" />
                               会话
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() =>
-                                impersonateMutation.mutate(record.id)
-                              }
+                              onClick={() => impersonateMutation.mutate(record.id)}
                               disabled={record.id === currentUser.id}
                             >
                               <ArrowLeftRight className="mr-2 h-4 w-4" />
@@ -326,9 +291,7 @@ function UsersSettings() {
                               <Ban className="mr-2 h-4 w-4" />
                               {record.banned ? '解封' : '封禁'}
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => setDeleteUser(record)}
-                            >
+                            <DropdownMenuItem onClick={() => setDeleteUser(record)}>
                               <Trash2 className="mr-2 h-4 w-4" />
                               删除
                             </DropdownMenuItem>
@@ -342,17 +305,13 @@ function UsersSettings() {
 
               {/* Pagination */}
               <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
-                <p className="text-sm text-muted-foreground">
-                  共 {total} 名用户
-                </p>
+                <p className="text-sm text-muted-foreground">共 {total} 名用户</p>
                 <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
                     size="sm"
                     disabled={pagination.current <= 1}
-                    onClick={() =>
-                      setPagination(p => ({ ...p, current: p.current - 1 }))
-                    }
+                    onClick={() => setPagination((p) => ({ ...p, current: p.current - 1 }))}
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
@@ -363,9 +322,7 @@ function UsersSettings() {
                     variant="outline"
                     size="sm"
                     disabled={pagination.current >= totalPages}
-                    onClick={() =>
-                      setPagination(p => ({ ...p, current: p.current + 1 }))
-                    }
+                    onClick={() => setPagination((p) => ({ ...p, current: p.current + 1 }))}
                   >
                     <ChevronRight className="h-4 w-4" />
                   </Button>
@@ -386,20 +343,13 @@ function UsersSettings() {
         onClose={() => setEditUser(null)}
         onSuccess={invalidateUsers}
       />
-      <BanUserModal
-        user={banUser}
-        onClose={() => setBanUser(null)}
-        onSuccess={invalidateUsers}
-      />
+      <BanUserModal user={banUser} onClose={() => setBanUser(null)} onSuccess={invalidateUsers} />
       <DeleteUserModal
         user={deleteUser}
         onClose={() => setDeleteUser(null)}
         onSuccess={invalidateUsers}
       />
-      <UserSessionsModal
-        user={sessionsUser}
-        onClose={() => setSessionsUser(null)}
-      />
+      <UserSessionsModal user={sessionsUser} onClose={() => setSessionsUser(null)} />
       <ResetPasswordModal
         user={resetPasswordUser}
         onClose={() => setResetPasswordUser(null)}

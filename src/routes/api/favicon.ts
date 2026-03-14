@@ -16,9 +16,7 @@ function generateLucideSvg(iconValue: string): string {
   const Icon = icons[name]
   if (!Icon) return ''
 
-  return renderToStaticMarkup(
-    createElement(Icon, { size: 32 }),
-  )
+  return renderToStaticMarkup(createElement(Icon, { size: 32 }))
 }
 
 function generateEmojiSvg(emoji: string): string {

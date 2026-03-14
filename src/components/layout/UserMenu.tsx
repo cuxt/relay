@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuGroup,
   DropdownMenuLabel,
-  DropdownMenuSeparator
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 
 interface UserMenuProps {
@@ -28,12 +28,12 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
 
   const logoutMutation = useMutation({
     mutationFn: () => authClient.signOut(),
-    onSuccess: () => navigate({ to: '/login' })
+    onSuccess: () => navigate({ to: '/login' }),
   })
 
   const stopImpersonateMutation = useMutation({
     mutationFn: () => authClient.admin.stopImpersonating(),
-    onSuccess: () => navigate({ to: '/settings/users' })
+    onSuccess: () => navigate({ to: '/settings/users' }),
   })
 
   return (
@@ -55,14 +55,10 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
               <p className="text-sm font-medium leading-none">
                 {user.name}
                 {impersonating && (
-                  <span className="ml-1.5 text-xs text-muted-foreground">
-                    模拟中
-                  </span>
+                  <span className="ml-1.5 text-xs text-muted-foreground">模拟中</span>
                 )}
               </p>
-              <p className="text-xs leading-none text-muted-foreground">
-                {user.email}
-              </p>
+              <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
             </div>
           </DropdownMenuLabel>
         </DropdownMenuGroup>

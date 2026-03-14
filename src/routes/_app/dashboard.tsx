@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardContent } from '@/components/ui/card'
 
 export const Route = createFileRoute('/_app/dashboard')({
-  component: DashboardPage
+  component: DashboardPage,
 })
 
 function getGreeting(): string {
@@ -24,9 +24,7 @@ function DashboardPage() {
         <h3 className="text-xl font-bold">
           {greeting}，{user.name}
         </h3>
-        <p className="text-muted-foreground mt-2 text-[15px]">
-          欢迎使用 Tanstack Start Template
-        </p>
+        <p className="text-muted-foreground mt-2 text-[15px]">欢迎使用 Tanstack Start Template</p>
       </CardContent>
     </Card>
   )

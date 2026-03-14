@@ -50,10 +50,9 @@ export const fetchReleases = createServerFn({ method: 'GET' }).handler(
     }
 
     try {
-      const response = await fetch(
-        `https://api.github.com/repos/${githubRepo}/releases`,
-        { headers },
-      )
+      const response = await fetch(`https://api.github.com/repos/${githubRepo}/releases`, {
+        headers,
+      })
 
       if (!response.ok) return []
 
@@ -77,5 +76,5 @@ export const fetchReleases = createServerFn({ method: 'GET' }).handler(
     } catch {
       return []
     }
-  },
+  }
 )

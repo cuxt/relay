@@ -20,8 +20,5 @@ export const auth = betterAuth({
       enabled: true,
     },
   },
-  plugins: [
-    admin(),
-    tanstackStartCookies(),
-  ],
+  plugins: [admin(), tanstackStartCookies()],
 })

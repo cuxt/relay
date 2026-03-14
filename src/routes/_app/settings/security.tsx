@@ -18,12 +18,12 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger
+  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { buttonVariants } from '@/components/ui/button'
 
 export const Route = createFileRoute('/_app/settings/security')({
-  component: SecuritySettings
+  component: SecuritySettings,
 })
 
 function SecuritySettings() {
@@ -33,26 +33,24 @@ function SecuritySettings() {
   const changePasswordMutation = useMutation({
     mutationFn: async ({
       currentPassword,
-      newPassword
+      newPassword,
     }: {
       currentPassword: string
       newPassword: string
     }) => {
       const res = await authClient.changePassword({
         currentPassword,
-        newPassword
+        newPassword,
       })
       if (res.error) throw res.error
       return res.data
     },
     onSuccess: () => {
       toast.success('密码已更新')
-    }
+    },
   })
 
-  const handleSubmit = (
-    e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>
-  ) => {
+  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     const currentPassword = formData.get('currentPassword') as string
@@ -131,9 +129,7 @@ function SecuritySettings() {
               className="rounded-full"
               disabled={changePasswordMutation.isPending}
             >
-              {changePasswordMutation.isPending && (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              )}
+              {changePasswordMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               更新密码
             </Button>
           </form>
@@ -149,9 +145,7 @@ function SecuritySettings() {
             删除账户后，所有数据将被永久移除且无法恢复。
           </p>
           <AlertDialog>
-            <AlertDialogTrigger
-              render={<Button variant="destructive" className="rounded-full" />}
-            >
+            <AlertDialogTrigger render={<Button variant="destructive" className="rounded-full" />}>
               删除账户
             </AlertDialogTrigger>
             <AlertDialogContent>

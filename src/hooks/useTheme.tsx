@@ -4,7 +4,7 @@ import {
   useEffect,
   createContext,
   useContext,
-  useSyncExternalStore
+  useSyncExternalStore,
 } from 'react'
 import type { ReactNode } from 'react'
 
@@ -19,9 +19,7 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 const mediaQuery =
-  typeof window !== 'undefined'
-    ? window.matchMedia('(prefers-color-scheme: dark)')
-    : null
+  typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)') : null
 
 function subscribeSystemTheme(callback: () => void) {
   mediaQuery?.addEventListener('change', callback)

@@ -8,7 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription
+  DialogDescription,
 } from '@/components/ui/dialog'
 import {
   AlertDialog,
@@ -18,7 +18,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogCancel,
-  AlertDialogAction
+  AlertDialogAction,
 } from '@/components/ui/alert-dialog'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -54,7 +54,7 @@ export function UserSessionsModal({ user, onClose }: UserSessionsModalProps) {
       const res = await authClient.admin.listUserSessions({ userId: user.id })
       return (res.data?.sessions ?? []) as unknown as SessionRecord[]
     },
-    enabled: !!user
+    enabled: !!user,
   })
 
   const revokeMutation = useMutation({
@@ -66,14 +66,14 @@ export function UserSessionsModal({ user, onClose }: UserSessionsModalProps) {
       toast.success('会话已撤销')
       setRevokeToken(null)
       queryClient.invalidateQueries({
-        queryKey: ['admin', 'user-sessions', user?.id]
+        queryKey: ['admin', 'user-sessions', user?.id],
       })
-    }
+    },
   })
 
   return (
     <>
-      <Dialog open={!!user} onOpenChange={v => !v && onClose()}>
+      <Dialog open={!!user} onOpenChange={(v) => !v && onClose()}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>{user?.name} 的会话</DialogTitle>
@@ -85,19 +85,14 @@ export function UserSessionsModal({ user, onClose }: UserSessionsModalProps) {
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : sessions.length === 0 ? (
-            <p className="py-8 text-center text-sm text-muted-foreground">
-              暂无会话
-            </p>
+            <p className="py-8 text-center text-sm text-muted-foreground">暂无会话</p>
           ) : (
             <ScrollArea className="max-h-96">
               <div className="space-y-3 pr-3">
-                {sessions.map(record => {
+                {sessions.map((record) => {
                   const expired = new Date(record.expiresAt) < new Date()
                   return (
-                    <div
-                      key={record.id}
-                      className="rounded-lg border p-3 space-y-2"
-                    >
+                    <div key={record.id} className="rounded-lg border p-3 space-y-2">
                       <div className="flex items-center justify-between">
                         <Badge variant={expired ? 'destructive' : 'secondary'}>
                           {expired ? '已过期' : '活跃'}
@@ -117,17 +112,13 @@ export function UserSessionsModal({ user, onClose }: UserSessionsModalProps) {
                         <span className="flex items-center gap-1.5 text-muted-foreground">
                           <Globe className="h-3.5 w-3.5" /> IP
                         </span>
-                        <span className="font-mono text-xs">
-                          {record.ipAddress || '-'}
-                        </span>
+                        <span className="font-mono text-xs">{record.ipAddress || '-'}</span>
                         <span className="flex items-center gap-1.5 text-muted-foreground">
                           <Monitor className="h-3.5 w-3.5" /> UA
                         </span>
                         <Tooltip>
                           <TooltipTrigger
-                            render={
-                              <span className="truncate text-xs cursor-default" />
-                            }
+                            render={<span className="truncate text-xs cursor-default" />}
                           >
                             {record.userAgent || '-'}
                           </TooltipTrigger>
@@ -153,16 +144,11 @@ export function UserSessionsModal({ user, onClose }: UserSessionsModalProps) {
         </DialogContent>
       </Dialog>
 
-      <AlertDialog
-        open={!!revokeToken}
-        onOpenChange={v => !v && setRevokeToken(null)}
-      >
+      <AlertDialog open={!!revokeToken} onOpenChange={(v) => !v && setRevokeToken(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>撤销会话</AlertDialogTitle>
-            <AlertDialogDescription>
-              确定要撤销该会话吗？用户将被强制下线。
-            </AlertDialogDescription>
+            <AlertDialogDescription>确定要撤销该会话吗？用户将被强制下线。</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
