@@ -106,6 +106,7 @@ function SignUpPage() {
             <Input
               id="password"
               type="password"
+              autoComplete="new-password"
               placeholder="请输入密码（至少 8 位）"
               value={password}
               onChange={e => setPassword(e.target.value)}
@@ -119,6 +120,7 @@ function SignUpPage() {
             <Input
               id="confirmPassword"
               type="password"
+              autoComplete="new-password"
               placeholder="请再次输入密码"
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}

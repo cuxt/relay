@@ -77,6 +77,7 @@ function LoginPage() {
             <Input
               id="password"
               type="password"
+              autoComplete="current-password"
               placeholder="请输入密码"
               value={password}
               onChange={e => setPassword(e.target.value)}

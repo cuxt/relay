@@ -11,6 +11,7 @@ import { AppHeader } from '@/components/layout/app-header'
 import { AnimatedOutlet } from '@/components/layout/animated-outlet'
 import { getSession } from '@/lib/auth/session'
 import { Toaster } from 'sonner'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 import appCss from '../styles.css?url'
 
@@ -86,13 +87,15 @@ function RootDocument() {
       </head>
       <body className="flex flex-col h-screen bg-background font-sans antialiased overflow-hidden">
         <ThemeProvider defaultTheme="system" storageKey="relay-theme">
-          <AppHeader />
-          <main className="flex flex-col flex-1 overflow-hidden">
-            <AnimatedOutlet />
-          </main>
-          <Toaster position="bottom-right" richColors closeButton />
-          <Scripts />
+          <TooltipProvider>
+            <AppHeader />
+            <main className="flex flex-col flex-1 overflow-hidden">
+              <AnimatedOutlet />
+            </main>
+            <Toaster position="bottom-right" richColors closeButton />
+          </TooltipProvider>
         </ThemeProvider>
+        <Scripts />
       </body>
     </html>
   )
