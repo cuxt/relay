@@ -5,6 +5,7 @@ import { Outlet, createRootRouteWithContext, HeadContent, Scripts } from '@tanst
 import { QueryClientProvider } from '@tanstack/react-query'
 import { Toaster as Sonner } from 'sonner'
 import { ThemeProvider, useTheme } from '@/hooks/useTheme'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { getSiteConfig } from '@/lib/site-config/queries'
 import appCSS from '@/styles.css?url'
 
@@ -42,10 +43,12 @@ function RootComponent() {
   return (
     <RootDocument>
       <ThemeProvider>
-        <QueryClientProvider client={queryClient}>
-          <Outlet />
-          <AppToaster />
-        </QueryClientProvider>
+        <TooltipProvider>
+          <QueryClientProvider client={queryClient}>
+            <Outlet />
+            <AppToaster />
+          </QueryClientProvider>
+        </TooltipProvider>
       </ThemeProvider>
     </RootDocument>
   )
