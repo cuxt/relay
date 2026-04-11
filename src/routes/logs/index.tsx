@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { PageContainer } from '@/components/layout/page-container'
 import { Badge } from '@/components/ui/badge'
@@ -28,33 +28,76 @@ import type { ChannelType } from '@/lib/channels/constants'
 import { ChannelIcon } from '@/components/shared/channel-icon'
 import { ChevronLeft, ChevronRight, FileText, Search } from 'lucide-react'
 import { EmptyState } from '@/components/shared/empty-state'
+import {
+  buildLogsSearch,
+  normalizeLogsSearch,
+  type LogsSearchInput
+} from './-search'
 
 export const Route = createFileRoute('/logs/')({
+  validateSearch: normalizeLogsSearch,
   component: LogsPage
 })
 
 function LogsPage() {
   const navigate = useNavigate()
-  const [page, setPage] = useState(1)
-  const [status, setStatus] = useState<string>('')
-  const [search, setSearch] = useState('')
-  const [endpointId, setEndpointId] = useState<string>('')
-  const [channelType, setChannelType] = useState<string>('')
+  const currentSearch = Route.useSearch()
+  const filters = normalizeLogsSearch(currentSearch)
+  const { page, status, search, endpointId, channelType } = filters
+  const [searchInput, setSearchInput] = useState(search ?? '')
 
   const { data: endpointsList } = useEndpointList()
 
   const { data, isLoading } = usePushLogs({
     page,
     limit: 20,
-    status: status || undefined,
-    search: search || undefined,
-    endpointId: endpointId || undefined,
-    channelType: channelType || undefined
+    status,
+    search,
+    endpointId,
+    channelType
   })
+
+  useEffect(() => {
+    setSearchInput(search ?? '')
+  }, [search])
+
+  const updateFilters = (partial: Omit<LogsSearchInput, 'page'>) => {
+    navigate({
+      to: '/logs',
+      search: buildLogsSearch({
+        ...filters,
+        ...partial,
+        page: 1
+      }),
+      replace: true
+    })
+  }
+
+  const updatePage = (nextPage: number) => {
+    navigate({
+      to: '/logs',
+      search: buildLogsSearch({
+        ...filters,
+        page: nextPage
+      })
+    })
+  }
+
+  useEffect(() => {
+    const trimmedInput = searchInput.trim()
+    const trimmedSearch = search ?? ''
+
+    if (trimmedInput === trimmedSearch) return
+
+    const timer = window.setTimeout(() => {
+      updateFilters({ search: trimmedInput || undefined })
+    }, 300)
+
+    return () => window.clearTimeout(timer)
+  }, [searchInput, search])
 
   return (
     <PageContainer title="推送日志" description="查看所有推送记录和详细信息">
-      {/* 筛选栏 */}
       <Card className="mb-6">
         <CardContent className="p-4">
           <div className="flex items-center gap-3 flex-wrap">
@@ -63,18 +106,16 @@ function LogsPage() {
               <Input
                 placeholder="搜索消息内容..."
                 className="pl-9"
-                value={search}
+                value={searchInput}
                 onChange={e => {
-                  setSearch(e.target.value)
-                  setPage(1)
+                  setSearchInput(e.target.value)
                 }}
               />
             </div>
             <Select
-              value={status}
-              onValueChange={v => {
-                setStatus(!v || v === 'all' ? '' : v)
-                setPage(1)
+              value={status ?? 'all'}
+              onValueChange={value => {
+                updateFilters({ status: value === 'all' ? undefined : value })
               }}
             >
               <SelectTrigger className="w-30">
@@ -88,10 +129,9 @@ function LogsPage() {
               </SelectContent>
             </Select>
             <Select
-              value={endpointId}
-              onValueChange={v => {
-                setEndpointId(!v || v === 'all' ? '' : v)
-                setPage(1)
+              value={endpointId ?? 'all'}
+              onValueChange={value => {
+                updateFilters({ endpointId: value === 'all' ? undefined : value })
               }}
             >
               <SelectTrigger className="w-40">
@@ -113,10 +153,11 @@ function LogsPage() {
               </SelectContent>
             </Select>
             <Select
-              value={channelType}
-              onValueChange={v => {
-                setChannelType(!v || v === 'all' ? '' : v)
-                setPage(1)
+              value={channelType ?? 'all'}
+              onValueChange={value => {
+                updateFilters({
+                  channelType: value === 'all' ? undefined : value
+                })
               }}
             >
               <SelectTrigger className="w-40">
@@ -143,7 +184,6 @@ function LogsPage() {
         </CardContent>
       </Card>
 
-      {/* 表格 */}
       {isLoading ? (
         <div className="space-y-2">
           {Array.from({ length: 8 }).map((_, i) => (
@@ -175,7 +215,11 @@ function LogsPage() {
                     key={log.id}
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() =>
-                      navigate({ to: '/logs/$id', params: { id: log.id } })
+                      navigate({
+                        to: '/logs/$id',
+                        params: { id: log.id },
+                        search: buildLogsSearch(filters)
+                      })
                     }
                   >
                     <TableCell>
@@ -217,7 +261,6 @@ function LogsPage() {
             </Table>
           </div>
 
-          {/* 分页 */}
           {data.totalPages > 1 && (
             <div className="flex items-center justify-between mt-4">
               <p className="text-sm text-muted-foreground">
@@ -227,7 +270,7 @@ function LogsPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  onClick={() => updatePage(Math.max(1, page - 1))}
                   disabled={page <= 1}
                 >
                   <ChevronLeft className="mr-1 h-4 w-4" />
@@ -236,7 +279,7 @@ function LogsPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPage(p => Math.min(data.totalPages, p + 1))}
+                  onClick={() => updatePage(Math.min(data.totalPages, page + 1))}
                   disabled={page >= data.totalPages}
                 >
                   下一页

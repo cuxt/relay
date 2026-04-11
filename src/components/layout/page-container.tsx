@@ -5,6 +5,12 @@ import { cn } from '@/lib/utils'
 
 type ContainerWidth = 'narrow' | 'medium' | 'wide' | 'full'
 
+type BackTarget = {
+  to: string
+  params?: Record<string, string>
+  search?: Record<string, unknown>
+}
+
 const widthClasses: Record<ContainerWidth, string> = {
   narrow: 'max-w-2xl',
   medium: 'max-w-4xl',
@@ -20,8 +26,16 @@ interface PageContainerProps {
   className?: string
   width?: ContainerWidth
   /** Show a back button linking to this path */
-  backTo?: string
+  backTo?: string | BackTarget
   backLabel?: string
+}
+
+function renderBackLink(backTo: string | BackTarget) {
+  if (typeof backTo === 'string') {
+    return <Link to={backTo} />
+  }
+
+  return <Link to={backTo.to} params={backTo.params} search={backTo.search} />
 }
 
 export function PageContainer({
@@ -42,7 +56,7 @@ export function PageContainer({
             variant="ghost"
             size="sm"
             nativeButton={false}
-            render={<Link to={backTo} />}
+            render={renderBackLink(backTo)}
             className="mb-4 -ml-2 text-muted-foreground"
           >
             <ArrowLeft className="mr-1.5 h-4 w-4" />
