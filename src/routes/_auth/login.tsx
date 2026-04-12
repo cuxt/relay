@@ -16,6 +16,8 @@ export const Route = createFileRoute('/_auth/login')({
 
 interface LoginState {
   error: string | null
+  email: string
+  password: string
 }
 
 function LoginPage() {
@@ -27,7 +29,7 @@ function LoginPage() {
       const password = formData.get('password') as string
 
       if (!email || !password) {
-        return { error: '请填写邮箱和密码' }
+        return { error: '请填写邮箱和密码', email, password }
       }
 
       try {
@@ -36,15 +38,15 @@ function LoginPage() {
           password,
         })
         if (result.error) {
-          return { error: result.error.message || '登录失败' }
+          return { error: result.error.message || '登录失败', email, password }
         }
         navigate({ to: '/dashboard' })
-        return { error: null }
+        return { error: null, email: '', password: '' }
       } catch {
-        return { error: '登录失败，请重试' }
+        return { error: '登录失败，请重试', email, password }
       }
     },
-    { error: null }
+    { error: null, email: '', password: '' }
   )
 
   return (
@@ -77,6 +79,7 @@ function LoginPage() {
               type="email"
               placeholder="your@email.com"
               className="pl-9"
+              defaultValue={state.email}
               required
             />
           </div>
@@ -92,6 +95,7 @@ function LoginPage() {
               type="password"
               placeholder="输入密码"
               className="pl-9"
+              defaultValue={state.password}
               required
             />
           </div>
