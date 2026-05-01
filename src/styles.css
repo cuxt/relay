@@ -174,11 +174,10 @@
   }
 
   body {
-    @apply bg-background text-foreground overflow-hidden;
+    @apply bg-background text-foreground;
   }
 }
 
 html {
-  overflow: hidden;
   height: 100%;
 }

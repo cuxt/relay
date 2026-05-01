@@ -1,15 +1,32 @@
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { createFileRoute, Outlet, redirect, useLocation } from '@tanstack/react-router'
+import { useState } from 'react'
 import { PanelLeftClose, PanelLeft } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
+import { Settings, MonitorPlay } from 'lucide-react'
 import { getSession } from '@/lib/auth/session'
 import { getSiteConfig } from '@/lib/site-config/queries'
-import { AppLogo } from '@/components/layout/AppLogo'
 import { UserMenu } from '@/components/layout/UserMenu'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
-import { SidebarNav } from '@/components/layout/SidebarNav'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarProvider,
+} from '@/components/ui/sidebar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { mainMenuItems, filterMenuByRole } from '@/config/menu'
 import { Button } from '@/components/ui/button'
+import { AppLogo } from '@/components/layout/AppLogo'
 import { cn } from '@/lib/utils'
 import { useSidebarCollapsed } from '@/hooks/useSidebar'
 
@@ -26,76 +43,221 @@ export const Route = createFileRoute('/_app')({
 
 function AppLayout() {
   const { user, session, siteConfig } = Route.useRouteContext()
-  const { collapsed, ready, toggle } = useSidebarCollapsed()
+  const location = useLocation()
+  const isSystemRoute = location.pathname.startsWith('/system')
+  const { collapsed } = useSidebarCollapsed()
 
   const filteredMainItems = filterMenuByRole(mainMenuItems, user.role ?? undefined)
 
   return (
-    <div className="flex min-h-screen" style={{ visibility: ready ? 'visible' : 'hidden' }}>
-      {/* Sidebar */}
-      <aside
-        className={cn(
-          'fixed left-0 top-0 bottom-0 z-20 flex flex-col bg-background border-r border-border transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
-          collapsed ? 'w-16' : 'w-56'
-        )}
-      >
-        <AppLogo collapsed={collapsed} siteConfig={siteConfig} />
-        <div className={cn('flex flex-1 flex-col overflow-y-auto')}>
-          <TooltipProvider>
-            <SidebarNav items={filteredMainItems} collapsed={collapsed} />
-          </TooltipProvider>
-        </div>
-        <div className="h-2" />
-      </aside>
-
-      {/* Main */}
-      <div
-        className={cn(
-          'flex flex-1 flex-col transition-[margin-left] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
-          collapsed ? 'ml-16' : 'ml-56'
-        )}
-      >
-        {/* Header */}
-        <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-3 border-b border-border bg-background/95 px-6 backdrop-blur-sm">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={toggle}>
-              {collapsed ? (
-                <PanelLeft className="h-5 w-5" />
+    <div>
+      <SidebarProvider open={!collapsed} onOpenChange={() => {}}>
+        <Sidebar collapsible="icon">
+          <SidebarHeader>
+            <AppLogo siteConfig={siteConfig} />
+          </SidebarHeader>
+          <SidebarContent>
+            <TooltipProvider>
+              {isSystemRoute ? (
+                <SystemSidebarContent location={location} />
               ) : (
-                <PanelLeftClose className="h-5 w-5" />
+                <MainSidebarContent items={filteredMainItems} location={location} />
               )}
-            </Button>
-            <div className="h-6 w-px bg-border" />
-            <Link
-              to="/"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              首页
-            </Link>
-            <Link
-              to="/dashboard"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              控制台
-            </Link>
-            <Link
-              to="/release"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              更新日志
-            </Link>
-          </div>
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <UserMenu user={user} impersonating={!!session.impersonatedBy} />
-          </div>
-        </header>
+            </TooltipProvider>
+          </SidebarContent>
+        </Sidebar>
 
-        {/* Content */}
-        <main className="flex-1 p-6">
-          <Outlet />
-        </main>
-      </div>
+        <AppContent user={user} session={session} />
+      </SidebarProvider>
+    </div>
+  )
+}
+
+function SystemSidebarContent({ location }: { location: ReturnType<typeof useLocation> }) {
+  const { collapsed: isCollapsed } = useSidebarCollapsed()
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+
+  const systemMenuItems = [
+    {
+      label: '常规',
+      icon: Settings,
+      children: [{ label: '系统信息', to: '/system/info' as const }],
+    },
+    {
+      label: '维护',
+      icon: MonitorPlay,
+      children: [{ label: '系统维护', to: '/system/maintenance' as const }],
+    },
+  ]
+
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>系统管理</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {systemMenuItems.map((item, index) => (
+            <SidebarMenuItem key={item.label}>
+              {isCollapsed && item.children.length > 0 ? (
+                <Popover
+                  open={openIndex === index}
+                  onOpenChange={(open) => setOpenIndex(open ? index : null)}
+                >
+                  <PopoverTrigger
+                    render={
+                      <SidebarMenuButton tooltip={item.label}>
+                        <item.icon className="h-4 w-4" />
+                      </SidebarMenuButton>
+                    }
+                  />
+                  <PopoverContent side="right" align="start" sideOffset={8} className="w-40 p-1">
+                    {item.children.map((child) => (
+                      <Link
+                        key={child.to}
+                        to={child.to}
+                        onClick={() => setOpenIndex(null)}
+                        className={cn(
+                          'flex items-center px-3 py-1.5 text-sm rounded-sm transition-colors',
+                          location.pathname === child.to
+                            ? 'bg-accent text-accent-foreground font-medium'
+                            : 'hover:bg-accent hover:text-accent-foreground'
+                        )}
+                      >
+                        {child.label}
+                      </Link>
+                    ))}
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                <>
+                  <SidebarMenuButton tooltip={item.label}>
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.label}</span>
+                  </SidebarMenuButton>
+                  {!isCollapsed && item.children.length > 0 && (
+                    <SidebarMenuSub>
+                      {item.children.map((child) => (
+                        <SidebarMenuSubItem key={child.to}>
+                          <SidebarMenuSubButton
+                            isActive={location.pathname === child.to}
+                            render={<Link to={child.to} />}
+                          >
+                            {child.label}
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  )}
+                </>
+              )}
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  )
+}
+
+function MainSidebarContent({
+  items,
+  location,
+}: {
+  items: ReturnType<typeof filterMenuByRole>
+  location: ReturnType<typeof useLocation>
+}) {
+  return (
+    <>
+      {items.map((item) => {
+        if (item.children) {
+          return (
+            <SidebarGroup key={item.key}>
+              <SidebarGroupLabel>{item.label}</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {item.children.map((child) => (
+                    <SidebarMenuItem key={child.key}>
+                      <SidebarMenuButton
+                        isActive={location.pathname === child.to}
+                        tooltip={child.label}
+                        render={<Link to={child.to!} />}
+                      >
+                        {child.icon}
+                        <span>{child.label}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          )
+        }
+        return (
+          <SidebarGroup key={item.key}>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem key={item.key}>
+                  <SidebarMenuButton
+                    isActive={location.pathname === item.to}
+                    tooltip={item.label}
+                    render={<Link to={item.to!} />}
+                  >
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )
+      })}
+    </>
+  )
+}
+
+function AppContent({
+  user,
+  session,
+}: {
+  user: { name: string; email: string; image?: string | null; role?: string | null }
+  session: { impersonatedBy?: string | null }
+}) {
+  const { collapsed, toggle } = useSidebarCollapsed()
+
+  return (
+    <div className="flex flex-1 flex-col">
+      <header className="shrink-0 flex h-16 items-center justify-between gap-3 border-b border-border bg-background px-6">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={toggle}>
+            {collapsed ? <PanelLeft className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
+          </Button>
+          <div className="h-6 w-px bg-border" />
+          <Link
+            to="/"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            首页
+          </Link>
+          <Link
+            to="/dashboard"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            控制台
+          </Link>
+          <Link
+            to="/release"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            更新日志
+          </Link>
+        </div>
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <UserMenu user={user} impersonating={!!session.impersonatedBy} />
+        </div>
+      </header>
+
+      <main className="flex-1 min-h-0 p-6">
+        <Outlet />
+      </main>
     </div>
   )
 }

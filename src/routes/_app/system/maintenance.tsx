@@ -70,7 +70,7 @@ function SystemMaintenance() {
           </div>
           <div>
             <p className="text-sm text-muted-foreground">运行时间</p>
-            <p className="text-xl font-semibold">{uptime}</p>
+            <p className="text-xl font-semibold" suppressHydrationWarning>{uptime}</p>
             <p className="text-xs text-muted-foreground mt-1">
               启动于 {formatStartTime(systemInfo.startTime)}
             </p>
