@@ -22,7 +22,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 
 import {
   Table,
@@ -190,29 +189,25 @@ function UsersSettings() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>用户</TableHead>
+                    <TableHead>ID</TableHead>
+                    <TableHead>用户名</TableHead>
+                    <TableHead>邮箱</TableHead>
                     <TableHead className="w-25">角色</TableHead>
                     <TableHead className="w-25">状态</TableHead>
-                    <TableHead className="w-45">注册时间</TableHead>
+                    <TableHead className="w-25">已验证</TableHead>
+                    <TableHead className="w-45">创建时间</TableHead>
                     <TableHead className="w-20">操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {users.map((record) => (
                     <TableRow key={record.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-8 w-8">
-                            {record.image && <AvatarImage src={record.image} />}
-                            <AvatarFallback className="text-xs">
-                              {record.name?.[0]?.toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="text-sm font-medium">{record.name}</p>
-                            <p className="text-xs text-muted-foreground">{record.email}</p>
-                          </div>
-                        </div>
+                      <TableCell className="text-xs text-muted-foreground font-mono">
+                        {record.id}
+                      </TableCell>
+                      <TableCell className="text-sm font-medium">{record.name}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {record.email}
                       </TableCell>
                       <TableCell>
                         <Badge variant={record.role === 'admin' ? 'default' : 'secondary'}>
@@ -222,6 +217,11 @@ function UsersSettings() {
                       <TableCell>
                         <Badge variant={record.banned ? 'destructive' : 'secondary'}>
                           {record.banned ? '已封禁' : '正常'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={record.emailVerified ? 'default' : 'secondary'}>
+                          {record.emailVerified ? '是' : '否'}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
@@ -240,7 +240,7 @@ function UsersSettings() {
                               编辑资料
                             </DropdownMenuItem>
                             <DropdownMenuSub>
-                              <DropdownMenuSubTrigger>
+                              <DropdownMenuSubTrigger className="whitespace-nowrap">
                                 <Shield className="mr-2 h-4 w-4" />
                                 切换角色
                               </DropdownMenuSubTrigger>
@@ -280,6 +280,7 @@ function UsersSettings() {
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
+                              className="text-destructive"
                               onClick={() => {
                                 if (record.banned) {
                                   unbanMutation.mutate(record.id)
@@ -291,7 +292,10 @@ function UsersSettings() {
                               <Ban className="mr-2 h-4 w-4" />
                               {record.banned ? '解封' : '封禁'}
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setDeleteUser(record)}>
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={() => setDeleteUser(record)}
+                            >
                               <Trash2 className="mr-2 h-4 w-4" />
                               删除
                             </DropdownMenuItem>

@@ -1,76 +1,37 @@
-import {
-  useState,
-  useCallback,
-  useEffect,
-  createContext,
-  useContext,
-  useSyncExternalStore,
-} from 'react'
+import { useContext, createContext, useEffect } from 'react'
 import type { ReactNode } from 'react'
+import { useThemeStore } from '@/stores/themeStore'
 
-type ThemeMode = 'light' | 'dark' | 'system'
+export function useTheme() {
+  const mode = useThemeStore((s) => s.mode)
+  const resolvedMode = useThemeStore((s) => s.resolvedMode)
+  const initialized = useThemeStore((s) => s.initialized)
+  const setMode = useThemeStore((s) => s.setMode)
+  const init = useThemeStore((s) => s.init)
+
+  useEffect(() => {
+    if (!initialized) {
+      init()
+    }
+  }, [init, initialized])
+
+  return { mode, resolvedMode, setMode }
+}
 
 interface ThemeContextValue {
-  mode: ThemeMode
+  mode: 'light' | 'dark' | 'system'
   resolvedMode: 'light' | 'dark'
-  setMode: (mode: ThemeMode) => void
+  setMode: (mode: 'light' | 'dark' | 'system') => void
 }
 
-const ThemeContext = createContext<ThemeContextValue | null>(null)
-
-const mediaQuery =
-  typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)') : null
-
-function subscribeSystemTheme(callback: () => void) {
-  mediaQuery?.addEventListener('change', callback)
-  return () => mediaQuery?.removeEventListener('change', callback)
-}
-
-function getSystemThemeSnapshot(): 'light' | 'dark' {
-  return mediaQuery?.matches ? 'dark' : 'light'
-}
-
-function getSystemThemeServerSnapshot(): 'light' | 'dark' {
-  return 'light'
-}
+export const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [mode, setModeState] = useState<ThemeMode>('system')
-
-  // Sync from localStorage after hydration to avoid mismatch
-  useEffect(() => {
-    const storedMode = localStorage.getItem('theme-mode') as ThemeMode | null
-    if (storedMode) setModeState(storedMode)
-  }, [])
-
-  const systemTheme = useSyncExternalStore(
-    subscribeSystemTheme,
-    getSystemThemeSnapshot,
-    getSystemThemeServerSnapshot
-  )
-
-  const resolvedMode = mode === 'system' ? systemTheme : mode
-
-  // Apply dark class to html element
-  if (typeof document !== 'undefined') {
-    document.documentElement.classList.toggle('dark', resolvedMode === 'dark')
-    document.documentElement.setAttribute('data-theme', resolvedMode)
-  }
-
-  const setMode = useCallback((m: ThemeMode) => {
-    setModeState(m)
-    localStorage.setItem('theme-mode', m)
-  }, [])
+  const { mode, resolvedMode, setMode } = useTheme()
 
   return (
     <ThemeContext.Provider value={{ mode, resolvedMode, setMode }}>
       {children}
     </ThemeContext.Provider>
   )
-}
-
-export function useTheme() {
-  const ctx = useContext(ThemeContext)
-  if (!ctx) throw new Error('useTheme must be used within ThemeProvider')
-  return ctx
 }

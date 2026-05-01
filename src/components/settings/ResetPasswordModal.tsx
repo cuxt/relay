@@ -1,8 +1,8 @@
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { authClient } from '@/lib/auth/client'
-import { Loader2, Dices, Copy, Eye, EyeOff } from 'lucide-react'
+import { Loader2, Dices, Copy } from 'lucide-react'
 import { customAlphabet } from 'nanoid'
 import {
   Dialog,
@@ -12,9 +12,9 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import { Input } from '@/components/x'
 
 const generatePassword = customAlphabet(
   'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%&*',
@@ -33,7 +33,6 @@ interface ResetPasswordModalProps {
 
 export function ResetPasswordModal({ user, onClose, onSuccess }: ResetPasswordModalProps) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const [visible, setVisible] = useState(false)
 
   const resetMutation = useMutation({
     mutationFn: async ({ userId, newPassword }: { userId: string; newPassword: string }) => {
@@ -53,14 +52,12 @@ export function ResetPasswordModal({ user, onClose, onSuccess }: ResetPasswordMo
   const handleGenerate = () => {
     const pwd = generatePassword()
     if (inputRef.current) {
-      // 使用 native setter 触发 React 受控更新
       const nativeSetter = Object.getOwnPropertyDescriptor(
         HTMLInputElement.prototype,
         'value'
       )!.set!
       nativeSetter.call(inputRef.current, pwd)
       inputRef.current.dispatchEvent(new Event('input', { bubbles: true }))
-      setVisible(true)
     }
   }
 
@@ -99,20 +96,12 @@ export function ResetPasswordModal({ user, onClose, onSuccess }: ResetPasswordMo
                   ref={inputRef}
                   id="reset-password"
                   name="password"
-                  type={visible ? 'text' : 'password'}
+                  type="password"
                   minLength={8}
                   placeholder="至少 8 个字符"
                   className="pr-9"
                   required
                 />
-                <button
-                  type="button"
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  onClick={() => setVisible((v) => !v)}
-                  tabIndex={-1}
-                >
-                  {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
               </div>
               <Button
                 type="button"

@@ -1,74 +1,56 @@
-import { useActionState } from 'react'
+import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { Mail, Lock, AlertCircle, Loader2 } from 'lucide-react'
+import { Mail, Lock, Loader2 } from 'lucide-react'
 import { Link, useNavigate } from '@tanstack/react-router'
-import { motion } from 'motion/react'
+import { toast } from 'sonner'
 import { authClient } from '@/lib/auth/client'
-import { Input } from '@/components/ui/input'
+import { Input } from '@/components/x'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Separator } from '@/components/ui/separator'
 
 export const Route = createFileRoute('/_auth/login')({
   component: LoginPage,
 })
 
-interface LoginState {
-  error: string | null
-  email: string
-  password: string
-}
-
 function LoginPage() {
   const navigate = useNavigate()
+  const [isPending, setIsPending] = useState(false)
 
-  const [state, submitAction, isPending] = useActionState(
-    async (_prev: LoginState, formData: FormData): Promise<LoginState> => {
-      const email = formData.get('email') as string
-      const password = formData.get('password') as string
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget as HTMLFormElement)
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
 
-      if (!email || !password) {
-        return { error: '请填写邮箱和密码', email, password }
+    if (!email || !password) {
+      toast.error('请填写邮箱和密码')
+      return
+    }
+
+    setIsPending(true)
+    try {
+      const result = await authClient.signIn.email({ email, password })
+      if (result.error) {
+        toast.error(result.error.message || '登录失败')
+        return
       }
-
-      try {
-        const result = await authClient.signIn.email({
-          email,
-          password,
-        })
-        if (result.error) {
-          return { error: result.error.message || '登录失败', email, password }
-        }
-        navigate({ to: '/dashboard' })
-        return { error: null, email: '', password: '' }
-      } catch {
-        return { error: '登录失败，请重试', email, password }
-      }
-    },
-    { error: null, email: '', password: '' }
-  )
+      navigate({ to: '/dashboard' })
+    } catch {
+      toast.error('登录失败，请重试')
+    } finally {
+      setIsPending(false)
+    }
+  }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, x: 0, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-    >
+    <div>
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold tracking-tight">欢迎回来</h2>
         <p className="text-sm text-muted-foreground mt-1">登录你的账户以继续</p>
       </div>
 
-      {state.error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{state.error}</AlertDescription>
-        </Alert>
-      )}
-
-      <form action={submitAction} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div className="space-y-2">
           <Label htmlFor="email">邮箱</Label>
           <div className="relative">
@@ -78,8 +60,8 @@ function LoginPage() {
               name="email"
               type="email"
               placeholder="your@email.com"
+              autoComplete="email"
               className="pl-9"
-              defaultValue={state.email}
               required
             />
           </div>
@@ -95,7 +77,6 @@ function LoginPage() {
               type="password"
               placeholder="输入密码"
               className="pl-9"
-              defaultValue={state.password}
               required
             />
           </div>
@@ -119,6 +100,6 @@ function LoginPage() {
           创建账户
         </Button>
       </Link>
-    </motion.div>
+    </div>
   )
 }

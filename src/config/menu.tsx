@@ -2,7 +2,6 @@ import {
   Home,
   Settings,
   User,
-  Lock,
   Users,
   Wrench,
   Bubbles,
@@ -19,45 +18,56 @@ export interface MenuItem {
   children?: MenuItem[]
   role?: 'admin' | 'user'
   external?: boolean
+  group?: string
 }
 
 export const mainMenuItems: MenuItem[] = [
   {
-    key: 'dashboard',
-    label: '首页',
-    icon: <Home className="h-4 w-4" />,
-    to: '/dashboard',
+    key: 'group-general',
+    label: '常规',
+    children: [
+      {
+        key: 'dashboard',
+        label: '概述',
+        icon: <Home className="h-4 w-4" />,
+        to: '/dashboard',
+        group: '常规',
+      },
+    ],
   },
   {
-    key: 'settings',
-    label: '设置',
-    icon: <Settings className="h-4 w-4" />,
+    key: 'group-personal',
+    label: '个人',
     children: [
       {
         key: 'settings-profile',
-        label: '个人资料',
+        label: '个人设置',
         icon: <User className="h-4 w-4" />,
         to: '/settings',
+        group: '个人',
       },
-      {
-        key: 'settings-security',
-        label: '安全',
-        icon: <Lock className="h-4 w-4" />,
-        to: '/settings/security',
-      },
+    ],
+  },
+  {
+    key: 'group-admin',
+    label: '管理员',
+    role: 'admin',
+    children: [
       {
         key: 'settings-users',
         label: '用户管理',
         icon: <Users className="h-4 w-4" />,
         to: '/settings/users',
         role: 'admin',
+        group: '管理员',
       },
       {
         key: 'settings-system',
         label: '系统配置',
         icon: <Wrench className="h-4 w-4" />,
-        to: '/settings/system',
+        to: '/system',
         role: 'admin',
+        group: '管理员',
       },
     ],
   },
@@ -65,17 +75,12 @@ export const mainMenuItems: MenuItem[] = [
 
 export const footerMenuItems: MenuItem[] = [
   {
-    key: 'release',
-    label: '更新日志',
-    icon: <Bubbles className="h-4 w-4" />,
-    to: '/release',
-  },
-  {
     key: 'feedback',
     label: '反馈',
     icon: <MessageCircle className="h-4 w-4" />,
     to: 'https://github.com',
     external: true,
+    group: '常规',
   },
   {
     key: 'help',
@@ -83,6 +88,7 @@ export const footerMenuItems: MenuItem[] = [
     icon: <HelpCircle className="h-4 w-4" />,
     to: 'https://github.com',
     external: true,
+    group: '常规',
   },
 ]
 

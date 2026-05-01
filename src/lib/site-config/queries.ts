@@ -10,6 +10,12 @@ export interface SiteConfig {
   iconValue: string
 }
 
+export interface SystemInfo {
+  version: string
+  startTime: number
+  nodeVersion: string
+}
+
 const defaultConfig: SiteConfig = {
   siteName: 'Start Template',
   iconType: 'lucide',
@@ -46,6 +52,17 @@ export const getSiteConfig = createServerFn({ method: 'GET' }).handler(
     }
 
     return result
+  }
+)
+
+export const getSystemInfo = createServerFn({ method: 'GET' }).handler(
+  async (): Promise<SystemInfo> => {
+    const startTime = Date.now() - (process.uptime() * 1000)
+    return {
+      version: process.env.npm_package_version || '1.0.0',
+      startTime,
+      nodeVersion: process.version,
+    }
   }
 )
 
