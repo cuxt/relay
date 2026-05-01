@@ -8,6 +8,13 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.1.0',
+    date: '2026-05-01',
+    type: 'minor',
+    title: '主题重新设计',
+    changes: ['新增暖色调主题（浅色/深色）', '优化边框与阴影样式', '增大圆角尺寸至 0.75rem'],
+  },
+  {
     version: '1.0.0',
     date: '2026-05-01',
     type: 'major',
