@@ -8,11 +8,23 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.1.2',
+    date: '2026-05-05',
+    type: 'patch',
+    title: '修复侧边栏刷新闪烁',
+    changes: ['侧边栏展开状态改为服务端读取 Cookie 初始化，避免刷新时先折叠后展开'],
+  },
+  {
     version: '1.1.1',
     date: '2026-05-02',
     type: 'patch',
     title: '优化侧边栏交互',
-    changes: ['侧边栏默认折叠状态', '折叠时子菜单通过 Popover 弹出', '修复系统维护页面 Hydration 警告', '解决刷新页面时侧边栏闪烁问题'],
+    changes: [
+      '侧边栏默认折叠状态',
+      '折叠时子菜单通过 Popover 弹出',
+      '修复系统维护页面 Hydration 警告',
+      '解决刷新页面时侧边栏闪烁问题',
+    ],
   },
   {
     version: '1.1.0',

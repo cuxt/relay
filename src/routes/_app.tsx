@@ -1,4 +1,6 @@
 import { createFileRoute, Outlet, redirect, useLocation } from '@tanstack/react-router'
+import { createServerFn } from '@tanstack/react-start'
+import { getRequestHeaders } from '@tanstack/react-start/server'
 import { useState } from 'react'
 import { PanelLeftClose, PanelLeft } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
@@ -22,36 +24,50 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarProvider,
+  useSidebar,
 } from '@/components/ui/sidebar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { mainMenuItems, filterMenuByRole } from '@/config/menu'
 import { Button } from '@/components/ui/button'
 import { AppLogo } from '@/components/layout/AppLogo'
 import { cn } from '@/lib/utils'
-import { useSidebarCollapsed } from '@/hooks/useSidebar'
+
+const getSidebarOpen = createServerFn({ method: 'GET' }).handler(() => {
+  const cookie = getRequestHeaders().get('cookie')
+  const sidebarState = cookie
+    ?.split(';')
+    .map((item) => item.trim())
+    .find((item) => item.startsWith('sidebar_state='))
+    ?.split('=')[1]
+
+  return sidebarState === undefined ? true : sidebarState === 'true'
+})
 
 export const Route = createFileRoute('/_app')({
   beforeLoad: async () => {
-    const [session, siteConfig] = await Promise.all([getSession(), getSiteConfig()])
+    const [session, siteConfig, sidebarOpen] = await Promise.all([
+      getSession(),
+      getSiteConfig(),
+      getSidebarOpen(),
+    ])
     if (!session) {
       throw redirect({ to: '/login' })
     }
-    return { user: session.user, session: session.session, siteConfig }
+    return { user: session.user, session: session.session, siteConfig, sidebarOpen }
   },
   component: AppLayout,
 })
 
 function AppLayout() {
-  const { user, session, siteConfig } = Route.useRouteContext()
+  const { user, session, siteConfig, sidebarOpen } = Route.useRouteContext()
   const location = useLocation()
   const isSystemRoute = location.pathname.startsWith('/system')
-  const { collapsed } = useSidebarCollapsed()
 
   const filteredMainItems = filterMenuByRole(mainMenuItems, user.role ?? undefined)
 
   return (
     <div>
-      <SidebarProvider open={!collapsed} onOpenChange={() => {}}>
+      <SidebarProvider defaultOpen={sidebarOpen}>
         <Sidebar collapsible="icon">
           <SidebarHeader>
             <AppLogo siteConfig={siteConfig} />
@@ -74,8 +90,9 @@ function AppLayout() {
 }
 
 function SystemSidebarContent({ location }: { location: ReturnType<typeof useLocation> }) {
-  const { collapsed: isCollapsed } = useSidebarCollapsed()
+  const { state } = useSidebar()
   const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const isCollapsed = state === 'collapsed'
 
   const systemMenuItems = [
     {
@@ -220,13 +237,14 @@ function AppContent({
   user: { name: string; email: string; image?: string | null; role?: string | null }
   session: { impersonatedBy?: string | null }
 }) {
-  const { collapsed, toggle } = useSidebarCollapsed()
+  const { state, toggleSidebar } = useSidebar()
+  const collapsed = state === 'collapsed'
 
   return (
     <div className="flex flex-1 flex-col">
       <header className="shrink-0 flex h-16 items-center justify-between gap-3 border-b border-border bg-background px-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={toggle}>
+          <Button variant="ghost" size="icon" onClick={toggleSidebar}>
             {collapsed ? <PanelLeft className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
           </Button>
           <div className="h-6 w-px bg-border" />
