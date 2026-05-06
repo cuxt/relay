@@ -8,6 +8,16 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.2.0',
+    date: '2026-05-06',
+    type: 'minor',
+    title: '增强开发与服务端构建能力',
+    changes: [
+      '集成 TanStack Devtools Vite 插件，提升开发调试体验',
+      '集成 Nitro Vite 插件，为服务端运行与构建提供支持',
+    ],
+  },
+  {
     version: '1.1.2',
     date: '2026-05-05',
     type: 'patch',
