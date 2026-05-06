@@ -82,6 +82,14 @@ export const auth = betterAuth({
     provider: 'pg',
     schema,
   }),
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 60 * 24, // update session every 24 hours
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60, // 缓存 5 分钟
+    },
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,

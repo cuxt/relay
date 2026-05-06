@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, redirect, useLocation } from '@tanstack/react-
 import { createServerFn } from '@tanstack/react-start'
 import { getRequestHeaders } from '@tanstack/react-start/server'
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { PanelLeftClose, PanelLeft } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Settings, MonitorPlay } from 'lucide-react'
@@ -43,23 +44,31 @@ const getSidebarOpen = createServerFn({ method: 'GET' }).handler(() => {
   return sidebarState === undefined ? true : sidebarState === 'true'
 })
 
+// TanStack Query 缓存 hooks
+function useSiteConfig() {
+  return useQuery({
+    queryKey: ['site-config'],
+    queryFn: () => getSiteConfig(),
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+  })
+}
+
 export const Route = createFileRoute('/_app')({
   beforeLoad: async () => {
-    const [session, siteConfig, sidebarOpen] = await Promise.all([
-      getSession(),
-      getSiteConfig(),
-      getSidebarOpen(),
-    ])
+    const session = await getSession()
     if (!session) {
       throw redirect({ to: '/login' })
     }
-    return { user: session.user, session: session.session, siteConfig, sidebarOpen }
+    const sidebarOpen = await getSidebarOpen()
+    return { user: session.user, session: session.session, sidebarOpen }
   },
   component: AppLayout,
 })
 
 function AppLayout() {
-  const { user, session, siteConfig, sidebarOpen } = Route.useRouteContext()
+  const { user, session, sidebarOpen } = Route.useRouteContext()
+  const { data: siteConfig } = useSiteConfig()
   const location = useLocation()
   const isSystemRoute = location.pathname.startsWith('/system')
 
@@ -89,9 +98,14 @@ function AppLayout() {
   )
 }
 
-function SidebarLogo({ siteConfig }: { siteConfig: { siteName: string; iconType: string; iconValue: string } }) {
+function SidebarLogo({ siteConfig }: { siteConfig?: { siteName: string; iconType: string; iconValue: string } }) {
   const { state } = useSidebar()
-  return <Logo siteConfig={siteConfig} collapsed={state === 'collapsed'} />
+  return (
+    <Logo
+      siteConfig={siteConfig ?? { siteName: '...', iconType: 'lucide', iconValue: 'loader' }}
+      collapsed={state === 'collapsed'}
+    />
+  )
 }
 
 function SystemSidebarContent({ location }: { location: ReturnType<typeof useLocation> }) {

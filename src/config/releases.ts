@@ -8,6 +8,16 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.2.3',
+    date: '2026-05-06',
+    type: 'patch',
+    title: '性能优化',
+    changes: [
+      '启用 Better Auth Cookie 缓存，减少数据库查询',
+      '优化 siteConfig 使用 TanStack Query 缓存',
+    ],
+  },
+  {
     version: '1.2.2',
     date: '2026-05-06',
     type: 'patch',
