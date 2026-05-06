@@ -70,7 +70,7 @@ function AppLayout() {
       <SidebarProvider defaultOpen={sidebarOpen}>
         <Sidebar collapsible="icon">
           <SidebarHeader>
-            <Logo siteConfig={siteConfig} />
+            <SidebarLogo siteConfig={siteConfig} />
           </SidebarHeader>
           <SidebarContent>
             <TooltipProvider>
@@ -87,6 +87,11 @@ function AppLayout() {
       </SidebarProvider>
     </div>
   )
+}
+
+function SidebarLogo({ siteConfig }: { siteConfig: { siteName: string; iconType: string; iconValue: string } }) {
+  const { state } = useSidebar()
+  return <Logo siteConfig={siteConfig} collapsed={state === 'collapsed'} />
 }
 
 function SystemSidebarContent({ location }: { location: ReturnType<typeof useLocation> }) {

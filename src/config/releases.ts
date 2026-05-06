@@ -8,6 +8,16 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.2.2',
+    date: '2026-05-06',
+    type: 'patch',
+    title: '优化 Logo 组件',
+    changes: [
+      'Logo 组件移除对 SidebarProvider 的依赖，可在任意上下文使用',
+      '修复 _auth 布局使用 Logo 组件时的 context 错误',
+    ],
+  },
+  {
     version: '1.2.1',
     date: '2026-05-06',
     type: 'patch',

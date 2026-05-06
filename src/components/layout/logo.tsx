@@ -2,21 +2,19 @@ import { cn } from '@/lib/utils'
 import { SiteIcon } from './site-icon'
 import type { SiteConfig } from '@/lib/site-config/queries'
 import packageJson from '../../../package.json'
-import { useSidebar } from '@/components/ui/sidebar'
 
 interface LogoProps {
   siteConfig: SiteConfig
+  /** 折叠状态，默认 false */
+  collapsed?: boolean
 }
 
-export function Logo({ siteConfig }: LogoProps) {
-  const { state } = useSidebar()
-  const isCollapsed = state === 'collapsed'
-
+export function Logo({ siteConfig, collapsed }: LogoProps) {
   return (
     <div
       className={cn(
         'flex items-center overflow-hidden whitespace-nowrap py-4 gap-3',
-        isCollapsed ? 'justify-center px-0' : 'px-4'
+        collapsed ? 'justify-center px-0' : 'px-4'
       )}
     >
       {siteConfig.iconType === 'lucide' ? (
@@ -34,7 +32,7 @@ export function Logo({ siteConfig }: LogoProps) {
           className="h-7 w-7"
         />
       )}
-      {!isCollapsed && (
+      {!collapsed && (
         <div className="flex flex-col">
           <span className="text-[15px] font-semibold leading-tight">{siteConfig.siteName}</span>
           <span className="text-[11px] text-muted-foreground/60">v{packageJson.version}</span>
