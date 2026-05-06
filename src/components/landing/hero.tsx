@@ -7,7 +7,7 @@ const ease = [0.22, 1, 0.36, 1] as const
 
 const techStack = ['TanStack Start', 'React 19', 'shadcn/ui', 'Drizzle ORM']
 
-export function HeroSection() {
+export function Hero() {
   return (
     <div className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden">
       {/* Dot grid background */}

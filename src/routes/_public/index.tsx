@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { HeroSection } from '@/components/landing/HeroSection'
-import { FeaturesSection } from '@/components/landing/FeaturesSection'
+import { Hero } from '@/components/landing/hero'
+import { Features } from '@/components/landing/features'
 
 export const Route = createFileRoute('/_public/')({
   component: LandingPage,
@@ -9,8 +9,8 @@ export const Route = createFileRoute('/_public/')({
 function LandingPage() {
   return (
     <div>
-      <HeroSection />
-      <FeaturesSection />
+      <Hero />
+      <Features />
     </div>
   )
 }

@@ -22,7 +22,7 @@ const highlights = [
 
 const ease = [0.22, 1, 0.36, 1] as const
 
-export function FeaturesSection() {
+export function Features() {
   return (
     <div className="px-6 md:px-12 py-24">
       <div className="max-w-5xl mx-auto">

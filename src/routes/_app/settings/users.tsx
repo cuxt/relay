@@ -43,12 +43,12 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from '@/components/ui/dropdown-menu'
-import { CreateUserModal } from '@/components/settings/CreateUserModal'
-import { EditUserModal } from '@/components/settings/EditUserModal'
-import { BanUserModal } from '@/components/settings/BanUserModal'
-import { DeleteUserModal } from '@/components/settings/DeleteUserModal'
-import { UserSessionsModal } from '@/components/settings/UserSessionsModal'
-import { ResetPasswordModal } from '@/components/settings/ResetPasswordModal'
+import { CreateUserModal } from '@/components/settings/create-user-modal'
+import { EditUserModal } from '@/components/settings/edit-user-modal'
+import { BanUserModal } from '@/components/settings/ban-user-modal'
+import { DeleteUserModal } from '@/components/settings/delete-user-modal'
+import { UserSessionsModal } from '@/components/settings/user-sessions-modal'
+import { ResetPasswordModal } from '@/components/settings/reset-password-modal'
 
 export const Route = createFileRoute('/_app/settings/users')({
   beforeLoad: async ({ context }) => {

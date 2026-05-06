@@ -1,9 +1,9 @@
 import { createFileRoute, Outlet, Link } from '@tanstack/react-router'
 import { getSiteConfig } from '@/lib/site-config/queries'
-import { SiteIcon } from '@/components/layout/SiteIcon'
+import { SiteIcon } from '@/components/layout/site-icon'
 import { authClient } from '@/lib/auth/client'
-import { ThemeToggle } from '@/components/layout/ThemeToggle'
-import { UserMenu } from '@/components/layout/UserMenu'
+import { ThemeToggle } from '@/components/layout/theme-toggle'
+import { UserMenu } from '@/components/layout/user-menu'
 import { Button } from '@/components/ui/button'
 
 export const Route = createFileRoute('/_public')({

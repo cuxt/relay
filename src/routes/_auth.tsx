@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import { getSession } from '@/lib/auth/session'
-import { AppLogo } from '@/components/layout/AppLogo'
+import { Logo } from '@/components/layout/logo'
 
 export const Route = createFileRoute('/_auth')({
   beforeLoad: async () => {
@@ -32,7 +32,7 @@ function AuthLayout() {
         >
           <div className="text-center relative z-10">
             <div className="mx-auto mb-8 flex justify-center [&_a]:p-0 [&_a]:text-white [&_a]:hover:text-white [&_span]:text-3xl [&_span]:font-bold">
-              <AppLogo siteConfig={siteConfig} />
+              <Logo siteConfig={siteConfig} />
             </div>
             <p className="text-white/85 text-base max-w-100">
               通用全栈起步模板，快速启动你的下一个项目

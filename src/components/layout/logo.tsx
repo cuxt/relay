@@ -1,15 +1,14 @@
 import { cn } from '@/lib/utils'
-import { SiteIcon } from './SiteIcon'
+import { SiteIcon } from './site-icon'
 import type { SiteConfig } from '@/lib/site-config/queries'
 import packageJson from '../../../package.json'
 import { useSidebar } from '@/components/ui/sidebar'
 
-interface AppLogoProps {
-  collapsed?: boolean
+interface LogoProps {
   siteConfig: SiteConfig
 }
 
-export function AppLogo({ siteConfig }: AppLogoProps) {
+export function Logo({ siteConfig }: LogoProps) {
   const { state } = useSidebar()
   const isCollapsed = state === 'collapsed'
 
@@ -22,7 +21,11 @@ export function AppLogo({ siteConfig }: AppLogoProps) {
     >
       {siteConfig.iconType === 'lucide' ? (
         <div className="w-7 h-7 rounded-lg bg-foreground flex items-center justify-center shrink-0">
-          <SiteIcon iconType={siteConfig.iconType} iconValue={siteConfig.iconValue} className="text-background" />
+          <SiteIcon
+            iconType={siteConfig.iconType}
+            iconValue={siteConfig.iconValue}
+            className="text-background"
+          />
         </div>
       ) : (
         <SiteIcon

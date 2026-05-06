@@ -8,6 +8,18 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.2.1',
+    date: '2026-05-06',
+    type: 'patch',
+    title: '统一文件命名风格',
+    changes: [
+      '简化 landing 目录组件命名（HeroSection → hero, FeaturesSection → features）',
+      '简化 layout 目录组件命名（AppLogo → logo, ThemeToggle, UserMenu 等）',
+      '简化 settings 目录组件命名（CreateUserModal → create-user-modal 等）',
+      '统一 hooks 目录命名（useTheme → use-theme, useSidebar → use-sidebar）',
+    ],
+  },
+  {
     version: '1.2.0',
     date: '2026-05-06',
     type: 'minor',

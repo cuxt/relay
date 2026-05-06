@@ -1,6 +1,6 @@
 import { flushSync } from 'react-dom'
 import { Sun, Moon, Monitor } from 'lucide-react'
-import { useTheme } from '@/hooks/useTheme'
+import { useTheme } from '@/hooks/use-theme'
 import { Button } from '@/components/ui/button'
 import type { MouseEvent } from 'react'
 

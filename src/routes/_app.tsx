@@ -7,8 +7,8 @@ import { Link } from '@tanstack/react-router'
 import { Settings, MonitorPlay } from 'lucide-react'
 import { getSession } from '@/lib/auth/session'
 import { getSiteConfig } from '@/lib/site-config/queries'
-import { UserMenu } from '@/components/layout/UserMenu'
-import { ThemeToggle } from '@/components/layout/ThemeToggle'
+import { UserMenu } from '@/components/layout/user-menu'
+import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import {
   Sidebar,
@@ -29,7 +29,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { mainMenuItems, filterMenuByRole } from '@/config/menu'
 import { Button } from '@/components/ui/button'
-import { AppLogo } from '@/components/layout/AppLogo'
+import { Logo } from '@/components/layout/logo'
 import { cn } from '@/lib/utils'
 
 const getSidebarOpen = createServerFn({ method: 'GET' }).handler(() => {
@@ -70,7 +70,7 @@ function AppLayout() {
       <SidebarProvider defaultOpen={sidebarOpen}>
         <Sidebar collapsible="icon">
           <SidebarHeader>
-            <AppLogo siteConfig={siteConfig} />
+            <Logo siteConfig={siteConfig} />
           </SidebarHeader>
           <SidebarContent>
             <TooltipProvider>
