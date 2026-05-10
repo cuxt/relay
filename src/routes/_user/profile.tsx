@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/x'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar } from '@/components/x/avatar'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import {
   Dialog,
@@ -115,10 +115,12 @@ function ProfileSettings() {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-start gap-4">
-            <Avatar className="h-16 w-16">
-              {user.image && <AvatarImage src={user.image} alt={user.name} />}
-              <AvatarFallback className="text-lg">{user.name?.[0]?.toUpperCase()}</AvatarFallback>
-            </Avatar>
+            <Avatar
+              id={user.id}
+              src={user.image}
+              size="lg"
+              className="h-16 w-16"
+            />
             <div className="flex flex-col gap-1.5 min-w-0">
               <h5 className="font-semibold text-base">{user.name}</h5>
               <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">

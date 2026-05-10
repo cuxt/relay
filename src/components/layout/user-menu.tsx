@@ -2,7 +2,8 @@ import { Settings, LogOut, ArrowLeftRight } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
 import { useMutation } from '@tanstack/react-query'
 import { authClient } from '@/lib/auth/client'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar } from '@/components/x/avatar'
+import { cn } from '@/lib/utils'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -15,6 +16,7 @@ import {
 
 interface UserMenuProps {
   user: {
+    id: string
     name: string
     email: string
     image?: string | null
@@ -43,10 +45,11 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
           <button className="cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2" />
         }
       >
-        <Avatar className={impersonating ? 'ring-2 ring-destructive' : ''}>
-          {user.image && <AvatarImage src={user.image} alt={user.name} />}
-          <AvatarFallback>{user.name?.[0]?.toUpperCase()}</AvatarFallback>
-        </Avatar>
+        <Avatar
+          id={user.id}
+          src={user.image}
+          className={cn(impersonating ? 'ring-2 ring-destructive' : '')}
+        />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuGroup>

@@ -3,7 +3,6 @@ import { createFileRoute } from '@tanstack/react-router'
 import {
   Plus,
   Search,
-  MoreHorizontal,
   Pencil,
   Ban,
   Trash2,
@@ -14,6 +13,9 @@ import {
   Loader2,
   KeyRound,
   Shield,
+  Check,
+  X,
+  MoreHorizontal,
 } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -22,7 +24,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-
+import { Avatar } from '@/components/x'
 import {
   Table,
   TableHeader,
@@ -73,7 +75,6 @@ function UsersSettings() {
   const [searchText, setSearchText] = useState('')
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
 
-  // Modal states
   const [createOpen, setCreateOpen] = useState(false)
   const [editUser, setEditUser] = useState<UserRecord | null>(null)
   const [banUser, setBanUser] = useState<UserRecord | null>(null)
@@ -155,7 +156,7 @@ function UsersSettings() {
   return (
     <>
       <Card>
-        <CardContent className="p-6">
+        <CardContent className="p-4">
           <div className="flex items-center justify-between gap-4 mb-4 flex-col sm:flex-row">
             <div className="relative w-full sm:w-auto sm:min-w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -181,129 +182,143 @@ function UsersSettings() {
             </div>
           ) : (
             <>
-              <div className="w-full overflow-auto">
-                <Table className="min-w-[800px]">
+              <div className="w-full overflow-x-auto">
+                <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-32">ID</TableHead>
-                      <TableHead>用户名</TableHead>
-                      <TableHead>邮箱</TableHead>
-                      <TableHead className="w-20">角色</TableHead>
-                      <TableHead className="w-20">状态</TableHead>
-                      <TableHead className="w-20">已验证</TableHead>
-                      <TableHead className="w-40">创建时间</TableHead>
+                      <TableHead className="w-20">用户</TableHead>
+                      <TableHead className="w-32 hidden sm:table-cell">ID</TableHead>
+                      <TableHead className="hidden md:table-cell">邮箱</TableHead>
+                      <TableHead className="w-16 hidden sm:table-cell">角色</TableHead>
+                      <TableHead className="w-16 hidden lg:table-cell">状态</TableHead>
+                      <TableHead className="w-16 hidden lg:table-cell">验证</TableHead>
                       <TableHead className="w-20">操作</TableHead>
                     </TableRow>
                   </TableHeader>
-                <TableBody>
-                  {users.map((record) => (
-                    <TableRow key={record.id}>
-                      <TableCell className="text-xs text-muted-foreground font-mono">
-                        {record.id}
-                      </TableCell>
-                      <TableCell className="text-sm font-medium">{record.name}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {record.email}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={record.role === 'admin' ? 'default' : 'secondary'}>
-                          {record.role === 'admin' ? '管理员' : '用户'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={record.banned ? 'destructive' : 'secondary'}>
-                          {record.banned ? '已封禁' : '正常'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={record.emailVerified ? 'default' : 'secondary'}>
-                          {record.emailVerified ? '是' : '否'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {new Date(record.createdAt).toLocaleString('zh-CN')}
-                      </TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger
-                            render={<Button variant="ghost" size="icon" className="h-8 w-8" />}
+                  <TableBody>
+                    {users.map((record) => (
+                      <TableRow key={record.id} className={record.banned ? 'opacity-60' : ''}>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Avatar id={record.id} src={record.image} size="sm" />
+                            <div className="flex flex-col min-w-0">
+                              <span className="font-medium truncate max-w-25">{record.name}</span>
+                              <span className="text-xs text-muted-foreground md:hidden truncate max-w-30">
+                                {record.email}
+                              </span>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell text-xs text-muted-foreground font-mono">
+                          {record.id}
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                          {record.email}
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          <Badge
+                            variant={record.role === 'admin' ? 'default' : 'secondary'}
+                            className="shrink-0"
                           >
-                            <MoreHorizontal className="h-4 w-4" />
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => setEditUser(record)}>
-                              <Pencil className="mr-2 h-4 w-4" />
-                              编辑资料
-                            </DropdownMenuItem>
-                            <DropdownMenuSub>
-                              <DropdownMenuSubTrigger className="whitespace-nowrap">
-                                <Shield className="mr-2 h-4 w-4" />
-                                切换角色
-                              </DropdownMenuSubTrigger>
-                              <DropdownMenuSubContent>
-                                <DropdownMenuRadioGroup
-                                  value={record.role || 'user'}
-                                  onValueChange={(role) => {
-                                    if (role !== (record.role || 'user')) {
-                                      setRoleMutation.mutate({
-                                        userId: record.id,
-                                        role: role as 'user' | 'admin',
-                                      })
-                                    }
-                                  }}
-                                >
-                                  <DropdownMenuRadioItem value="user">用户</DropdownMenuRadioItem>
-                                  <DropdownMenuRadioItem value="admin">
-                                    管理员
-                                  </DropdownMenuRadioItem>
-                                </DropdownMenuRadioGroup>
-                              </DropdownMenuSubContent>
-                            </DropdownMenuSub>
-                            <DropdownMenuItem onClick={() => setResetPasswordUser(record)}>
-                              <KeyRound className="mr-2 h-4 w-4" />
-                              重置密码
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setSessionsUser(record)}>
-                              <Eye className="mr-2 h-4 w-4" />
-                              会话
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => impersonateMutation.mutate(record.id)}
-                              disabled={record.id === currentUser.id}
+                            {record.role === 'admin' ? '管理员' : '用户'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="hidden lg:table-cell">
+                          <Badge
+                            variant={record.banned ? 'destructive' : 'secondary'}
+                            className="shrink-0"
+                          >
+                            {record.banned ? '已封禁' : '正常'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="hidden lg:table-cell">
+                          {record.emailVerified ? (
+                            <Check className="h-4 w-4 text-green-500" />
+                          ) : (
+                            <X className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger
+                              render={<Button variant="ghost" size="icon" className="h-8 w-8" />}
                             >
-                              <ArrowLeftRight className="mr-2 h-4 w-4" />
-                              模拟登录
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => {
-                                if (record.banned) {
-                                  unbanMutation.mutate(record.id)
-                                } else {
-                                  setBanUser(record)
-                                }
-                              }}
-                            >
-                              <Ban className="mr-2 h-4 w-4" />
-                              {record.banned ? '解封' : '封禁'}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => setDeleteUser(record)}
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              删除
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table></div>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => setEditUser(record)}>
+                                <Pencil className="mr-2 h-4 w-4" />
+                                编辑资料
+                              </DropdownMenuItem>
+                              <DropdownMenuSub>
+                                <DropdownMenuSubTrigger className="whitespace-nowrap">
+                                  <Shield className="mr-2 h-4 w-4" />
+                                  切换角色
+                                </DropdownMenuSubTrigger>
+                                <DropdownMenuSubContent>
+                                  <DropdownMenuRadioGroup
+                                    value={record.role || 'user'}
+                                    onValueChange={(role) => {
+                                      if (role !== (record.role || 'user')) {
+                                        setRoleMutation.mutate({
+                                          userId: record.id,
+                                          role: role as 'user' | 'admin',
+                                        })
+                                      }
+                                    }}
+                                  >
+                                    <DropdownMenuRadioItem value="user">用户</DropdownMenuRadioItem>
+                                    <DropdownMenuRadioItem value="admin">
+                                      管理员
+                                    </DropdownMenuRadioItem>
+                                  </DropdownMenuRadioGroup>
+                                </DropdownMenuSubContent>
+                              </DropdownMenuSub>
+                              <DropdownMenuItem onClick={() => setResetPasswordUser(record)}>
+                                <KeyRound className="mr-2 h-4 w-4" />
+                                重置密码
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => setSessionsUser(record)}>
+                                <Eye className="mr-2 h-4 w-4" />
+                                会话
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => impersonateMutation.mutate(record.id)}
+                                disabled={record.id === currentUser.id}
+                              >
+                                <ArrowLeftRight className="mr-2 h-4 w-4" />
+                                模拟登录
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => {
+                                  if (record.banned) {
+                                    unbanMutation.mutate(record.id)
+                                  } else {
+                                    setBanUser(record)
+                                  }
+                                }}
+                              >
+                                <Ban className="mr-2 h-4 w-4" />
+                                {record.banned ? '解封' : '封禁'}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => setDeleteUser(record)}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                删除
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
 
-              {/* Pagination */}
               <div className="flex items-center justify-between mt-4 pt-4 border-t border-border flex-col sm:flex-row gap-4">
                 <p className="text-sm text-muted-foreground">共 {total} 名用户</p>
                 <div className="flex items-center gap-2">

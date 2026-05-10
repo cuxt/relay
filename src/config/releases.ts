@@ -8,6 +8,19 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.3.1',
+    date: '2026-05-10',
+    type: 'patch',
+    title: '用户头像与界面优化',
+    changes: [
+      '引入 boring-avatars 生成用户头像（beam 风格）',
+      '新增自定义 Avatar 组件（src/components/x/avatar.tsx）',
+      '用户菜单、个人资料页显示生成式头像',
+      '用户管理页面添加头像列，响应式自适应布局',
+      '表格支持 sm/md/lg 断点隐藏/显示列',
+    ],
+  },
+  {
     version: '1.3.0',
     date: '2026-05-10',
     type: 'minor',
