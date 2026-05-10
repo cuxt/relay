@@ -15,72 +15,116 @@ export const Route = createFileRoute('/_public/release')({
 
 function ReleasePending() {
   return (
-    <div className="flex justify-center py-28">
+    <div className="flex justify-center py-40">
       <Loader2 className="h-10 w-10 animate-spin text-primary" />
     </div>
   )
 }
 
-const typeColors: Record<string, string> = {
-  major: 'bg-red-500',
-  minor: 'bg-blue-500',
-  patch: 'bg-green-500',
-}
-
-const typeLabels: Record<string, string> = {
-  major: '大版本',
-  minor: '功能更新',
-  patch: '问题修复',
+const typeConfig: Record<
+  string,
+  { label: string; badge: string; dot: string }
+> = {
+  major: {
+    label: '大版本',
+    badge: 'bg-red-500/10 text-red-600 dark:text-red-400',
+    dot: 'bg-red-500',
+  },
+  minor: {
+    label: '功能更新',
+    badge: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
+    dot: 'bg-blue-500',
+  },
+  patch: {
+    label: '问题修复',
+    badge: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    dot: 'bg-emerald-500',
+  },
 }
 
 function ReleasePage() {
   const { data: releases } = useSuspenseQuery(releasesQueryOptions())
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, x: 0, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-    >
-      <div className="py-12 px-6 md:px-12 max-w-3xl mx-auto">
-        <h2 className="text-2xl font-bold mb-10">更新日志</h2>
-        <div className="relative space-y-0">
-          {releases.map((release, index) => (
-            <div key={release.version} className="relative flex gap-4 pb-6 last:pb-0">
-              {index < releases.length - 1 && (
-                <div className="absolute left-1.75 top-4 bottom-0 w-px bg-border" />
-              )}
-              <div className="relative shrink-0 mt-1.5">
-                <div className={cn('h-3.5 w-3.5 rounded-full border-2 border-background', typeColors[release.type])} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="rounded-lg border border-border p-5 mb-2">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-lg font-semibold">{release.title}</h4>
-                      <span className={cn('text-[11px] px-2 py-0.5 rounded-full text-white', typeColors[release.type])}>
+    <div className="relative z-10 px-4 py-16 md:py-24">
+      <div className="mx-auto max-w-2xl">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-10"
+        >
+          <h1 className="text-2xl font-bold tracking-tight">更新日志</h1>
+          <p className="text-muted-foreground mt-2 text-sm">
+            记录每一个版本的演进
+          </p>
+        </motion.div>
+
+        <div className="relative">
+          {releases.map((release, index) => {
+            const config = typeConfig[release.type] || typeConfig.patch
+
+            return (
+              <motion.div
+                key={release.version}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.4,
+                  ease: [0.22, 1, 0.36, 1],
+                  delay: index * 0.06,
+                }}
+                className="group relative pl-8 last:pb-0 pb-8"
+              >
+                {index < releases.length - 1 && (
+                  <div className="absolute left-[7px] top-6 h-[calc(100%-24px)] w-px bg-border" />
+                )}
+
+                <div className="absolute left-0 top-1.5 h-3.5 w-3.5 rounded-full bg-background ring-2 ring-border group-hover:bg-primary/10 group-hover:ring-primary/30 transition-colors" />
+
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-base font-semibold">{release.title}</span>
+                      <span
+                        className={cn(
+                          'inline-flex rounded px-1.5 py-0.5 text-[10px] font-medium',
+                          config.badge
+                        )}
+                      >
                         v{release.version}
                       </span>
                     </div>
-                    <span className="text-[13px] text-muted-foreground whitespace-nowrap">
-                      {new Date(release.date).toLocaleDateString('zh-CN')}
-                    </span>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(release.date).toLocaleDateString('zh-CN', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </p>
+                    <ul className="mt-3 space-y-1.5">
+                      {release.changes.map((change, i) => (
+                        <li
+                          key={i}
+                          className="text-sm text-muted-foreground flex items-start gap-2"
+                        >
+                          <span
+                            className={cn(
+                              'mt-1.5 h-1 w-1 rounded-full shrink-0',
+                              config.dot
+                            )}
+                          />
+                          {change}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <ul className="space-y-1.5">
-                    {release.changes.map((change, i) => (
-                      <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                        <span className="mt-1.5 h-1 w-1 rounded-full bg-muted-foreground shrink-0" />
-                        {change}
-                      </li>
-                    ))}
-                  </ul>
                 </div>
-              </div>
-            </div>
-          ))}
+              </motion.div>
+            )
+          })}
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }

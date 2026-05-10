@@ -1,0 +1,114 @@
+import { useState } from 'react'
+import { createFileRoute, redirect } from '@tanstack/react-router'
+import { Mail, Lock, Loader2 } from 'lucide-react'
+import { Link, useNavigate } from '@tanstack/react-router'
+import { toast } from 'sonner'
+import { authClient } from '@/lib/auth/client'
+import { getSession } from '@/lib/auth/session'
+import { Input } from '@/components/x'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
+
+export const Route = createFileRoute('/_public/login')({
+  beforeLoad: async () => {
+    const session = await getSession()
+    if (session) {
+      throw redirect({ to: '/dashboard' })
+    }
+  },
+  component: LoginPage,
+})
+
+function LoginPage() {
+  const navigate = useNavigate()
+  const [isPending, setIsPending] = useState(false)
+
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget as HTMLFormElement)
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
+
+    if (!email || !password) {
+      toast.error('请填写邮箱和密码')
+      return
+    }
+
+    setIsPending(true)
+    try {
+      const result = await authClient.signIn.email({ email, password })
+      if (result.error) {
+        toast.error(result.error.message || '登录失败')
+        return
+      }
+      navigate({ to: '/dashboard' })
+    } catch {
+      toast.error('登录失败，请重试')
+    } finally {
+      setIsPending(false)
+    }
+  }
+
+  return (
+    <div className="flex min-h-svh items-center justify-center px-4 py-12">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold tracking-tight">欢迎回来</h2>
+          <p className="text-sm text-muted-foreground mt-1">登录你的账户以继续</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <Label htmlFor="email">邮箱</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="your@email.com"
+                autoComplete="email"
+                className="pl-9"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password">密码</Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="输入密码"
+                className="pl-9"
+                required
+              />
+            </div>
+          </div>
+
+          <Button type="submit" className="w-full rounded-full" size="lg" disabled={isPending}>
+            {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+            登录
+          </Button>
+        </form>
+
+        <div className="relative my-6">
+          <Separator />
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-3 text-xs text-muted-foreground">
+            还没有账户？
+          </span>
+        </div>
+
+        <Link to="/register" className="block">
+          <Button variant="outline" className="w-full rounded-full" size="lg">
+            创建账户
+          </Button>
+        </Link>
+      </div>
+    </div>
+  )
+}

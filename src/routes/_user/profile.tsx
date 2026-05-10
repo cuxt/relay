@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { buttonVariants } from '@/components/ui/button'
 
-export const Route = createFileRoute('/_app/settings/')({
+export const Route = createFileRoute('/_user/profile')({
   component: ProfileSettings,
 })
 

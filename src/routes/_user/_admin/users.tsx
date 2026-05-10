@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import {
   Plus,
   Search,
@@ -50,12 +50,7 @@ import { DeleteUserModal } from '@/components/settings/delete-user-modal'
 import { UserSessionsModal } from '@/components/settings/user-sessions-modal'
 import { ResetPasswordModal } from '@/components/settings/reset-password-modal'
 
-export const Route = createFileRoute('/_app/settings/users')({
-  beforeLoad: async ({ context }) => {
-    if (context.user.role !== 'admin') {
-      throw redirect({ to: '/dashboard' })
-    }
-  },
+export const Route = createFileRoute('/_user/_admin/users')({
   component: UsersSettings,
 })
 
@@ -161,8 +156,8 @@ function UsersSettings() {
     <>
       <Card>
         <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="relative w-75">
+          <div className="flex items-center justify-between gap-4 mb-4 flex-col sm:flex-row">
+            <div className="relative w-full sm:w-auto sm:min-w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="搜索邮箱..."
@@ -174,7 +169,7 @@ function UsersSettings() {
                 className="pl-9"
               />
             </div>
-            <Button className="rounded-full" onClick={() => setCreateOpen(true)}>
+            <Button className="rounded-full shrink-0" onClick={() => setCreateOpen(true)}>
               <Plus className="h-4 w-4 mr-1" />
               创建用户
             </Button>
@@ -186,19 +181,20 @@ function UsersSettings() {
             </div>
           ) : (
             <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>ID</TableHead>
-                    <TableHead>用户名</TableHead>
-                    <TableHead>邮箱</TableHead>
-                    <TableHead className="w-25">角色</TableHead>
-                    <TableHead className="w-25">状态</TableHead>
-                    <TableHead className="w-25">已验证</TableHead>
-                    <TableHead className="w-45">创建时间</TableHead>
-                    <TableHead className="w-20">操作</TableHead>
-                  </TableRow>
-                </TableHeader>
+              <div className="w-full overflow-auto">
+                <Table className="min-w-[800px]">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-32">ID</TableHead>
+                      <TableHead>用户名</TableHead>
+                      <TableHead>邮箱</TableHead>
+                      <TableHead className="w-20">角色</TableHead>
+                      <TableHead className="w-20">状态</TableHead>
+                      <TableHead className="w-20">已验证</TableHead>
+                      <TableHead className="w-40">创建时间</TableHead>
+                      <TableHead className="w-20">操作</TableHead>
+                    </TableRow>
+                  </TableHeader>
                 <TableBody>
                   {users.map((record) => (
                     <TableRow key={record.id}>
@@ -305,10 +301,10 @@ function UsersSettings() {
                     </TableRow>
                   ))}
                 </TableBody>
-              </Table>
+              </Table></div>
 
               {/* Pagination */}
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-border flex-col sm:flex-row gap-4">
                 <p className="text-sm text-muted-foreground">共 {total} 名用户</p>
                 <div className="flex items-center gap-2">
                   <Button

@@ -33,7 +33,7 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
 
   const stopImpersonateMutation = useMutation({
     mutationFn: () => authClient.admin.stopImpersonating(),
-    onSuccess: () => navigate({ to: '/settings/users' }),
+    onSuccess: () => navigate({ to: '/users' }),
   })
 
   return (

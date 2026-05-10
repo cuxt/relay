@@ -8,6 +8,21 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.3.0',
+    date: '2026-05-10',
+    type: 'minor',
+    title: '路由系统重构',
+    changes: [
+      '重构路由目录结构：从 _app/_auth 迁移到 _user/_public 双层架构',
+      '新增公开路由：/login 登录页、/register 注册页、/ 公共首页',
+      '用户路由优化：/dashboard、/profile、/users、/settings',
+      '统一用户区域根路由 _user/route.tsx',
+      '优化 Logo/SiteIcon 组件，移除不必要的依赖',
+      '删除弃用的 API 路由 (favicon.ts)',
+      '新增 vite-env.d.ts 类型定义',
+    ],
+  },
+  {
     version: '1.2.3',
     date: '2026-05-06',
     type: 'patch',

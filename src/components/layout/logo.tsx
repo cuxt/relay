@@ -1,43 +1,29 @@
+import { Link } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
 import { SiteIcon } from './site-icon'
-import type { SiteConfig } from '@/lib/site-config/queries'
-import packageJson from '../../../package.json'
 
 interface LogoProps {
-  siteConfig: SiteConfig
   /** 折叠状态，默认 false */
   collapsed?: boolean
 }
 
-export function Logo({ siteConfig, collapsed }: LogoProps) {
+export function Logo({ collapsed }: LogoProps) {
+  const siteName = import.meta.env.VITE_SITE_NAME || 'Start Template'
+
   return (
-    <div
+    <Link
+      to="/"
       className={cn(
-        'flex items-center overflow-hidden whitespace-nowrap py-4 gap-3',
-        collapsed ? 'justify-center px-0' : 'px-4'
+        'flex items-center overflow-hidden whitespace-nowrap gap-3 no-underline',
+        collapsed ? 'justify-center' : 'px-2'
       )}
     >
-      {siteConfig.iconType === 'lucide' ? (
-        <div className="w-7 h-7 rounded-lg bg-foreground flex items-center justify-center shrink-0">
-          <SiteIcon
-            iconType={siteConfig.iconType}
-            iconValue={siteConfig.iconValue}
-            className="text-background"
-          />
-        </div>
-      ) : (
-        <SiteIcon
-          iconType={siteConfig.iconType}
-          iconValue={siteConfig.iconValue}
-          className="h-7 w-7"
-        />
-      )}
+      <div className="w-5 h-5 shrink-0">
+        <SiteIcon />
+      </div>
       {!collapsed && (
-        <div className="flex flex-col">
-          <span className="text-[15px] font-semibold leading-tight">{siteConfig.siteName}</span>
-          <span className="text-[11px] text-muted-foreground/60">v{packageJson.version}</span>
-        </div>
+        <span className="text-[15px] font-semibold leading-tight">{siteName}</span>
       )}
-    </div>
+    </Link>
   )
 }

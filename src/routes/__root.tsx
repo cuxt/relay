@@ -1,4 +1,3 @@
-/// <reference types="vite/client" />
 import type { ReactNode } from 'react'
 import type { QueryClient } from '@tanstack/react-query'
 import { Outlet, createRootRouteWithContext, HeadContent, Scripts } from '@tanstack/react-router'
@@ -6,7 +5,6 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { Toaster as Sonner } from 'sonner'
 import { ThemeProvider, useTheme } from '@/hooks/use-theme'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { getSiteConfig } from '@/lib/site-config/queries'
 import appCSS from '@/styles.css?url'
 
 interface RouterContext {
@@ -14,21 +12,16 @@ interface RouterContext {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  beforeLoad: async () => {
-    const siteConfig = await getSiteConfig()
-    return { siteConfig }
-  },
-  head: ({ match }) => {
-    const { siteConfig } = match.context as { siteConfig: { siteName: string } }
+  head: () => {
     return {
       meta: [
         { charSet: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { title: siteConfig.siteName },
+        { title: 'Start Template' },
         { name: 'description', content: '通用全栈起步模板' },
       ],
       links: [
-        { rel: 'icon', href: '/api/favicon' },
+        { rel: 'icon', href: '/favicon.svg' },
         { rel: 'stylesheet', href: appCSS },
       ],
     }

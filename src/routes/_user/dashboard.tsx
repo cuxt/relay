@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardContent } from '@/components/ui/card'
 
-export const Route = createFileRoute('/_app/dashboard')({
+export const Route = createFileRoute('/_user/dashboard')({
   component: DashboardPage,
 })
 
@@ -19,8 +19,8 @@ function DashboardPage() {
   const greeting = getGreeting()
 
   return (
-    <Card>
-      <CardContent className="p-7">
+    <Card className="mt-0">
+      <CardContent className="p-6 md:p-7">
         <h3 className="text-xl font-bold">
           {greeting}，{user.name}
         </h3>

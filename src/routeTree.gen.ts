@@ -9,266 +9,197 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as PublicRouteImport } from './routes/_public'
-import { Route as AuthRouteImport } from './routes/_auth'
-import { Route as AppRouteImport } from './routes/_app'
 import { Route as SplatRouteImport } from './routes/$'
+import { Route as UserRouteRouteImport } from './routes/_user/route'
+import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as ApiReleasesRouteImport } from './routes/api/releases'
-import { Route as ApiFaviconRouteImport } from './routes/api/favicon'
+import { Route as UserProfileRouteImport } from './routes/_user/profile'
+import { Route as UserDashboardRouteImport } from './routes/_user/dashboard'
 import { Route as PublicReleaseRouteImport } from './routes/_public/release'
-import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
-import { Route as AuthLoginRouteImport } from './routes/_auth/login'
-import { Route as AppSystemRouteImport } from './routes/_app/system'
-import { Route as AppSettingsRouteImport } from './routes/_app/settings'
-import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
-import { Route as AppSystemIndexRouteImport } from './routes/_app/system/index'
-import { Route as AppSettingsIndexRouteImport } from './routes/_app/settings/index'
+import { Route as PublicRegisterRouteImport } from './routes/_public/register'
+import { Route as PublicLoginRouteImport } from './routes/_public/login'
+import { Route as UserAdminRouteRouteImport } from './routes/_user/_admin/route'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as AppSystemMaintenanceRouteImport } from './routes/_app/system/maintenance'
-import { Route as AppSystemInfoRouteImport } from './routes/_app/system/info'
-import { Route as AppSettingsUsersRouteImport } from './routes/_app/settings/users'
+import { Route as UserAdminUsersRouteImport } from './routes/_user/_admin/users'
+import { Route as UserAdminSettingsRouteRouteImport } from './routes/_user/_admin/settings/route'
+import { Route as UserAdminSettingsIndexRouteImport } from './routes/_user/_admin/settings/index'
 
-const PublicRoute = PublicRouteImport.update({
-  id: '/_public',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/_auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppRoute = AppRouteImport.update({
-  id: '/_app',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SplatRoute = SplatRouteImport.update({
   id: '/$',
   path: '/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UserRouteRoute = UserRouteRouteImport.update({
+  id: '/_user',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicRouteRoute = PublicRouteRouteImport.update({
+  id: '/_public',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => PublicRoute,
+  getParentRoute: () => PublicRouteRoute,
 } as any)
 const ApiReleasesRoute = ApiReleasesRouteImport.update({
   id: '/api/releases',
   path: '/api/releases',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiFaviconRoute = ApiFaviconRouteImport.update({
-  id: '/api/favicon',
-  path: '/api/favicon',
-  getParentRoute: () => rootRouteImport,
+const UserProfileRoute = UserProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserDashboardRoute = UserDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => UserRouteRoute,
 } as any)
 const PublicReleaseRoute = PublicReleaseRouteImport.update({
   id: '/release',
   path: '/release',
-  getParentRoute: () => PublicRoute,
+  getParentRoute: () => PublicRouteRoute,
 } as any)
-const AuthRegisterRoute = AuthRegisterRouteImport.update({
+const PublicRegisterRoute = PublicRegisterRouteImport.update({
   id: '/register',
   path: '/register',
-  getParentRoute: () => AuthRoute,
+  getParentRoute: () => PublicRouteRoute,
 } as any)
-const AuthLoginRoute = AuthLoginRouteImport.update({
+const PublicLoginRoute = PublicLoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => AuthRoute,
+  getParentRoute: () => PublicRouteRoute,
 } as any)
-const AppSystemRoute = AppSystemRouteImport.update({
-  id: '/system',
-  path: '/system',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSettingsRoute = AppSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppDashboardRoute = AppDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSystemIndexRoute = AppSystemIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppSystemRoute,
-} as any)
-const AppSettingsIndexRoute = AppSettingsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppSettingsRoute,
+const UserAdminRouteRoute = UserAdminRouteRouteImport.update({
+  id: '/_admin',
+  getParentRoute: () => UserRouteRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppSystemMaintenanceRoute = AppSystemMaintenanceRouteImport.update({
-  id: '/maintenance',
-  path: '/maintenance',
-  getParentRoute: () => AppSystemRoute,
-} as any)
-const AppSystemInfoRoute = AppSystemInfoRouteImport.update({
-  id: '/info',
-  path: '/info',
-  getParentRoute: () => AppSystemRoute,
-} as any)
-const AppSettingsUsersRoute = AppSettingsUsersRouteImport.update({
+const UserAdminUsersRoute = UserAdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
-  getParentRoute: () => AppSettingsRoute,
+  getParentRoute: () => UserAdminRouteRoute,
+} as any)
+const UserAdminSettingsRouteRoute = UserAdminSettingsRouteRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => UserAdminRouteRoute,
+} as any)
+const UserAdminSettingsIndexRoute = UserAdminSettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => UserAdminSettingsRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/$': typeof SplatRoute
   '/': typeof PublicIndexRoute
-  '/dashboard': typeof AppDashboardRoute
-  '/settings': typeof AppSettingsRouteWithChildren
-  '/system': typeof AppSystemRouteWithChildren
-  '/login': typeof AuthLoginRoute
-  '/register': typeof AuthRegisterRoute
+  '/$': typeof SplatRoute
+  '/login': typeof PublicLoginRoute
+  '/register': typeof PublicRegisterRoute
   '/release': typeof PublicReleaseRoute
-  '/api/favicon': typeof ApiFaviconRoute
+  '/dashboard': typeof UserDashboardRoute
+  '/profile': typeof UserProfileRoute
   '/api/releases': typeof ApiReleasesRoute
-  '/settings/users': typeof AppSettingsUsersRoute
-  '/system/info': typeof AppSystemInfoRoute
-  '/system/maintenance': typeof AppSystemMaintenanceRoute
+  '/settings': typeof UserAdminSettingsRouteRouteWithChildren
+  '/users': typeof UserAdminUsersRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/settings/': typeof AppSettingsIndexRoute
-  '/system/': typeof AppSystemIndexRoute
+  '/settings/': typeof UserAdminSettingsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/$': typeof SplatRoute
   '/': typeof PublicIndexRoute
-  '/dashboard': typeof AppDashboardRoute
-  '/login': typeof AuthLoginRoute
-  '/register': typeof AuthRegisterRoute
+  '/$': typeof SplatRoute
+  '/login': typeof PublicLoginRoute
+  '/register': typeof PublicRegisterRoute
   '/release': typeof PublicReleaseRoute
-  '/api/favicon': typeof ApiFaviconRoute
+  '/dashboard': typeof UserDashboardRoute
+  '/profile': typeof UserProfileRoute
   '/api/releases': typeof ApiReleasesRoute
-  '/settings/users': typeof AppSettingsUsersRoute
-  '/system/info': typeof AppSystemInfoRoute
-  '/system/maintenance': typeof AppSystemMaintenanceRoute
+  '/users': typeof UserAdminUsersRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/settings': typeof AppSettingsIndexRoute
-  '/system': typeof AppSystemIndexRoute
+  '/settings': typeof UserAdminSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_public': typeof PublicRouteRouteWithChildren
+  '/_user': typeof UserRouteRouteWithChildren
   '/$': typeof SplatRoute
-  '/_app': typeof AppRouteWithChildren
-  '/_auth': typeof AuthRouteWithChildren
-  '/_public': typeof PublicRouteWithChildren
-  '/_app/dashboard': typeof AppDashboardRoute
-  '/_app/settings': typeof AppSettingsRouteWithChildren
-  '/_app/system': typeof AppSystemRouteWithChildren
-  '/_auth/login': typeof AuthLoginRoute
-  '/_auth/register': typeof AuthRegisterRoute
+  '/_user/_admin': typeof UserAdminRouteRouteWithChildren
+  '/_public/login': typeof PublicLoginRoute
+  '/_public/register': typeof PublicRegisterRoute
   '/_public/release': typeof PublicReleaseRoute
-  '/api/favicon': typeof ApiFaviconRoute
+  '/_user/dashboard': typeof UserDashboardRoute
+  '/_user/profile': typeof UserProfileRoute
   '/api/releases': typeof ApiReleasesRoute
   '/_public/': typeof PublicIndexRoute
-  '/_app/settings/users': typeof AppSettingsUsersRoute
-  '/_app/system/info': typeof AppSystemInfoRoute
-  '/_app/system/maintenance': typeof AppSystemMaintenanceRoute
+  '/_user/_admin/settings': typeof UserAdminSettingsRouteRouteWithChildren
+  '/_user/_admin/users': typeof UserAdminUsersRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/_app/settings/': typeof AppSettingsIndexRoute
-  '/_app/system/': typeof AppSystemIndexRoute
+  '/_user/_admin/settings/': typeof UserAdminSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/$'
     | '/'
-    | '/dashboard'
-    | '/settings'
-    | '/system'
+    | '/$'
     | '/login'
     | '/register'
     | '/release'
-    | '/api/favicon'
+    | '/dashboard'
+    | '/profile'
     | '/api/releases'
-    | '/settings/users'
-    | '/system/info'
-    | '/system/maintenance'
+    | '/settings'
+    | '/users'
     | '/api/auth/$'
     | '/settings/'
-    | '/system/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/$'
     | '/'
-    | '/dashboard'
+    | '/$'
     | '/login'
     | '/register'
     | '/release'
-    | '/api/favicon'
+    | '/dashboard'
+    | '/profile'
     | '/api/releases'
-    | '/settings/users'
-    | '/system/info'
-    | '/system/maintenance'
+    | '/users'
     | '/api/auth/$'
     | '/settings'
-    | '/system'
   id:
     | '__root__'
-    | '/$'
-    | '/_app'
-    | '/_auth'
     | '/_public'
-    | '/_app/dashboard'
-    | '/_app/settings'
-    | '/_app/system'
-    | '/_auth/login'
-    | '/_auth/register'
+    | '/_user'
+    | '/$'
+    | '/_user/_admin'
+    | '/_public/login'
+    | '/_public/register'
     | '/_public/release'
-    | '/api/favicon'
+    | '/_user/dashboard'
+    | '/_user/profile'
     | '/api/releases'
     | '/_public/'
-    | '/_app/settings/users'
-    | '/_app/system/info'
-    | '/_app/system/maintenance'
+    | '/_user/_admin/settings'
+    | '/_user/_admin/users'
     | '/api/auth/$'
-    | '/_app/settings/'
-    | '/_app/system/'
+    | '/_user/_admin/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  PublicRouteRoute: typeof PublicRouteRouteWithChildren
+  UserRouteRoute: typeof UserRouteRouteWithChildren
   SplatRoute: typeof SplatRoute
-  AppRoute: typeof AppRouteWithChildren
-  AuthRoute: typeof AuthRouteWithChildren
-  PublicRoute: typeof PublicRouteWithChildren
-  ApiFaviconRoute: typeof ApiFaviconRoute
   ApiReleasesRoute: typeof ApiReleasesRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_public': {
-      id: '/_public'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof PublicRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_auth': {
-      id: '/_auth'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_app': {
-      id: '/_app'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AppRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/$': {
       id: '/$'
       path: '/$'
@@ -276,12 +207,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_user': {
+      id: '/_user'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof UserRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PublicRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/': {
       id: '/_public/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof PublicIndexRouteImport
-      parentRoute: typeof PublicRoute
+      parentRoute: typeof PublicRouteRoute
     }
     '/api/releases': {
       id: '/api/releases'
@@ -290,68 +235,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiReleasesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/favicon': {
-      id: '/api/favicon'
-      path: '/api/favicon'
-      fullPath: '/api/favicon'
-      preLoaderRoute: typeof ApiFaviconRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_user/profile': {
+      id: '/_user/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof UserProfileRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/dashboard': {
+      id: '/_user/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof UserDashboardRouteImport
+      parentRoute: typeof UserRouteRoute
     }
     '/_public/release': {
       id: '/_public/release'
       path: '/release'
       fullPath: '/release'
       preLoaderRoute: typeof PublicReleaseRouteImport
-      parentRoute: typeof PublicRoute
+      parentRoute: typeof PublicRouteRoute
     }
-    '/_auth/register': {
-      id: '/_auth/register'
+    '/_public/register': {
+      id: '/_public/register'
       path: '/register'
       fullPath: '/register'
-      preLoaderRoute: typeof AuthRegisterRouteImport
-      parentRoute: typeof AuthRoute
+      preLoaderRoute: typeof PublicRegisterRouteImport
+      parentRoute: typeof PublicRouteRoute
     }
-    '/_auth/login': {
-      id: '/_auth/login'
+    '/_public/login': {
+      id: '/_public/login'
       path: '/login'
       fullPath: '/login'
-      preLoaderRoute: typeof AuthLoginRouteImport
-      parentRoute: typeof AuthRoute
+      preLoaderRoute: typeof PublicLoginRouteImport
+      parentRoute: typeof PublicRouteRoute
     }
-    '/_app/system': {
-      id: '/_app/system'
-      path: '/system'
-      fullPath: '/system'
-      preLoaderRoute: typeof AppSystemRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/settings': {
-      id: '/_app/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AppSettingsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/dashboard': {
-      id: '/_app/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AppDashboardRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/system/': {
-      id: '/_app/system/'
-      path: '/'
-      fullPath: '/system/'
-      preLoaderRoute: typeof AppSystemIndexRouteImport
-      parentRoute: typeof AppSystemRoute
-    }
-    '/_app/settings/': {
-      id: '/_app/settings/'
-      path: '/'
-      fullPath: '/settings/'
-      preLoaderRoute: typeof AppSettingsIndexRouteImport
-      parentRoute: typeof AppSettingsRoute
+    '/_user/_admin': {
+      id: '/_user/_admin'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof UserAdminRouteRouteImport
+      parentRoute: typeof UserRouteRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -360,105 +284,96 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/system/maintenance': {
-      id: '/_app/system/maintenance'
-      path: '/maintenance'
-      fullPath: '/system/maintenance'
-      preLoaderRoute: typeof AppSystemMaintenanceRouteImport
-      parentRoute: typeof AppSystemRoute
-    }
-    '/_app/system/info': {
-      id: '/_app/system/info'
-      path: '/info'
-      fullPath: '/system/info'
-      preLoaderRoute: typeof AppSystemInfoRouteImport
-      parentRoute: typeof AppSystemRoute
-    }
-    '/_app/settings/users': {
-      id: '/_app/settings/users'
+    '/_user/_admin/users': {
+      id: '/_user/_admin/users'
       path: '/users'
-      fullPath: '/settings/users'
-      preLoaderRoute: typeof AppSettingsUsersRouteImport
-      parentRoute: typeof AppSettingsRoute
+      fullPath: '/users'
+      preLoaderRoute: typeof UserAdminUsersRouteImport
+      parentRoute: typeof UserAdminRouteRoute
+    }
+    '/_user/_admin/settings': {
+      id: '/_user/_admin/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof UserAdminSettingsRouteRouteImport
+      parentRoute: typeof UserAdminRouteRoute
+    }
+    '/_user/_admin/settings/': {
+      id: '/_user/_admin/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof UserAdminSettingsIndexRouteImport
+      parentRoute: typeof UserAdminSettingsRouteRoute
     }
   }
 }
 
-interface AppSettingsRouteChildren {
-  AppSettingsUsersRoute: typeof AppSettingsUsersRoute
-  AppSettingsIndexRoute: typeof AppSettingsIndexRoute
-}
-
-const AppSettingsRouteChildren: AppSettingsRouteChildren = {
-  AppSettingsUsersRoute: AppSettingsUsersRoute,
-  AppSettingsIndexRoute: AppSettingsIndexRoute,
-}
-
-const AppSettingsRouteWithChildren = AppSettingsRoute._addFileChildren(
-  AppSettingsRouteChildren,
-)
-
-interface AppSystemRouteChildren {
-  AppSystemInfoRoute: typeof AppSystemInfoRoute
-  AppSystemMaintenanceRoute: typeof AppSystemMaintenanceRoute
-  AppSystemIndexRoute: typeof AppSystemIndexRoute
-}
-
-const AppSystemRouteChildren: AppSystemRouteChildren = {
-  AppSystemInfoRoute: AppSystemInfoRoute,
-  AppSystemMaintenanceRoute: AppSystemMaintenanceRoute,
-  AppSystemIndexRoute: AppSystemIndexRoute,
-}
-
-const AppSystemRouteWithChildren = AppSystemRoute._addFileChildren(
-  AppSystemRouteChildren,
-)
-
-interface AppRouteChildren {
-  AppDashboardRoute: typeof AppDashboardRoute
-  AppSettingsRoute: typeof AppSettingsRouteWithChildren
-  AppSystemRoute: typeof AppSystemRouteWithChildren
-}
-
-const AppRouteChildren: AppRouteChildren = {
-  AppDashboardRoute: AppDashboardRoute,
-  AppSettingsRoute: AppSettingsRouteWithChildren,
-  AppSystemRoute: AppSystemRouteWithChildren,
-}
-
-const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
-
-interface AuthRouteChildren {
-  AuthLoginRoute: typeof AuthLoginRoute
-  AuthRegisterRoute: typeof AuthRegisterRoute
-}
-
-const AuthRouteChildren: AuthRouteChildren = {
-  AuthLoginRoute: AuthLoginRoute,
-  AuthRegisterRoute: AuthRegisterRoute,
-}
-
-const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
-
-interface PublicRouteChildren {
+interface PublicRouteRouteChildren {
+  PublicLoginRoute: typeof PublicLoginRoute
+  PublicRegisterRoute: typeof PublicRegisterRoute
   PublicReleaseRoute: typeof PublicReleaseRoute
   PublicIndexRoute: typeof PublicIndexRoute
 }
 
-const PublicRouteChildren: PublicRouteChildren = {
+const PublicRouteRouteChildren: PublicRouteRouteChildren = {
+  PublicLoginRoute: PublicLoginRoute,
+  PublicRegisterRoute: PublicRegisterRoute,
   PublicReleaseRoute: PublicReleaseRoute,
   PublicIndexRoute: PublicIndexRoute,
 }
 
-const PublicRouteWithChildren =
-  PublicRoute._addFileChildren(PublicRouteChildren)
+const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
+  PublicRouteRouteChildren,
+)
+
+interface UserAdminSettingsRouteRouteChildren {
+  UserAdminSettingsIndexRoute: typeof UserAdminSettingsIndexRoute
+}
+
+const UserAdminSettingsRouteRouteChildren: UserAdminSettingsRouteRouteChildren =
+  {
+    UserAdminSettingsIndexRoute: UserAdminSettingsIndexRoute,
+  }
+
+const UserAdminSettingsRouteRouteWithChildren =
+  UserAdminSettingsRouteRoute._addFileChildren(
+    UserAdminSettingsRouteRouteChildren,
+  )
+
+interface UserAdminRouteRouteChildren {
+  UserAdminSettingsRouteRoute: typeof UserAdminSettingsRouteRouteWithChildren
+  UserAdminUsersRoute: typeof UserAdminUsersRoute
+}
+
+const UserAdminRouteRouteChildren: UserAdminRouteRouteChildren = {
+  UserAdminSettingsRouteRoute: UserAdminSettingsRouteRouteWithChildren,
+  UserAdminUsersRoute: UserAdminUsersRoute,
+}
+
+const UserAdminRouteRouteWithChildren = UserAdminRouteRoute._addFileChildren(
+  UserAdminRouteRouteChildren,
+)
+
+interface UserRouteRouteChildren {
+  UserAdminRouteRoute: typeof UserAdminRouteRouteWithChildren
+  UserDashboardRoute: typeof UserDashboardRoute
+  UserProfileRoute: typeof UserProfileRoute
+}
+
+const UserRouteRouteChildren: UserRouteRouteChildren = {
+  UserAdminRouteRoute: UserAdminRouteRouteWithChildren,
+  UserDashboardRoute: UserDashboardRoute,
+  UserProfileRoute: UserProfileRoute,
+}
+
+const UserRouteRouteWithChildren = UserRouteRoute._addFileChildren(
+  UserRouteRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
+  PublicRouteRoute: PublicRouteRouteWithChildren,
+  UserRouteRoute: UserRouteRouteWithChildren,
   SplatRoute: SplatRoute,
-  AppRoute: AppRouteWithChildren,
-  AuthRoute: AuthRouteWithChildren,
-  PublicRoute: PublicRouteWithChildren,
-  ApiFaviconRoute: ApiFaviconRoute,
   ApiReleasesRoute: ApiReleasesRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
