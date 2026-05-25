@@ -1,5 +1,5 @@
 import { Settings, LogOut, ArrowLeftRight } from 'lucide-react'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useRouter } from '@tanstack/react-router'
 import { useMutation } from '@tanstack/react-query'
 import { authClient } from '@/lib/auth/client'
 import { Avatar } from '@/components/x/avatar'
@@ -27,15 +27,22 @@ interface UserMenuProps {
 
 export function UserMenu({ user, impersonating }: UserMenuProps) {
   const navigate = useNavigate()
+  const router = useRouter()
 
   const logoutMutation = useMutation({
     mutationFn: () => authClient.signOut(),
-    onSuccess: () => navigate({ to: '/login' }),
+    onSuccess: async () => {
+      await router.invalidate()
+      await navigate({ to: '/login' })
+    },
   })
 
   const stopImpersonateMutation = useMutation({
     mutationFn: () => authClient.admin.stopImpersonating(),
-    onSuccess: () => navigate({ to: '/users' }),
+    onSuccess: async () => {
+      await router.invalidate()
+      await navigate({ to: '/users' })
+    },
   })
 
   return (
