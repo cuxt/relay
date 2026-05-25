@@ -22,7 +22,7 @@ export function createRouter() {
     routeTree,
     scrollRestoration: true,
     defaultPreload: 'intent',
-    defaultPreloadStaleTime: 0,
+    defaultPreloadStaleTime: 1000 * 30,
     context: { queryClient },
   })
 
