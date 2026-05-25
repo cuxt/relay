@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect, Link, useNavigate, useRouter } from '@tanstack/react-router'
 import { Mail, Lock, Loader2 } from 'lucide-react'
-import { Link, useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { authClient } from '@/lib/auth/client'
 import { getSession } from '@/lib/auth/session'
@@ -22,6 +21,7 @@ export const Route = createFileRoute('/_public/login')({
 
 function LoginPage() {
   const navigate = useNavigate()
+  const router = useRouter()
   const [isPending, setIsPending] = useState(false)
 
   async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
@@ -42,7 +42,8 @@ function LoginPage() {
         toast.error(result.error.message || '登录失败')
         return
       }
-      navigate({ to: '/dashboard' })
+      await router.invalidate()
+      await navigate({ to: '/dashboard' })
     } catch {
       toast.error('登录失败，请重试')
     } finally {
