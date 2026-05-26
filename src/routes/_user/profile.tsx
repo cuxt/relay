@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
 import { Loader2, Lock, User, Mail, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { authClient } from '@/lib/auth/client'
@@ -41,6 +41,7 @@ export const Route = createFileRoute('/_user/profile')({
 function ProfileSettings() {
   const { user } = Route.useRouteContext()
   const navigate = useNavigate()
+  const router = useRouter()
   const [deleting, setDeleting] = useState(false)
   const [changeEmailOpen, setChangeEmailOpen] = useState(false)
   const [newEmail, setNewEmail] = useState('')
@@ -104,7 +105,8 @@ function ProfileSettings() {
     setDeleting(true)
     try {
       await authClient.deleteUser()
-      navigate({ to: '/' })
+      await router.invalidate()
+      await navigate({ to: '/' })
     } catch {
       setDeleting(false)
     }

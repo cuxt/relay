@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect, useLocation, Link } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { getRequestHeaders } from '@tanstack/react-start/server'
-import { getSession } from '@/lib/auth/session'
+import { auth } from '@/lib/auth/auth'
 import { UserMenu } from '@/components/layout/user-menu'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -25,26 +25,40 @@ import { mainMenuItems, filterMenuByRole } from '@/config/menu'
 import { Logo } from '@/components/layout/logo'
 import { useIsMobile } from '@/hooks/use-mobile'
 
-const getSidebarOpen = createServerFn({ method: 'GET' }).handler(() => {
-  const cookie = getRequestHeaders().get('cookie')
+const USER_ROUTE_STALE_TIME = 1000 * 60 * 5
+
+const getUserRouteContext = createServerFn({ method: 'GET' }).handler(async () => {
+  const headers = getRequestHeaders()
+  const session = await auth.api.getSession({ headers })
+
+  if (!session) {
+    return null
+  }
+
+  const cookie = headers.get('cookie')
   const sidebarState = cookie
     ?.split(';')
     .map((item) => item.trim())
     .find((item) => item.startsWith('sidebar_state='))
     ?.split('=')[1]
 
-  return sidebarState === undefined ? true : sidebarState === 'true'
+  return {
+    user: session.user,
+    session: session.session,
+    sidebarOpen: sidebarState === undefined ? true : sidebarState === 'true',
+  }
 })
 
 export const Route = createFileRoute('/_user')({
   beforeLoad: async () => {
-    const session = await getSession()
-    if (!session) {
+    const userRouteContext = await getUserRouteContext()
+    if (!userRouteContext) {
       throw redirect({ to: '/login' })
     }
-    const sidebarOpen = await getSidebarOpen()
-    return { user: session.user, session: session.session, sidebarOpen }
+    return userRouteContext
   },
+  staleTime: USER_ROUTE_STALE_TIME,
+  preloadStaleTime: USER_ROUTE_STALE_TIME,
   component: AppLayout,
 })
 
