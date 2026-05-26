@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
 import {
   Plus,
   Search,
@@ -71,6 +71,8 @@ interface UserRecord {
 
 function UsersSettings() {
   const { user: currentUser } = Route.useRouteContext()
+  const navigate = useNavigate()
+  const router = useRouter()
   const queryClient = useQueryClient()
   const [searchText, setSearchText] = useState('')
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
@@ -121,9 +123,10 @@ function UsersSettings() {
       const res = await authClient.admin.impersonateUser({ userId })
       if (res.error) throw res.error
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success('已切换到目标用户视角')
-      window.location.reload()
+      await router.invalidate()
+      await navigate({ to: '/dashboard' })
     },
   })
 
