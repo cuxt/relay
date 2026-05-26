@@ -92,7 +92,7 @@ function ProfileSettings() {
 
   const changeEmailMutation = useMutation({
     mutationFn: async ({ newEmail }: { newEmail: string }) => {
-      const res = await authClient.changeEmail({ newEmail, callbackURL: '/settings' })
+      const res = await authClient.changeEmail({ newEmail, callbackURL: '/profile' })
       if (res.error) throw res.error
     },
     onSuccess: () => {
@@ -104,7 +104,8 @@ function ProfileSettings() {
   const handleDeleteAccount = async () => {
     setDeleting(true)
     try {
-      await authClient.deleteUser()
+      const res = await authClient.deleteUser()
+      if (res.error) throw res.error
       await router.invalidate()
       await navigate({ to: '/' })
     } catch {

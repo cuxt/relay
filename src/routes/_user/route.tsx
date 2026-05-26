@@ -25,7 +25,7 @@ import { mainMenuItems, filterMenuByRole } from '@/config/menu'
 import { Logo } from '@/components/layout/logo'
 import { useIsMobile } from '@/hooks/use-mobile'
 
-const USER_ROUTE_STALE_TIME = 1000 * 60 * 5
+const USER_ROUTE_STALE_TIME = 1000 * 60
 
 const getUserRouteContext = createServerFn({ method: 'GET' }).handler(async () => {
   const headers = getRequestHeaders()
