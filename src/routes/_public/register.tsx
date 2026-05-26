@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { createFileRoute, redirect, Link, useNavigate, useRouter } from '@tanstack/react-router'
 import { Mail, Lock, User, Loader2 } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { authClient } from '@/lib/auth/client'
 import { getSession } from '@/lib/auth/session'
+import { userRouteContextQueryKey } from '@/lib/query-keys'
 import { Input } from '@/components/x'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -22,6 +24,7 @@ export const Route = createFileRoute('/_public/register')({
 function RegisterPage() {
   const navigate = useNavigate()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [isPending, setIsPending] = useState(false)
 
   async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
@@ -54,6 +57,7 @@ function RegisterPage() {
         toast.error(result.error.message || '注册失败')
         return
       }
+      queryClient.removeQueries({ queryKey: userRouteContextQueryKey })
       await router.invalidate()
       await navigate({ to: '/dashboard' })
     } catch {

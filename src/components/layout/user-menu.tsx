@@ -1,7 +1,8 @@
 import { Settings, LogOut, ArrowLeftRight } from 'lucide-react'
 import { useNavigate, useRouter } from '@tanstack/react-router'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { authClient } from '@/lib/auth/client'
+import { userRouteContextQueryKey } from '@/lib/query-keys'
 import { Avatar } from '@/components/x/avatar'
 import { cn } from '@/lib/utils'
 import {
@@ -28,6 +29,7 @@ interface UserMenuProps {
 export function UserMenu({ user, impersonating }: UserMenuProps) {
   const navigate = useNavigate()
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -35,6 +37,7 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
       if (res.error) throw res.error
     },
     onSuccess: async () => {
+      queryClient.removeQueries({ queryKey: userRouteContextQueryKey })
       await router.invalidate()
       await navigate({ to: '/login' })
     },
@@ -46,6 +49,7 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
       if (res.error) throw res.error
     },
     onSuccess: async () => {
+      queryClient.removeQueries({ queryKey: userRouteContextQueryKey })
       await router.invalidate()
       await navigate({ to: '/users' })
     },
