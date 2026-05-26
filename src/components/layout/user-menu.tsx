@@ -30,7 +30,10 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
   const router = useRouter()
 
   const logoutMutation = useMutation({
-    mutationFn: () => authClient.signOut(),
+    mutationFn: async () => {
+      const res = await authClient.signOut()
+      if (res.error) throw res.error
+    },
     onSuccess: async () => {
       await router.invalidate()
       await navigate({ to: '/login' })
@@ -38,7 +41,10 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
   })
 
   const stopImpersonateMutation = useMutation({
-    mutationFn: () => authClient.admin.stopImpersonating(),
+    mutationFn: async () => {
+      const res = await authClient.admin.stopImpersonating()
+      if (res.error) throw res.error
+    },
     onSuccess: async () => {
       await router.invalidate()
       await navigate({ to: '/users' })
@@ -73,7 +79,7 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
           </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate({ to: '/settings' })}>
+        <DropdownMenuItem onClick={() => navigate({ to: '/profile' })}>
           <Settings className="mr-2 h-4 w-4" />
           设置
         </DropdownMenuItem>
