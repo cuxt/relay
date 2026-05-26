@@ -20,7 +20,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { userRouteContextQueryKey } from '@/lib/query-keys'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,6 +43,7 @@ function ProfileSettings() {
   const { user } = Route.useRouteContext()
   const navigate = useNavigate()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [deleting, setDeleting] = useState(false)
   const [changeEmailOpen, setChangeEmailOpen] = useState(false)
   const [newEmail, setNewEmail] = useState('')
@@ -106,6 +108,7 @@ function ProfileSettings() {
     try {
       const res = await authClient.deleteUser()
       if (res.error) throw res.error
+      queryClient.removeQueries({ queryKey: userRouteContextQueryKey })
       await router.invalidate()
       await navigate({ to: '/' })
     } catch {

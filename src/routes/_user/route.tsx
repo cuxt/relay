@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, redirect, useLocation, Link } from '@tanstack/
 import { createServerFn } from '@tanstack/react-start'
 import { getRequestHeaders } from '@tanstack/react-start/server'
 import { auth } from '@/lib/auth/auth'
+import { userRouteContextQueryKey } from '@/lib/query-keys'
 import { UserMenu } from '@/components/layout/user-menu'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -50,8 +51,12 @@ const getUserRouteContext = createServerFn({ method: 'GET' }).handler(async () =
 })
 
 export const Route = createFileRoute('/_user')({
-  beforeLoad: async () => {
-    const userRouteContext = await getUserRouteContext()
+  beforeLoad: async ({ context }) => {
+    const userRouteContext = await context.queryClient.ensureQueryData({
+      queryKey: userRouteContextQueryKey,
+      queryFn: () => getUserRouteContext(),
+      staleTime: USER_ROUTE_STALE_TIME,
+    })
     if (!userRouteContext) {
       throw redirect({ to: '/login' })
     }

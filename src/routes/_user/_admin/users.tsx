@@ -20,6 +20,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { authClient } from '@/lib/auth/client'
+import { userRouteContextQueryKey } from '@/lib/query-keys'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -125,6 +126,7 @@ function UsersSettings() {
     },
     onSuccess: async () => {
       toast.success('已切换到目标用户视角')
+      queryClient.removeQueries({ queryKey: userRouteContextQueryKey })
       await router.invalidate()
       await navigate({ to: '/dashboard' })
     },
