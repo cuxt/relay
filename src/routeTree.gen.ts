@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SplatRouteImport } from './routes/$'
 import { Route as UserRouteRouteImport } from './routes/_user/route'
 import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
@@ -25,11 +24,6 @@ import { Route as UserAdminUsersRouteImport } from './routes/_user/_admin/users'
 import { Route as UserAdminSettingsRouteRouteImport } from './routes/_user/_admin/settings/route'
 import { Route as UserAdminSettingsIndexRouteImport } from './routes/_user/_admin/settings/index'
 
-const SplatRoute = SplatRouteImport.update({
-  id: '/$',
-  path: '/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const UserRouteRoute = UserRouteRouteImport.update({
   id: '/_user',
   getParentRoute: () => rootRouteImport,
@@ -100,7 +94,6 @@ const UserAdminSettingsIndexRoute = UserAdminSettingsIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
-  '/$': typeof SplatRoute
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
   '/release': typeof PublicReleaseRoute
@@ -114,7 +107,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
-  '/$': typeof SplatRoute
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
   '/release': typeof PublicReleaseRoute
@@ -129,7 +121,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_public': typeof PublicRouteRouteWithChildren
   '/_user': typeof UserRouteRouteWithChildren
-  '/$': typeof SplatRoute
   '/_user/_admin': typeof UserAdminRouteRouteWithChildren
   '/_public/login': typeof PublicLoginRoute
   '/_public/register': typeof PublicRegisterRoute
@@ -147,7 +138,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/$'
     | '/login'
     | '/register'
     | '/release'
@@ -161,7 +151,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/$'
     | '/login'
     | '/register'
     | '/release'
@@ -175,7 +164,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_public'
     | '/_user'
-    | '/$'
     | '/_user/_admin'
     | '/_public/login'
     | '/_public/register'
@@ -193,20 +181,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
   UserRouteRoute: typeof UserRouteRouteWithChildren
-  SplatRoute: typeof SplatRoute
   ApiReleasesRoute: typeof ApiReleasesRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/$': {
-      id: '/$'
-      path: '/$'
-      fullPath: '/$'
-      preLoaderRoute: typeof SplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_user': {
       id: '/_user'
       path: ''
@@ -373,7 +353,6 @@ const UserRouteRouteWithChildren = UserRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   PublicRouteRoute: PublicRouteRouteWithChildren,
   UserRouteRoute: UserRouteRouteWithChildren,
-  SplatRoute: SplatRoute,
   ApiReleasesRoute: ApiReleasesRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
