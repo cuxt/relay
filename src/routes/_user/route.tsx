@@ -1,7 +1,6 @@
-import { createFileRoute, Outlet, redirect, useLocation, Link } from '@tanstack/react-router'
+import { createFileRoute, Outlet, useLocation, Link } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { getRequestHeaders } from '@tanstack/react-start/server'
-import { auth } from '@/lib/auth/auth'
 import { userRouteContextQueryKey } from '@/lib/query-keys'
 import { UserMenu } from '@/components/layout/user-menu'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
@@ -25,42 +24,35 @@ import {
 import { mainMenuItems, filterMenuByRole } from '@/config/menu'
 import { Logo } from '@/components/layout/logo'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { authMiddleware } from '@/middleware/auth'
 
-const USER_ROUTE_STALE_TIME = 1000 * 60
+const USER_ROUTE_STALE_TIME = Infinity
 
-const getUserRouteContext = createServerFn({ method: 'GET' }).handler(async () => {
-  const headers = getRequestHeaders()
-  const session = await auth.api.getSession({ headers })
+const getUserRouteContext = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .handler(async ({ context: { user, session } }) => {
+    const headers = getRequestHeaders()
+    const cookie = headers.get('cookie')
+    const sidebarState = cookie
+      ?.split(';')
+      .map((item) => item.trim())
+      .find((item) => item.startsWith('sidebar_state='))
+      ?.split('=')[1]
 
-  if (!session) {
-    return null
-  }
-
-  const cookie = headers.get('cookie')
-  const sidebarState = cookie
-    ?.split(';')
-    .map((item) => item.trim())
-    .find((item) => item.startsWith('sidebar_state='))
-    ?.split('=')[1]
-
-  return {
-    user: session.user,
-    session: session.session,
-    sidebarOpen: sidebarState === undefined ? true : sidebarState === 'true',
-  }
-})
+    return {
+      user: user,
+      session: session,
+      sidebarOpen: sidebarState === undefined ? true : sidebarState === 'true',
+    }
+  })
 
 export const Route = createFileRoute('/_user')({
   beforeLoad: async ({ context }) => {
-    const userRouteContext = await context.queryClient.ensureQueryData({
+    return context.queryClient.ensureQueryData({
       queryKey: userRouteContextQueryKey,
       queryFn: () => getUserRouteContext(),
       staleTime: USER_ROUTE_STALE_TIME,
     })
-    if (!userRouteContext) {
-      throw redirect({ to: '/login' })
-    }
-    return userRouteContext
   },
   staleTime: USER_ROUTE_STALE_TIME,
   preloadStaleTime: USER_ROUTE_STALE_TIME,
