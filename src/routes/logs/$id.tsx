@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState, type MouseEvent } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { createMarkdownExit } from 'markdown-exit'
 import { motion } from 'framer-motion'
@@ -10,6 +10,7 @@ import { usePushLogDetail } from '@/hooks/use-push-logs'
 import { CHANNEL_TYPES } from '@/lib/channels/constants'
 import type { ChannelType } from '@/lib/channels/constants'
 import { ChannelIcon } from '@/components/shared/channel-icon'
+import { ImageLightbox } from '@/components/shared/image-lightbox'
 import { cn } from '@/lib/utils'
 import {
   Clock,
@@ -44,7 +45,26 @@ function LogDetailPage() {
   const logsSearch = buildLogsSearch(Route.useSearch())
   const { data: log, isLoading } = usePushLogDetail(id)
   const [renderMarkdown, setRenderMarkdown] = useState(true)
+  const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(
+    null
+  )
   const backTo = { to: '/logs', search: logsSearch }
+
+  const renderedHtml = useMemo(
+    () => (log?.resolvedMessage ? md.render(log.resolvedMessage) : ''),
+    [log?.resolvedMessage]
+  )
+
+  const handleMarkdownClick = (event: MouseEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement | null
+    if (!target) return
+    const img = target.closest('img')
+    if (!img) return
+    const src = img.getAttribute('src')
+    if (!src) return
+    event.preventDefault()
+    setLightbox({ src, alt: img.getAttribute('alt') ?? '' })
+  }
 
   if (isLoading) {
     return (
@@ -221,10 +241,9 @@ function LogDetailPage() {
               <CardContent>
                 {renderMarkdown ? (
                   <div
-                    className="prose prose-sm dark:prose-invert max-w-none rounded-md bg-muted/50 p-4"
-                    dangerouslySetInnerHTML={{
-                      __html: md.render(log.resolvedMessage)
-                    }}
+                    className="prose prose-sm dark:prose-invert max-w-none rounded-md bg-muted/50 p-4 [&_img]:cursor-zoom-in [&_img]:rounded-md [&_img]:transition-opacity [&_img]:hover:opacity-90"
+                    onClick={handleMarkdownClick}
+                    dangerouslySetInnerHTML={{ __html: renderedHtml }}
                   />
                 ) : (
                   <pre className="rounded-md bg-muted/50 p-4 text-xs font-mono whitespace-pre-wrap overflow-x-auto">
@@ -269,6 +288,12 @@ function LogDetailPage() {
           </Card>
         </motion.div>
       </motion.div>
+      <ImageLightbox
+        image={lightbox}
+        onClose={() => {
+          setLightbox(null)
+        }}
+      />
     </PageContainer>
   )
 }
