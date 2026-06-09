@@ -5,7 +5,7 @@
  */
 
 import { db } from '../src/lib/db'
-import { user, config } from '../src/lib/db/schema'
+import { user } from '../src/lib/db/schema'
 import { auth } from '../src/lib/auth/auth'
 import { eq } from 'drizzle-orm'
 
@@ -47,18 +47,6 @@ async function seed() {
     console.log('📧 邮箱:', adminEmail)
     console.log('🔑 密码:', adminPassword)
     console.log('⚠️  请在生产环境中立即修改密码！')
-
-    // 插入默认站点配置
-    await db
-      .insert(config)
-      .values([
-        { key: 'site_name', value: 'Tanstack Template' },
-        { key: 'icon_type', value: 'lucide' },
-        { key: 'icon_value', value: 'bubbles' },
-      ])
-      .onConflictDoNothing()
-
-    console.log('✅ 默认站点配置已创建')
 
     process.exit(0)
   } catch (error) {
