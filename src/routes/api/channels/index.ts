@@ -37,11 +37,14 @@ export const Route = createFileRoute('/api/channels/')({
           )
         }
 
-        const data = parsed.data
+        const data = parsed.data as Record<string, unknown>
         const [created] = await db
           .insert(channels)
           .values({
-            ...data,
+            name: data.name as string,
+            type: data.type as any,
+            enabled: data.enabled as boolean,
+            config: data.config as Record<string, unknown>,
             userId: session.user.id
           })
           .returning()

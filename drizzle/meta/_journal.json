@@ -36,6 +36,20 @@
       "when": 1771573318889,
       "tag": "0004_sudden_gwen_stacy",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1781330994286,
+      "tag": "0005_nosy_archangel",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1781337910414,
+      "tag": "0006_loud_post",
+      "breakpoints": true
     }
   ]
 }

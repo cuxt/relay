@@ -13,6 +13,7 @@ interface Channel {
   type: ChannelType
   enabled: boolean
   createdAt: string
+  config: Record<string, unknown>
 }
 
 interface ChannelListProps {

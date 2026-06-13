@@ -1,0 +1,20 @@
+ALTER TABLE "channels" DROP COLUMN "webhook_url";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "secret";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "bot_token";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "chat_id";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "corp_id";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "agent_id";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "app_secret";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "smtp_host";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "smtp_port";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "smtp_secure";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "smtp_user";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "smtp_password";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "email_from";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "email_to";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "email_provider";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "resend_api_key";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "bark_server_url";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "bark_device_key";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "webhook_method";--> statement-breakpoint
+ALTER TABLE "channels" DROP COLUMN "webhook_headers";

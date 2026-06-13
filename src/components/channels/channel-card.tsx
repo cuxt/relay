@@ -28,34 +28,35 @@ interface ChannelCardProps {
     type: ChannelType
     enabled: boolean
     createdAt: string
-    webhookUrl?: string | null
-    botToken?: string | null
-    corpId?: string | null
-    smtpHost?: string | null
-    barkServerUrl?: string | null
+    config: Record<string, unknown>
   }
   onToggle: (id: string, enabled: boolean) => void
   onDelete: (id: string) => void
   index: number
 }
 
-function getConfigPreview(channel: ChannelCardProps['channel']): string | null {
-  if (channel.webhookUrl) {
+function getConfigPreview(_type: ChannelType, config: Record<string, unknown>): string | null {
+  const webhook = config.webhook as string | undefined
+  const botToken = config.botToken as string | undefined
+  const corpId = config.corpId as string | undefined
+  const server = config.server as string | undefined
+  const smtp = config.smtp as Record<string, unknown> | undefined
+
+  if (webhook) {
     try {
-      const url = new URL(channel.webhookUrl)
-      return url.hostname
+      return new URL(webhook).hostname
     } catch {
-      return channel.webhookUrl.slice(0, 30)
+      return webhook.slice(0, 30)
     }
   }
-  if (channel.botToken) return `Bot ${channel.botToken.slice(0, 8)}...`
-  if (channel.corpId) return `Corp: ${channel.corpId}`
-  if (channel.smtpHost) return channel.smtpHost
-  if (channel.barkServerUrl) {
+  if (botToken) return `Bot ${botToken.slice(0, 8)}...`
+  if (corpId) return `Corp: ${corpId}`
+  if (smtp?.host) return smtp.host as string
+  if (server) {
     try {
-      return new URL(channel.barkServerUrl).hostname
+      return new URL(server).hostname
     } catch {
-      return channel.barkServerUrl.slice(0, 30)
+      return server.slice(0, 30)
     }
   }
   return null
@@ -68,7 +69,7 @@ export function ChannelCard({
   index
 }: ChannelCardProps) {
   const meta = CHANNEL_TYPES[channel.type]
-  const configPreview = getConfigPreview(channel)
+  const configPreview = getConfigPreview(channel.type, channel.config)
   const createdDate = new Date(channel.createdAt).toLocaleDateString('zh-CN')
 
   return (

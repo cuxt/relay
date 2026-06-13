@@ -1,39 +1,31 @@
-import type { Sender } from './types'
 import crypto from 'node:crypto'
+import type { SendContext, SendResult } from '../types'
+import type { DingtalkConfig } from './dingtalk'
 
-export const sendDingtalk: Sender = async ({ message, channel, endpoint }) => {
-  if (!channel.webhookUrl) {
+export async function sendDingtalk({ message, config, endpoint }: SendContext<DingtalkConfig>): Promise<SendResult> {
+  if (!config.webhook) {
     return { success: false, errorMessage: '未配置 Webhook 地址' }
   }
 
-  let url = channel.webhookUrl
+  let url = config.webhook
 
-  // 签名验证
-  if (channel.secret) {
+  if (config.secret) {
     const timestamp = Date.now()
-    const stringToSign = `${timestamp}\n${channel.secret}`
-    const hmac = crypto.createHmac('sha256', channel.secret)
+    const stringToSign = `${timestamp}\n${config.secret}`
+    const hmac = crypto.createHmac('sha256', config.secret)
     hmac.update(stringToSign)
     const sign = encodeURIComponent(hmac.digest('base64'))
     url += `&timestamp=${timestamp}&sign=${sign}`
   }
 
   const messageType = endpoint.messageType || 'text'
-
-  // 钉钉 markdown 需要 title 和 text
   const lines = message.split('\n')
   const title = lines[0] || '通知'
 
   const body =
     messageType === 'markdown'
-      ? {
-          msgtype: 'markdown',
-          markdown: { title, text: message }
-        }
-      : {
-          msgtype: 'text',
-          text: { content: message }
-        }
+      ? { msgtype: 'markdown', markdown: { title, text: message } }
+      : { msgtype: 'text', text: { content: message } }
 
   try {
     const res = await fetch(url, {

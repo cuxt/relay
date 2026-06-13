@@ -5,6 +5,8 @@ import { eq, and } from 'drizzle-orm'
 import { requireSession } from '@/middleware/api-auth'
 import { jsonResponse, errorResponse } from '@/lib/api/response'
 import { updateChannelSchema } from '@/lib/channels/validation'
+import { getChannelMeta } from '@/lib/channels/registry'
+import type { ChannelType } from '@/lib/channels/registry'
 
 export const Route = createFileRoute('/api/channels/$id')({
   server: {
@@ -69,6 +71,19 @@ export const Route = createFileRoute('/api/channels/$id')({
 
         if (!existing) {
           return errorResponse('NOT_FOUND', '渠道不存在', 404)
+        }
+
+        // 按 type 校验 config
+        if (parsed.data.config) {
+          const meta = getChannelMeta(existing.type as ChannelType)
+          const configParsed = meta.configSchema.safeParse(parsed.data.config)
+          if (!configParsed.success) {
+            return errorResponse(
+              'VALIDATION_ERROR',
+              configParsed.error.issues.map(i => i.message).join(', '),
+              400
+            )
+          }
         }
 
         const [updated] = await db

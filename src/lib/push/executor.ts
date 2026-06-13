@@ -4,7 +4,7 @@ import { channels } from '@/db/schemas/channels.schema'
 import { pushLogs } from '@/db/schemas/push-logs.schema'
 import { aiPresets } from '@/db/schemas/ai-presets.schema'
 import { eq, and } from 'drizzle-orm'
-import { sendMessage } from '@/lib/channels/sender'
+import { sendMessage } from '@/lib/channels/sender.server'
 import { evaluate } from './template.server'
 import type { AiResolver, AiCallMeta } from './template'
 import { processMessageWithAi } from '@/lib/ai/process'
@@ -144,7 +144,7 @@ export async function executePush(req: PushRequest): Promise<PushResponse> {
   const startTime = Date.now()
   const result = await sendMessage(ch.type as ChannelType, {
     message,
-    channel: ch,
+    config: (ch.config as Record<string, unknown>) || {},
     endpoint: ep
   })
   const latencyMs = Date.now() - startTime

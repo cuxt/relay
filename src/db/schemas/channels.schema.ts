@@ -1,7 +1,6 @@
 import {
   boolean,
   index,
-  integer,
   json,
   pgEnum,
   pgTable,
@@ -35,39 +34,7 @@ export const channels = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
 
-    // 通用字段
-    webhookUrl: text('webhook_url'),
-    secret: text('secret'),
-
-    // Telegram
-    botToken: text('bot_token'),
-    chatId: text('chat_id'),
-
-    // 企微应用
-    corpId: text('corp_id'),
-    agentId: text('agent_id'),
-    appSecret: text('app_secret'),
-
-    // Email SMTP
-    smtpHost: text('smtp_host'),
-    smtpPort: integer('smtp_port'),
-    smtpSecure: boolean('smtp_secure'),
-    smtpUser: text('smtp_user'),
-    smtpPassword: text('smtp_password'),
-    emailFrom: text('email_from'),
-    emailTo: text('email_to'),
-
-    // Email Resend
-    emailProvider: text('email_provider'), // 'smtp' | 'resend'
-    resendApiKey: text('resend_api_key'),
-
-    // Bark
-    barkServerUrl: text('bark_server_url'),
-    barkDeviceKey: text('bark_device_key'),
-
-    // 通用 Webhook
-    webhookMethod: text('webhook_method'),
-    webhookHeaders: json('webhook_headers').$type<Record<string, string>>(),
+    config: json('config').$type<Record<string, unknown>>().notNull().default({}),
 
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true })
