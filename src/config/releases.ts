@@ -8,6 +8,23 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.4.0',
+    date: '2026-06-13',
+    type: 'minor',
+    title: '数据库 Schema 与导航性能优化',
+    changes: [
+      '添加数据库 schema 和配置（account、session、user、verification 表）及 Drizzle 迁移文件',
+      '修复退出登录和注册成功后用户路由上下文查询未清除的问题',
+      '修复用户信息变更时的错误处理和回调 URL 更新',
+      '优化导航性能：导航前调用 router.invalidate() 刷新路由',
+      '优化导航性能：调整预加载过期时间，减少不必要的重新加载',
+      '从 seed 脚本中移除默认站点配置',
+      '.env.example 添加 VITE_SITE_NAME 变量',
+      '升级 button、card、sidebar、toggle-group 等组件',
+      '重构 use-mobile hook 实现',
+    ],
+  },
+  {
     version: '1.3.1',
     date: '2026-05-10',
     type: 'patch',

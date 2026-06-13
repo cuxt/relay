@@ -1,6 +1,7 @@
 import { Shield, Palette, Cable } from 'lucide-react'
 import { motion } from 'motion/react'
 import { Separator } from '@/components/ui/separator'
+import { ease } from './constants'
 
 const highlights = [
   {
@@ -19,8 +20,6 @@ const highlights = [
     description: 'Server Functions + Middleware + Zod，端到端类型推导',
   },
 ]
-
-const ease = [0.22, 1, 0.36, 1] as const
 
 export function Features() {
   return (

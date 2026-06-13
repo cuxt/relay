@@ -2,8 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-
-const ease = [0.22, 1, 0.36, 1] as const
+import { ease } from './constants'
 
 const techStack = ['TanStack Start', 'React 19', 'shadcn/ui', 'Drizzle ORM']
 
