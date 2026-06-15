@@ -1,12 +1,8 @@
 import {
   Home,
-  Settings,
   User,
   Users,
   Wrench,
-  Bubbles,
-  MessageCircle,
-  HelpCircle,
 } from 'lucide-react'
 import type { ReactNode } from 'react'
 
@@ -70,25 +66,6 @@ export const mainMenuItems: MenuItem[] = [
         group: '管理员',
       },
     ],
-  },
-]
-
-export const footerMenuItems: MenuItem[] = [
-  {
-    key: 'feedback',
-    label: '反馈',
-    icon: <MessageCircle className="h-4 w-4" />,
-    to: 'https://github.com',
-    external: true,
-    group: '常规',
-  },
-  {
-    key: 'help',
-    label: '帮助与支持',
-    icon: <HelpCircle className="h-4 w-4" />,
-    to: 'https://github.com',
-    external: true,
-    group: '常规',
   },
 ]
 

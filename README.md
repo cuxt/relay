@@ -27,10 +27,10 @@
 - 认证系统 — 邮箱注册/登录、邮箱验证、会话管理、管理员冒充登录
 - 角色权限 — user / admin 角色区分，路由级中间件保护
 - 侧边栏布局 — 可折叠侧边栏，支持 inset / icon / offcanvas 模式
-- 主题切换 — 浅色/深色/跟随系统，CSS 变量驱动
-- 用户管理 — 管理员可创建/编辑/封禁/删除用户、查看会话、重置密码
-- 系统配置 — 数据库存储的站点级配置（站点名称、图标等）
-- 更新日志 — 版本发布记录页面
+- 主题切换 — 浅色/深色/跟随系统，CSS 变量驱动，View Transition 动画
+- 用户管理 — 管理员可创建/编辑/封禁/删除用户、查看会话、重置密码、冒充登录
+- 系统配置 — 运行时系统信息展示
+- 更新日志 — 版本发布记录页面（支持 GitHub Releases API 代理）
 - 60+ UI 组件 — shadcn/ui 全套组件
 - SSR — TanStack Start 服务端渲染
 - 响应式 — 移动端适配
@@ -41,15 +41,16 @@
 src/
 ├── components/
 │   ├── ui/              # shadcn/ui 组件（60+）
-│   ├── x/               # 业务封装组件（Avatar、Input）
-│   ├── landing/         # 首页组件（Hero、Features）
-│   ├── layout/          # 布局组件（SidebarNav、Logo、UserMenu、ThemeToggle）
+│   ├── x/               # 业务封装组件（Avatar、Input、Logo）
+│   ├── landing/          # 首页组件（Hero、Features）
+│   ├── layout/          # 布局组件（UserMenu、ThemeToggle）
 │   └── settings/        # 设置页组件（用户 CRUD 弹窗）
 ├── config/
+│   ├── site.ts          # 站点品牌配置（名称、描述）
 │   ├── menu.tsx         # 侧边栏菜单配置
 │   └── releases.ts      # 版本更新记录
 ├── hooks/
-│   ├── use-theme.tsx    # 主题 Hook
+│   ├── use-theme.tsx    # 主题 Hook + ThemeProvider
 │   ├── use-sidebar.ts   # 侧边栏 Hook
 │   └── use-mobile.ts    # 移动端检测 Hook
 ├── lib/
@@ -90,7 +91,6 @@ src/
 
 ### 环境要求
 
-- Node.js >= 20
 - Bun >= 1.3
 - PostgreSQL
 
@@ -121,6 +121,8 @@ cp .env.example .env
 | `RESEND_API_KEY` | Resend 邮件 API Key | `re_xxxx` |
 | `EMAIL_FROM` | 发件人地址 | `noreply@example.com` |
 | `VITE_SITE_NAME` | 站点名称 | `My App` |
+| `GITHUB_TOKEN` | GitHub API Token（可选） | `ghp_xxxx` |
+| `GITHUB_REPO` | GitHub 仓库（可选，用于 Releases） | `owner/repo` |
 
 ### 数据库
 
@@ -128,11 +130,11 @@ cp .env.example .env
 # 推送 Schema 到数据库
 bun run db:push
 
-# 初始化种子数据（创建管理员账户 + 默认配置）
+# 初始化种子数据（创建管理员账户）
 bun run db:seed
 ```
 
-种子脚本会创建管理员账户：
+种子脚本会在数据库中不存在管理员时创建管理员账户：
 
 - 邮箱：`admin@example.com`
 - 密码：`12345678`
@@ -150,7 +152,7 @@ bun run dev
 ### 构建
 
 ```bash
-# 构建前自动执行 db:push 和 db:seed
+# 构建前自动执行 db:migrate，构建后自动执行 db:seed
 bun run build
 
 # 预览构建结果
@@ -203,21 +205,13 @@ bun run preview
 | banReason | text | 封禁原因 |
 | banExpires | timestamp | 封禁到期时间 |
 
-### session
+### session / account / verification
 
-会话表，支持 Cookie 缓存（5 分钟）以减少数据库查询。
-
-### account
-
-OAuth/密码账户表。
-
-### verification
-
-邮箱验证 token 表。
+Better Auth 标准表，支持 Cookie 缓存（5 分钟）以减少数据库查询。
 
 ### config
 
-站点配置键值对表（如 `site_name`、`icon_type`、`icon_value`）。
+站点配置键值对表（软删除），用于存储站点级动态配置。
 
 ## 主题系统
 
@@ -227,6 +221,7 @@ OAuth/密码账户表。
 - `--primary`（默认暖棕 `#b05d2e`）等设计 Token
 - 主题状态通过 Zustand 管理，持久化到 `localStorage`
 - 支持跟随系统偏好自动切换
+- 切换时使用 View Transition API 实现圆形扩散动画
 
 ## 认证架构
 
