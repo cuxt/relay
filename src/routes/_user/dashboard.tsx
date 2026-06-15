@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardContent } from '@/components/ui/card'
+import { siteConfig } from '@/config/site'
 
 export const Route = createFileRoute('/_user/dashboard')({
   component: DashboardPage,
@@ -24,7 +25,7 @@ function DashboardPage() {
         <h3 className="text-xl font-bold">
           {greeting}，{user.name}
         </h3>
-        <p className="text-muted-foreground mt-2 text-[15px]">欢迎使用 Tanstack Start Template</p>
+        <p className="text-muted-foreground mt-2 text-[15px]">欢迎使用 {siteConfig.name}</p>
       </CardContent>
     </Card>
   )

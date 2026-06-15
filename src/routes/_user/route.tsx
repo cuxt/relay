@@ -22,7 +22,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 import { mainMenuItems, filterMenuByRole } from '@/config/menu'
-import { Logo } from '@/components/layout/logo'
+import { Logo } from '@/components/x/logo'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { authMiddleware } from '@/middleware/auth'
 
@@ -99,7 +99,7 @@ function AppLayout() {
 function LogoArea() {
   const { state } = useSidebar()
 
-  return <Logo collapsed={state === 'collapsed'} />
+  return <Logo variant={state === 'collapsed' ? 'icon' : 'full'} />
 }
 
 function MainSidebarContent({

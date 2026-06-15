@@ -8,6 +8,21 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.5.0',
+    date: '2026-06-15',
+    type: 'minor',
+    title: '品牌系统重构与代码整理',
+    changes: [
+      '新增 siteConfig 集中管理站点名称与描述，消除多处硬编码',
+      '重构 Logo 组件：variant 变体（full/icon）替代 collapsed 属性，移除 SiteIcon 独立组件',
+      'Logo 组件迁移至 src/components/x/ 目录，统一业务组件归属',
+      '移除 src/components/x/index.ts 桶文件，改为直接导入路径',
+      '删除未使用的 SidebarNav 组件及 footerMenuItems 配置',
+      '优化 seed 脚本：仅当数据库中不存在管理员时才创建，而非检查任意用户',
+      '新增 Dependabot 自动依赖更新配置（bun + github-actions）',
+    ],
+  },
+  {
     version: '1.4.0',
     date: '2026-06-13',
     type: 'minor',

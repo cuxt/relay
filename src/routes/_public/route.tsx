@@ -1,7 +1,8 @@
 import { createFileRoute, Outlet, Link } from '@tanstack/react-router'
 import { useState, useEffect, useRef } from 'react'
 import { useLocation } from '@tanstack/react-router'
-import { SiteIcon } from '@/components/layout/site-icon'
+import { Logo } from '@/components/x/logo'
+import { siteConfig } from '@/config/site'
 import { authClient } from '@/lib/auth/client'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { UserMenu } from '@/components/layout/user-menu'
@@ -18,7 +19,6 @@ const navLinks = [
 ]
 
 function PublicLayout() {
-  const siteName = import.meta.env.VITE_SITE_NAME || 'Start Template'
   const location = useLocation()
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register'
   const { data: session } = authClient.useSession()
@@ -68,12 +68,7 @@ function PublicLayout() {
                 : 'h-16 px-2'
             }`}
           >
-            <Link to="/" className="group flex shrink-0 items-center gap-2.5 no-underline">
-              <div className="flex size-7 shrink-0 items-center justify-center transition-all duration-300 group-hover:scale-105">
-                <SiteIcon className="h-4 w-4" />
-              </div>
-              <span className="text-sm font-semibold tracking-tight">{siteName}</span>
-            </Link>
+            <Logo className="group shrink-0" />
 
             <div className="hidden items-center gap-0.5 sm:flex">
               {navLinks.map((link) => (
@@ -110,19 +105,19 @@ function PublicLayout() {
         <Outlet />
       </div>
 
-            {!isAuthPage && (
+      {!isAuthPage && (
         <footer className="border-border/40 relative z-10 border-t">
-        <div className="mx-auto max-w-6xl px-6 py-10 md:py-12">
-          <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-            <p className="text-muted-foreground/40 text-xs">
-              &copy; {new Date().getFullYear()} {siteName}. 版权所有。
-            </p>
-            <p className="text-muted-foreground/45 text-center text-xs sm:text-right">
-              &copy; {new Date().getFullYear()} cuxt. 版权所有，由项目贡献者设计与开发。
-            </p>
+          <div className="mx-auto max-w-6xl px-6 py-10 md:py-12">
+            <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
+              <p className="text-muted-foreground/40 text-xs">
+                &copy; {new Date().getFullYear()} {siteConfig.name}. 版权所有。
+              </p>
+              <p className="text-muted-foreground/45 text-center text-xs sm:text-right">
+                &copy; {new Date().getFullYear()} cuxt. 版权所有，由项目贡献者设计与开发。
+              </p>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
       )}
     </div>
   )

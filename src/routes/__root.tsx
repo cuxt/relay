@@ -5,6 +5,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { Toaster as Sonner } from 'sonner'
 import { ThemeProvider, useTheme } from '@/hooks/use-theme'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { siteConfig } from '@/config/site'
 import appCSS from '@/styles.css?url'
 
 interface RouterContext {
@@ -17,8 +18,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       meta: [
         { charSet: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { title: 'Start Template' },
-        { name: 'description', content: '通用全栈起步模板' },
+        { title: siteConfig.name },
+        { name: 'description', content: siteConfig.description },
       ],
       links: [
         { rel: 'icon', href: '/favicon.svg' },

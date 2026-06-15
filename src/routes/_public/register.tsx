@@ -6,10 +6,11 @@ import { toast } from 'sonner'
 import { authClient } from '@/lib/auth/client'
 import { getSession } from '@/lib/auth/session'
 import { userRouteContextQueryKey } from '@/lib/query-keys'
-import { Input } from '@/components/x'
+import { Input } from '@/components/x/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
+import { siteConfig } from '@/config/site'
 
 export const Route = createFileRoute('/_public/register')({
   beforeLoad: async () => {
@@ -72,7 +73,7 @@ function RegisterPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
         <h2 className="text-2xl font-bold tracking-tight">创建账户</h2>
-        <p className="text-sm text-muted-foreground mt-1">开始使用 TanStack Start Template</p>
+        <p className="text-sm text-muted-foreground mt-1">开始使用 {siteConfig.name}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
