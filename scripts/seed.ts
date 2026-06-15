@@ -16,10 +16,14 @@ async function seed() {
   console.log('🌱 开始数据库种子...')
 
   try {
-    const existingUsers = await db.select().from(user).limit(1)
+    const existingAdmin = await db
+      .select()
+      .from(user)
+      .where(eq(user.role, 'admin'))
+      .limit(1)
 
-    if (existingUsers.length > 0) {
-      console.log('⚠️  数据库中已存在用户，跳过种子数据创建')
+    if (existingAdmin.length > 0) {
+      console.log('⚠️  数据库中已存在管理员用户，跳过种子数据创建')
       process.exit(0)
     }
 
