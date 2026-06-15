@@ -5,9 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "bun run db:migrate",
-    "build": "vite build",
-    "postbuild": "bun run db:seed",
+    "build": "bun run db:migrate && bun run db:seed && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "oxlint",
