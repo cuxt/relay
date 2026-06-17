@@ -34,6 +34,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { buttonVariants } from '@/components/ui/button'
+import { ROLES, ROUTES, AUTH } from '@/constants'
 
 export const Route = createFileRoute('/_user/profile')({
   component: ProfileSettings,
@@ -81,7 +82,7 @@ function ProfileSettings() {
       toast.error('请填写所有字段')
       return
     }
-    if (newPassword.length < 8) {
+    if (newPassword.length < AUTH.PASSWORD_MIN_LENGTH) {
       toast.error('新密码至少 8 位')
       return
     }
@@ -94,7 +95,7 @@ function ProfileSettings() {
 
   const changeEmailMutation = useMutation({
     mutationFn: async ({ newEmail }: { newEmail: string }) => {
-      const res = await authClient.changeEmail({ newEmail, callbackURL: '/profile' })
+      const res = await authClient.changeEmail({ newEmail, callbackURL: ROUTES.PROFILE })
       if (res.error) throw res.error
     },
     onSuccess: () => {
@@ -110,7 +111,7 @@ function ProfileSettings() {
       if (res.error) throw res.error
       queryClient.removeQueries({ queryKey: userRouteContextQueryKey })
       await router.invalidate()
-      await navigate({ to: '/' })
+      await navigate({ to: ROUTES.HOME })
     } catch {
       setDeleting(false)
     }
@@ -130,9 +131,9 @@ function ProfileSettings() {
             <div className="flex flex-col gap-1.5 min-w-0">
               <h5 className="font-semibold text-base">{user.name}</h5>
               <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
+                <Badge variant={user.role === ROLES.ADMIN ? 'default' : 'secondary'}>
                   <Shield className="h-3 w-3 mr-1" />
-                  {user.role === 'admin' ? '管理员' : '普通用户'}
+                  {user.role === ROLES.ADMIN ? '管理员' : '普通用户'}
                 </Badge>
                 <span className="text-muted-foreground">ID：{user.id}</span>
               </div>

@@ -5,6 +5,7 @@ import {
   Wrench,
 } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { ROLES, ROUTES, type Role } from '@/constants'
 
 export interface MenuItem {
   key: string
@@ -12,7 +13,7 @@ export interface MenuItem {
   icon?: ReactNode
   to?: string
   children?: MenuItem[]
-  role?: 'admin' | 'user'
+  role?: Role
   external?: boolean
   group?: string
 }
@@ -26,7 +27,7 @@ export const mainMenuItems: MenuItem[] = [
         key: 'dashboard',
         label: '概述',
         icon: <Home className="h-4 w-4" />,
-        to: '/dashboard',
+        to: ROUTES.DASHBOARD,
         group: '常规',
       },
     ],
@@ -39,7 +40,7 @@ export const mainMenuItems: MenuItem[] = [
         key: 'settings-profile',
         label: '个人设置',
         icon: <User className="h-4 w-4" />,
-        to: '/profile',
+        to: ROUTES.PROFILE,
         group: '个人',
       },
     ],
@@ -47,22 +48,22 @@ export const mainMenuItems: MenuItem[] = [
   {
     key: 'group-admin',
     label: '管理员',
-    role: 'admin',
+    role: ROLES.ADMIN,
     children: [
       {
         key: 'settings-users',
         label: '用户管理',
         icon: <Users className="h-4 w-4" />,
-        to: '/users',
-        role: 'admin',
+        to: ROUTES.USERS,
+        role: ROLES.ADMIN,
         group: '管理员',
       },
       {
         key: 'settings-system',
         label: '系统配置',
         icon: <Wrench className="h-4 w-4" />,
-        to: '/settings',
-        role: 'admin',
+        to: ROUTES.SETTINGS,
+        role: ROLES.ADMIN,
         group: '管理员',
       },
     ],

@@ -3,12 +3,13 @@ import { routerWithQueryClient } from '@tanstack/react-router-with-query'
 import { QueryClient, MutationCache } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { routeTree } from './routeTree.gen'
+import { CACHE } from '@/constants'
 
 export function createRouter() {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 1000 * 60 * 5,
+        staleTime: CACHE.DEFAULT_STALE_TIME,
         retry: 1,
       },
     },
@@ -23,7 +24,7 @@ export function createRouter() {
     routeTree,
     scrollRestoration: true,
     defaultPreload: 'intent',
-    defaultPreloadStaleTime: 1000 * 30,
+    defaultPreloadStaleTime: CACHE.DEFAULT_PRELOAD_STALE_TIME,
     context: { queryClient },
   })
 

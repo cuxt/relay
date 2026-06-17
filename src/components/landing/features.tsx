@@ -1,7 +1,7 @@
 import { Shield, Palette, Cable } from 'lucide-react'
 import { motion } from 'motion/react'
 import { Separator } from '@/components/ui/separator'
-import { ease } from './constants'
+import { EASE } from '@/constants'
 
 const highlights = [
   {
@@ -35,7 +35,7 @@ export function Features() {
               transition={{
                 duration: 0.5,
                 delay: index * 0.1,
-                ease,
+                ease: EASE
               }}
               className="flex flex-col md:flex-row"
             >

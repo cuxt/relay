@@ -15,10 +15,11 @@ import {
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/x/input'
+import { AUTH } from '@/constants'
 
 const generatePassword = customAlphabet(
   'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%&*',
-  16
+  AUTH.GENERATED_PASSWORD_LENGTH
 )
 
 interface ResetPasswordModalProps {
@@ -97,7 +98,7 @@ export function ResetPasswordModal({ user, onClose, onSuccess }: ResetPasswordMo
                   id="reset-password"
                   name="password"
                   type="password"
-                  minLength={8}
+                  minLength={AUTH.PASSWORD_MIN_LENGTH}
                   placeholder="至少 8 个字符"
                   className="pr-9"
                   required

@@ -7,20 +7,21 @@ import { authClient } from '@/lib/auth/client'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { UserMenu } from '@/components/layout/user-menu'
 import { Button } from '@/components/ui/button'
+import { ROUTES } from '@/constants'
 
 export const Route = createFileRoute('/_public')({
   component: PublicLayout,
 })
 
 const navLinks = [
-  { to: '/', label: '首页' },
-  { to: '/dashboard', label: '控制台' },
-  { to: '/release', label: '更新日志' },
+  { to: ROUTES.HOME, label: '首页' },
+  { to: ROUTES.DASHBOARD, label: '控制台' },
+  { to: ROUTES.RELEASE, label: '更新日志' },
 ]
 
 function PublicLayout() {
   const location = useLocation()
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/register'
+  const isAuthPage = location.pathname === ROUTES.LOGIN || location.pathname === ROUTES.REGISTER
   const { data: session } = authClient.useSession()
   const [compact, setCompact] = useState(false)
   const hasScrolled = useRef(false)
@@ -86,12 +87,12 @@ function PublicLayout() {
                 <UserMenu user={session.user} impersonating={!!session.session.impersonatedBy} />
               ) : (
                 <>
-                  <Link to="/login">
+                  <Link to={ROUTES.LOGIN}>
                     <Button variant="outline" className="rounded-full h-8 text-[13px] px-3">
                       登录
                     </Button>
                   </Link>
-                  <Link to="/register">
+                  <Link to={ROUTES.REGISTER}>
                     <Button className="rounded-full h-8 text-[13px] px-3">注册</Button>
                   </Link>
                 </>

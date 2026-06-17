@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ease } from './constants'
+import { EASE } from '@/constants'
 
 const techStack = ['TanStack Start', 'React 19', 'shadcn/ui', 'Drizzle ORM']
 
@@ -32,7 +32,7 @@ export function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ duration: 0.6, ease }}
+          transition={{ duration: 0.6, ease: EASE }}
           className="flex items-center justify-center flex-wrap gap-2 mb-8"
         >
           {techStack.map((tech, i) => (
@@ -40,7 +40,7 @@ export function Hero() {
               key={tech}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, delay: 0.1 + i * 0.06, ease }}
+              transition={{ duration: 0.4, delay: 0.1 + i * 0.06, ease: EASE }}
             >
               <Badge variant="outline" className="text-xs font-normal px-3 py-1">
                 {tech}
@@ -53,7 +53,7 @@ export function Hero() {
         <motion.h1
           initial={{ opacity: 0, y: 24, filter: 'blur(10px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ duration: 0.7, delay: 0.15, ease }}
+          transition={{ duration: 0.7, delay: 0.15, ease: EASE }}
           className="text-5xl md:text-7xl font-extrabold leading-[1.08] tracking-tight mb-5 bg-linear-to-b from-foreground to-muted-foreground bg-clip-text text-transparent"
         >
           通用全栈
@@ -65,7 +65,7 @@ export function Hero() {
         <motion.p
           initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ duration: 0.6, delay: 0.3, ease }}
+          transition={{ duration: 0.6, delay: 0.3, ease: EASE }}
           className="text-lg text-muted-foreground mb-12"
         >
           认证、用户管理、主题、仪表盘 — 开箱即用，专注你的业务逻辑
@@ -75,7 +75,7 @@ export function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ duration: 0.6, delay: 0.45, ease }}
+          transition={{ duration: 0.6, delay: 0.45, ease: EASE }}
           className="flex items-center justify-center gap-3"
         >
           <Link to="/register">

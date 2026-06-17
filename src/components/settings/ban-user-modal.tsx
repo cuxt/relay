@@ -22,6 +22,7 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select'
+import { BAN_DURATIONS } from '@/constants'
 
 interface BanUserModalProps {
   user: {
@@ -32,14 +33,6 @@ interface BanUserModalProps {
   onClose: () => void
   onSuccess: () => void
 }
-
-const banDurations = [
-  { label: '1 小时', value: '3600' },
-  { label: '24 小时', value: '86400' },
-  { label: '7 天', value: '604800' },
-  { label: '30 天', value: '2592000' },
-  { label: '永久', value: 'permanent' },
-]
 
 export function BanUserModal({ user, onClose, onSuccess }: BanUserModalProps) {
   const formRef = useRef<HTMLFormElement>(null)
@@ -89,13 +82,13 @@ export function BanUserModal({ user, onClose, onSuccess }: BanUserModalProps) {
             <Select
               name="duration"
               defaultValue="permanent"
-              items={Object.fromEntries(banDurations.map((d) => [d.value, d.label]))}
+              items={Object.fromEntries(BAN_DURATIONS.map((d) => [d.value, d.label]))}
             >
               <SelectTrigger>
                 <SelectValue placeholder="选择时长" />
               </SelectTrigger>
               <SelectContent>
-                {banDurations.map((d) => (
+                {BAN_DURATIONS.map((d) => (
                   <SelectItem key={d.value} value={d.value}>
                     {d.label}
                   </SelectItem>

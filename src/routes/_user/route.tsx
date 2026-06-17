@@ -25,8 +25,7 @@ import { mainMenuItems, filterMenuByRole } from '@/config/menu'
 import { Logo } from '@/components/x/logo'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { authMiddleware } from '@/middleware/auth'
-
-const USER_ROUTE_STALE_TIME = Infinity
+import { CACHE } from '@/constants'
 
 const getUserRouteContext = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
@@ -51,11 +50,11 @@ export const Route = createFileRoute('/_user')({
     return context.queryClient.ensureQueryData({
       queryKey: userRouteContextQueryKey,
       queryFn: () => getUserRouteContext(),
-      staleTime: USER_ROUTE_STALE_TIME,
+      staleTime: CACHE.USER_ROUTE_STALE_TIME,
     })
   },
-  staleTime: USER_ROUTE_STALE_TIME,
-  preloadStaleTime: USER_ROUTE_STALE_TIME,
+  staleTime: CACHE.USER_ROUTE_STALE_TIME,
+  preloadStaleTime: CACHE.USER_ROUTE_STALE_TIME,
   component: AppLayout,
 })
 

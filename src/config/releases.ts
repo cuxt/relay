@@ -8,6 +8,16 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.5.1',
+    date: '2026-06-17',
+    type: 'patch',
+    title: '统一常量管理',
+    changes: [
+      '统一常量目录（roles、routes、auth、cache、ui、i18n、animation、ban）',
+      '消除全项目硬编码散落',
+    ],
+  },
+  {
     version: '1.5.0',
     date: '2026-06-15',
     type: 'minor',

@@ -11,12 +11,13 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { siteConfig } from '@/config/site'
+import { ROUTES, AUTH } from '@/constants'
 
 export const Route = createFileRoute('/_public/register')({
   beforeLoad: async () => {
     const session = await getSession()
     if (session) {
-      throw redirect({ to: '/dashboard' })
+      throw redirect({ to: ROUTES.DASHBOARD })
     }
   },
   component: RegisterPage,
@@ -41,7 +42,7 @@ function RegisterPage() {
       return
     }
 
-    if (password.length < 8) {
+    if (password.length < AUTH.PASSWORD_MIN_LENGTH) {
       toast.error('密码至少 8 位')
       return
     }
@@ -60,7 +61,7 @@ function RegisterPage() {
       }
       queryClient.removeQueries({ queryKey: userRouteContextQueryKey })
       await router.invalidate()
-      await navigate({ to: '/dashboard' })
+      await navigate({ to: ROUTES.DASHBOARD })
     } catch {
       toast.error('注册失败，请重试')
     } finally {
@@ -112,7 +113,7 @@ function RegisterPage() {
               placeholder="至少 8 位密码"
               className="pl-9"
               required
-              minLength={8}
+              minLength={AUTH.PASSWORD_MIN_LENGTH}
             />
           </div>
         </div>
@@ -145,7 +146,7 @@ function RegisterPage() {
         </span>
       </div>
 
-      <Link to="/login" className="block">
+      <Link to={ROUTES.LOGIN} className="block">
         <Button variant="outline" className="w-full rounded-full" size="lg">
           登录
         </Button>

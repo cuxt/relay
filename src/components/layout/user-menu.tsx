@@ -14,6 +14,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
+import { ROUTES } from '@/constants'
 
 interface UserMenuProps {
   user: {
@@ -39,7 +40,7 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
     onSuccess: async () => {
       queryClient.removeQueries({ queryKey: userRouteContextQueryKey })
       await router.invalidate()
-      await navigate({ to: '/login' })
+      await navigate({ to: ROUTES.LOGIN })
     },
   })
 
@@ -51,7 +52,7 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
     onSuccess: async () => {
       queryClient.removeQueries({ queryKey: userRouteContextQueryKey })
       await router.invalidate()
-      await navigate({ to: '/users' })
+      await navigate({ to: ROUTES.USERS })
     },
   })
 
@@ -83,7 +84,7 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
           </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate({ to: '/profile' })}>
+        <DropdownMenuItem onClick={() => navigate({ to: ROUTES.PROFILE })}>
           <Settings className="mr-2 h-4 w-4" />
           设置
         </DropdownMenuItem>

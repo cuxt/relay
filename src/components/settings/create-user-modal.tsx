@@ -22,6 +22,7 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select'
+import { ROLES, AUTH, type Role } from '@/constants'
 
 interface CreateUserModalProps {
   open: boolean
@@ -37,7 +38,7 @@ export function CreateUserModal({ open, onClose, onSuccess }: CreateUserModalPro
       name: string
       email: string
       password: string
-      role: 'user' | 'admin'
+      role: Role
     }) => {
       const res = await authClient.admin.createUser(values)
       if (res.error) throw res.error
@@ -57,7 +58,7 @@ export function CreateUserModal({ open, onClose, onSuccess }: CreateUserModalPro
       name: formData.get('name') as string,
       email: formData.get('email') as string,
       password: formData.get('password') as string,
-      role: (formData.get('role') as 'user' | 'admin') || 'user',
+      role: (formData.get('role') as Role) || ROLES.USER,
     })
   }
 
@@ -91,18 +92,18 @@ export function CreateUserModal({ open, onClose, onSuccess }: CreateUserModalPro
               type="password"
               placeholder="至少 8 位密码"
               required
-              minLength={8}
+              minLength={AUTH.PASSWORD_MIN_LENGTH}
             />
           </div>
           <div className="space-y-2">
             <Label>角色</Label>
-            <Select name="role" defaultValue="user" items={{ user: '用户', admin: '管理员' }}>
+            <Select name="role" defaultValue={ROLES.USER} items={{ [ROLES.USER]: '用户', [ROLES.ADMIN]: '管理员' }}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="user">用户</SelectItem>
-                <SelectItem value="admin">管理员</SelectItem>
+                <SelectItem value={ROLES.USER}>用户</SelectItem>
+                <SelectItem value={ROLES.ADMIN}>管理员</SelectItem>
               </SelectContent>
             </Select>
           </div>
