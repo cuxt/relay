@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { Server, Clock } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
+import { I18N } from '@/constants'
 
 export const Route = createFileRoute('/_user/_admin/settings/')({
   component: SystemSettings,
@@ -26,7 +27,7 @@ function formatUptime(startTime: number): string {
 }
 
 function formatStartTime(startTime: number): string {
-  return new Date(startTime).toLocaleString('zh-CN', {
+  return new Date(startTime).toLocaleString(I18N.LOCALE, {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',

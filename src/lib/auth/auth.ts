@@ -5,6 +5,7 @@ import { tanstackStartCookies } from 'better-auth/tanstack-start'
 import { Resend } from 'resend'
 import { db } from '@/lib/db'
 import * as schema from '@/lib/db/schema'
+import { AUTH } from '@/constants'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -83,11 +84,11 @@ export const auth = betterAuth({
     schema,
   }),
   session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 days
-    updateAge: 60 * 60 * 24, // update session every 24 hours
+    expiresIn: AUTH.SESSION_EXPIRES_IN,
+    updateAge: AUTH.SESSION_UPDATE_AGE,
     cookieCache: {
       enabled: true,
-      maxAge: 5 * 60, // 缓存 5 分钟
+      maxAge: AUTH.COOKIE_CACHE_MAX_AGE,
     },
   },
   emailAndPassword: {

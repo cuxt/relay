@@ -24,6 +24,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { I18N } from '@/constants'
 
 interface UserSessionsModalProps {
   user: {
@@ -132,7 +133,7 @@ export function UserSessionsModal({ user, onClose }: UserSessionsModalProps) {
                           <Clock className="h-3.5 w-3.5" /> 创建
                         </span>
                         <span className="text-xs">
-                          {new Date(record.createdAt).toLocaleString('zh-CN')}
+                          {new Date(record.createdAt).toLocaleString(I18N.LOCALE)}
                         </span>
                       </div>
                     </div>

@@ -10,12 +10,13 @@ import { Input } from '@/components/x/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
+import { ROUTES } from '@/constants'
 
 export const Route = createFileRoute('/_public/login')({
   beforeLoad: async () => {
     const session = await getSession()
     if (session) {
-      throw redirect({ to: '/dashboard' })
+      throw redirect({ to: ROUTES.DASHBOARD })
     }
   },
   component: LoginPage,
@@ -47,7 +48,7 @@ function LoginPage() {
       }
       queryClient.removeQueries({ queryKey: userRouteContextQueryKey })
       await router.invalidate()
-      await navigate({ to: '/dashboard' })
+      await navigate({ to: ROUTES.DASHBOARD })
     } catch {
       toast.error('登录失败，请重试')
     } finally {
@@ -108,7 +109,7 @@ function LoginPage() {
           </span>
         </div>
 
-        <Link to="/register" className="block">
+        <Link to={ROUTES.REGISTER} className="block">
           <Button variant="outline" className="w-full rounded-full" size="lg">
             创建账户
           </Button>

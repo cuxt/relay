@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react'
 import { motion } from 'motion/react'
 import { cn } from '@/lib/utils'
 import { releasesQueryOptions } from '@/lib/query-keys'
+import { EASE, I18N } from '@/constants'
 
 export const Route = createFileRoute('/_public/release')({
   loader: async ({ context: { queryClient } }) => {
@@ -51,7 +52,7 @@ function ReleasePage() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.4, ease: EASE }}
           className="mb-10"
         >
           <h1 className="text-2xl font-bold tracking-tight">更新日志</h1>
@@ -71,7 +72,7 @@ function ReleasePage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
                   duration: 0.4,
-                  ease: [0.22, 1, 0.36, 1],
+                  ease: EASE,
                   delay: index * 0.06,
                 }}
                 className="group relative pl-8 last:pb-0 pb-8"
@@ -96,7 +97,7 @@ function ReleasePage() {
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(release.date).toLocaleDateString('zh-CN', {
+                      {new Date(release.date).toLocaleDateString(I18N.LOCALE, {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',

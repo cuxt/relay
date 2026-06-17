@@ -6,6 +6,7 @@ import { Toaster as Sonner } from 'sonner'
 import { ThemeProvider, useTheme } from '@/hooks/use-theme'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { siteConfig } from '@/config/site'
+import { I18N } from '@/constants'
 import appCSS from '@/styles.css?url'
 
 interface RouterContext {
@@ -89,7 +90,7 @@ function RootErrorComponent({ error }: { error: Error }) {
 
 function RootDocument({ children }: { children: ReactNode }) {
   return (
-    <html lang="zh-CN">
+    <html lang={I18N.LOCALE}>
       <head>
         <HeadContent />
       </head>

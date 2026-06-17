@@ -52,6 +52,7 @@ import { BanUserModal } from '@/components/settings/ban-user-modal'
 import { DeleteUserModal } from '@/components/settings/delete-user-modal'
 import { UserSessionsModal } from '@/components/settings/user-sessions-modal'
 import { ResetPasswordModal } from '@/components/settings/reset-password-modal'
+import { ROLES, ROUTES, UI, type Role } from '@/constants'
 
 export const Route = createFileRoute('/_user/_admin/users')({
   component: UsersSettings,
@@ -76,7 +77,7 @@ function UsersSettings() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const [searchText, setSearchText] = useState('')
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
+  const [pagination, setPagination] = useState({ current: 1, pageSize: UI.USER_PAGE_SIZE })
 
   const [createOpen, setCreateOpen] = useState(false)
   const [editUser, setEditUser] = useState<UserRecord | null>(null)
@@ -128,7 +129,7 @@ function UsersSettings() {
       toast.success('已切换到目标用户视角')
       queryClient.removeQueries({ queryKey: userRouteContextQueryKey })
       await router.invalidate()
-      await navigate({ to: '/dashboard' })
+      await navigate({ to: ROUTES.DASHBOARD })
     },
   })
 
@@ -144,7 +145,7 @@ function UsersSettings() {
   })
 
   const setRoleMutation = useMutation({
-    mutationFn: async ({ userId, role }: { userId: string; role: 'user' | 'admin' }) => {
+    mutationFn: async ({ userId, role }: { userId: string; role: Role }) => {
       const res = await authClient.admin.setRole({ userId, role })
       if (res.error) throw res.error
     },
@@ -222,10 +223,10 @@ function UsersSettings() {
                         </TableCell>
                         <TableCell className="hidden sm:table-cell">
                           <Badge
-                            variant={record.role === 'admin' ? 'default' : 'secondary'}
+                            variant={record.role === ROLES.ADMIN ? 'default' : 'secondary'}
                             className="shrink-0"
                           >
-                            {record.role === 'admin' ? '管理员' : '用户'}
+                            {record.role === ROLES.ADMIN ? '管理员' : '用户'}
                           </Badge>
                         </TableCell>
                         <TableCell className="hidden lg:table-cell">
@@ -262,18 +263,18 @@ function UsersSettings() {
                                 </DropdownMenuSubTrigger>
                                 <DropdownMenuSubContent>
                                   <DropdownMenuRadioGroup
-                                    value={record.role || 'user'}
+                                    value={record.role || ROLES.USER}
                                     onValueChange={(role) => {
-                                      if (role !== (record.role || 'user')) {
+                                      if (role !== (record.role || ROLES.USER)) {
                                         setRoleMutation.mutate({
                                           userId: record.id,
-                                          role: role as 'user' | 'admin',
+                                          role: role as Role,
                                         })
                                       }
                                     }}
                                   >
-                                    <DropdownMenuRadioItem value="user">用户</DropdownMenuRadioItem>
-                                    <DropdownMenuRadioItem value="admin">
+                                    <DropdownMenuRadioItem value={ROLES.USER}>用户</DropdownMenuRadioItem>
+                                    <DropdownMenuRadioItem value={ROLES.ADMIN}>
                                       管理员
                                     </DropdownMenuRadioItem>
                                   </DropdownMenuRadioGroup>
