@@ -10,17 +10,13 @@ import { auth } from '../src/lib/auth/auth'
 import { eq } from 'drizzle-orm'
 
 async function seed() {
-  const adminEmail = 'admin@example.com'
+  const adminEmail = 'admin@xbxin.com'
   const adminPassword = '12345678'
 
   console.log('🌱 开始数据库种子...')
 
   try {
-    const existingAdmin = await db
-      .select()
-      .from(user)
-      .where(eq(user.role, 'admin'))
-      .limit(1)
+    const existingAdmin = await db.select().from(user).where(eq(user.role, 'admin')).limit(1)
 
     if (existingAdmin.length > 0) {
       console.log('⚠️  数据库中已存在管理员用户，跳过种子数据创建')

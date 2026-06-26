@@ -1,8 +1,9 @@
 import { Settings, LogOut, ArrowLeftRight } from 'lucide-react'
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { authClient } from '@/lib/auth/client'
-import { sessionKey } from '@/lib/auth/session'
+import { sessionKey, type Session } from '@/lib/auth/session'
 import { Avatar } from '@/components/x/avatar'
 import { cn } from '@/lib/utils'
 import {
@@ -17,13 +18,7 @@ import {
 import { ROUTES } from '@/constants'
 
 interface UserMenuProps {
-  user: {
-    id: string
-    name: string
-    email: string
-    image?: string | null
-    role?: string | null
-  }
+  user: Session['user']
   impersonating?: boolean
 }
 
@@ -42,6 +37,7 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
       await router.invalidate()
       await navigate({ to: ROUTES.LOGIN })
     },
+    onError: () => toast.error('退出登录失败，请重试'),
   })
 
   const stop = useMutation({
@@ -54,13 +50,17 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
       await router.invalidate()
       await navigate({ to: ROUTES.USERS })
     },
+    onError: () => toast.error('退出模拟失败，请重试'),
   })
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <button className="cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2" />
+          <button
+            aria-label="用户菜单"
+            className="cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          />
         }
       >
         <Avatar
@@ -90,12 +90,12 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         {impersonating ? (
-          <DropdownMenuItem onClick={() => stop.mutate()}>
+          <DropdownMenuItem onClick={() => stop.mutate()} disabled={stop.isPending}>
             <ArrowLeftRight className="mr-2 h-4 w-4" />
             {stop.isPending ? '退出中...' : '退出模拟'}
           </DropdownMenuItem>
         ) : (
-          <DropdownMenuItem onClick={() => logout.mutate()}>
+          <DropdownMenuItem onClick={() => logout.mutate()} disabled={logout.isPending}>
             <LogOut className="mr-2 h-4 w-4" />
             {logout.isPending ? '退出中...' : '退出登录'}
           </DropdownMenuItem>

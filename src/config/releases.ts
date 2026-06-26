@@ -8,6 +8,18 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.6.1',
+    date: '2026-06-26',
+    type: 'patch',
+    title: '用户菜单可访问性与健壮性优化',
+    changes: [
+      '用户菜单触发按钮补充 aria-label，提升屏幕阅读器可访问性',
+      '退出登录、退出模拟失败时新增 toast 错误提示，避免静默失败',
+      '退出操作进行中禁用对应菜单项，防止重复触发',
+      '用户菜单 user 属性改用 Session 类型推导，移除手写类型定义',
+    ],
+  },
+  {
     version: '1.6.0',
     date: '2026-06-26',
     type: 'minor',
