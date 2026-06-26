@@ -6,24 +6,29 @@ interface SidebarStore {
   toggle: () => void
 }
 
-const SIDEBAR_COLLAPSED_KEY = 'sidebar-collapsed'
+const key = 'sidebar-collapsed'
+
+function readCollapsed() {
+  if (typeof window === 'undefined') return false
+
+  return localStorage.getItem(key) === 'true'
+}
+
+function saveCollapsed(value: boolean) {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(key, String(value))
+  }
+}
 
 export const useSidebarStore = create<SidebarStore>((set, get) => ({
-  collapsed: true,
+  collapsed: readCollapsed(),
   setCollapsed: (value: boolean) => {
-    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(value))
+    saveCollapsed(value)
     set({ collapsed: value })
   },
   toggle: () => {
-    const newValue = !get().collapsed
-    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(newValue))
-    set({ collapsed: newValue })
+    const value = !get().collapsed
+    saveCollapsed(value)
+    set({ collapsed: value })
   },
 }))
-
-if (typeof window !== 'undefined') {
-  const stored = localStorage.getItem(SIDEBAR_COLLAPSED_KEY)
-  // 未设置时默认折叠
-  const isCollapsed = stored === null ? true : stored === 'true'
-  useSidebarStore.setState({ collapsed: isCollapsed })
-}

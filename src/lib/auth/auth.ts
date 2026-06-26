@@ -1,7 +1,6 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { admin } from 'better-auth/plugins'
-import { tanstackStartCookies } from 'better-auth/tanstack-start'
+import { admin, openAPI } from 'better-auth/plugins'
 import { Resend } from 'resend'
 import { db } from '@/lib/db'
 import * as schema from '@/lib/db/schema'
@@ -140,5 +139,5 @@ export const auth = betterAuth({
       }
     },
   },
-  plugins: [admin(), tanstackStartCookies()],
+  plugins: [admin(), openAPI({ disableDefaultReference: true })],
 })

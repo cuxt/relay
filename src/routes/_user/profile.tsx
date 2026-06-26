@@ -1,27 +1,8 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
-import { Loader2, Lock, User, Mail, Trash2 } from 'lucide-react'
-import { toast } from 'sonner'
-import { authClient } from '@/lib/auth/client'
-import { Badge } from '@/components/ui/badge'
-import { Shield } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/x/input'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Avatar } from '@/components/x/avatar'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { userRouteContextQueryKey } from '@/lib/query-keys'
+import { Loader2, Lock, Mail, Shield, Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,299 +14,337 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { buttonVariants } from '@/components/ui/button'
-import { ROLES, ROUTES, AUTH } from '@/constants'
+import { Badge } from '@/components/ui/badge'
+import { Button, buttonVariants } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { Avatar } from '@/components/x/avatar'
+import { Input } from '@/components/x/input'
+import { AUTH, ROLES, ROUTES } from '@/constants'
+import { authClient } from '@/lib/auth/client'
+import { sessionKey } from '@/lib/auth/session'
 
 export const Route = createFileRoute('/_user/profile')({
-  component: ProfileSettings,
+  component: ProfilePage,
 })
 
-function ProfileSettings() {
+function ProfilePage() {
   const { user } = Route.useRouteContext()
   const navigate = useNavigate()
   const router = useRouter()
   const queryClient = useQueryClient()
+  const [emailOpen, setEmailOpen] = useState(false)
+  const [email, setEmail] = useState('')
+  const [passOpen, setPassOpen] = useState(false)
+  const [oldPass, setOldPass] = useState('')
+  const [newPass, setNewPass] = useState('')
+  const [confirmPass, setConfirmPass] = useState('')
   const [deleting, setDeleting] = useState(false)
-  const [changeEmailOpen, setChangeEmailOpen] = useState(false)
-  const [newEmail, setNewEmail] = useState('')
-  const [changePasswordOpen, setChangePasswordOpen] = useState(false)
-  const [currentPassword, setCurrentPassword] = useState('')
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
 
-  const changePasswordMutation = useMutation({
-    mutationFn: async ({
-      currentPassword,
-      newPassword,
-    }: {
-      currentPassword: string
-      newPassword: string
-    }) => {
+  const changeEmail = useMutation({
+    mutationFn: async () => {
+      const res = await authClient.changeEmail({ newEmail: email, callbackURL: ROUTES.PROFILE })
+      if (res.error) throw res.error
+    },
+    onSuccess: () => {
+      toast.success('验证链接已发送')
+      setEmailOpen(false)
+      setEmail('')
+    },
+  })
+
+  const changePass = useMutation({
+    mutationFn: async () => {
       const res = await authClient.changePassword({
-        currentPassword,
-        newPassword,
+        currentPassword: oldPass,
+        newPassword: newPass,
       })
       if (res.error) throw res.error
-      return res.data
     },
     onSuccess: () => {
       toast.success('密码已更新')
-      setChangePasswordOpen(false)
-      setCurrentPassword('')
-      setNewPassword('')
-      setConfirmPassword('')
+      setPassOpen(false)
+      setOldPass('')
+      setNewPass('')
+      setConfirmPass('')
     },
   })
 
-  const handleChangePassword = () => {
-    if (!currentPassword || !newPassword) {
+  function submitPass() {
+    if (!oldPass || !newPass) {
       toast.error('请填写所有字段')
       return
     }
-    if (newPassword.length < AUTH.PASSWORD_MIN_LENGTH) {
-      toast.error('新密码至少 8 位')
+    if (newPass.length < AUTH.PASSWORD_MIN_LENGTH) {
+      toast.error(`新密码至少 ${AUTH.PASSWORD_MIN_LENGTH} 位`)
       return
     }
-    if (newPassword !== confirmPassword) {
+    if (newPass !== confirmPass) {
       toast.error('两次密码不一致')
       return
     }
-    changePasswordMutation.mutate({ currentPassword, newPassword })
+    changePass.mutate()
   }
 
-  const changeEmailMutation = useMutation({
-    mutationFn: async ({ newEmail }: { newEmail: string }) => {
-      const res = await authClient.changeEmail({ newEmail, callbackURL: ROUTES.PROFILE })
-      if (res.error) throw res.error
-    },
-    onSuccess: () => {
-      setChangeEmailOpen(false)
-      setNewEmail('')
-    },
-  })
-
-  const handleDeleteAccount = async () => {
+  async function deleteAccount() {
     setDeleting(true)
     try {
       const res = await authClient.deleteUser()
       if (res.error) throw res.error
-      queryClient.removeQueries({ queryKey: userRouteContextQueryKey })
+      queryClient.removeQueries({ queryKey: sessionKey })
       await router.invalidate()
       await navigate({ to: ROUTES.HOME })
     } catch {
       setDeleting(false)
+      toast.error('删除失败，请重试')
     }
   }
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-start gap-4">
-            <Avatar
-              id={user.id}
-              src={user.image}
-              size="lg"
-              className="h-16 w-16"
-            />
-            <div className="flex flex-col gap-1.5 min-w-0">
-              <h5 className="font-semibold text-base">{user.name}</h5>
-              <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                <Badge variant={user.role === ROLES.ADMIN ? 'default' : 'secondary'}>
-                  <Shield className="h-3 w-3 mr-1" />
-                  {user.role === ROLES.ADMIN ? '管理员' : '普通用户'}
-                </Badge>
-                <span className="text-muted-foreground">ID：{user.id}</span>
-              </div>
+    <div className="mx-auto max-w-3xl space-y-12">
+      <header className="grid gap-6 border-b border-border pb-10 md:grid-cols-[1fr_auto] md:items-end">
+        <div>
+          <p className="text-sm text-muted-foreground">个人设置</p>
+          <h1 className="mt-3 text-3xl font-semibold">{user.name}</h1>
+          <p className="mt-4 max-w-xl leading-7 text-muted-foreground">
+            管理登录身份、邮箱和账户安全。这里保留必要操作，其他信息交给系统自动维护。
+          </p>
+        </div>
+        <Avatar id={user.id} src={user.image} size="lg" className="h-20 w-20" />
+      </header>
+
+      <section className="space-y-4">
+        <h2 className="text-base font-medium">身份</h2>
+        <div className="divide-y divide-border border-y border-border">
+          <InfoRow label="用户 ID" value={user.id} />
+          <div className="grid gap-2 py-5 md:grid-cols-[9rem_1fr]">
+            <p className="text-sm text-muted-foreground">角色</p>
+            <div>
+              <Badge variant={user.role === ROLES.ADMIN ? 'default' : 'secondary'}>
+                <Shield className="mr-1 h-3 w-3" />
+                {user.role === ROLES.ADMIN ? '管理员' : '普通用户'}
+              </Badge>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>账户管理</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="binding">
-            <TabsList className="w-full justify-start">
-              <TabsTrigger value="binding" className="gap-1.5">
-                <User className="h-4 w-4" />
-                账户绑定
-              </TabsTrigger>
-              <TabsTrigger value="security" className="gap-1.5">
-                <Lock className="h-4 w-4" />
-                安全设置
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="binding" className="mt-4 space-y-0">
-              <div className="flex items-center justify-between py-3 border-b border-border">
-                <div className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">邮箱</p>
-                    <p className="text-sm text-muted-foreground">{user.email}</p>
+      <section className="space-y-4">
+        <h2 className="text-base font-medium">账户</h2>
+        <div className="divide-y divide-border border-y border-border">
+          <ActionRow
+            icon={<Mail className="h-4 w-4" />}
+            label="邮箱"
+            value={user.email}
+            action={
+              <Dialog open={emailOpen} onOpenChange={setEmailOpen}>
+                <DialogTrigger
+                  render={
+                    <Button variant="outline" size="sm" className="rounded-full">
+                      修改
+                    </Button>
+                  }
+                />
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>修改邮箱</DialogTitle>
+                    <DialogDescription>验证链接会发送到新的邮箱地址。</DialogDescription>
+                  </DialogHeader>
+                  <div className="py-4">
+                    <Label htmlFor="email">新邮箱</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                      placeholder="your@email.com"
+                      className="mt-2"
+                    />
                   </div>
-                </div>
-                <Dialog open={changeEmailOpen} onOpenChange={setChangeEmailOpen}>
-                  <DialogTrigger
-                    render={
-                      <Button variant="outline" size="sm" className="rounded-full" onClick={() => setChangeEmailOpen(true)}>
-                        修改邮箱
-                      </Button>
-                    }
-                  />
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>修改邮箱</DialogTitle>
-                      <DialogDescription>
-                        输入新的邮箱地址，我们会发送验证链接到该邮箱。
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4">
-                      <Label htmlFor="newEmail">新邮箱</Label>
-                      <Input
-                        id="newEmail"
-                        type="email"
-                        placeholder="your@email.com"
-                        value={newEmail}
-                        onChange={(e) => setNewEmail(e.target.value)}
-                        className="mt-2"
-                      />
-                    </div>
-                    <DialogFooter>
-                      <Button variant="outline" onClick={() => setChangeEmailOpen(false)}>
-                        取消
-                      </Button>
-                      <Button
-                        onClick={() => changeEmailMutation.mutate({ newEmail })}
-                        disabled={!newEmail || changeEmailMutation.isPending}
-                      >
-                        {changeEmailMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                        发送验证链接
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </TabsContent>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setEmailOpen(false)}>
+                      取消
+                    </Button>
+                    <Button
+                      onClick={() => changeEmail.mutate()}
+                      disabled={!email || changeEmail.isPending}
+                    >
+                      {changeEmail.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                      发送验证
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            }
+          />
 
-            <TabsContent value="security" className="mt-4 space-y-0">
-              <div className="flex items-center justify-between py-3 border-b border-border">
-                <div className="flex items-center gap-3">
-                  <Lock className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">密码</p>
-                    <p className="text-sm text-muted-foreground">定期更改密码可以提高账户安全性</p>
+          <ActionRow
+            icon={<Lock className="h-4 w-4" />}
+            label="密码"
+            value="定期更新密码可以降低账户风险"
+            action={
+              <Dialog open={passOpen} onOpenChange={setPassOpen}>
+                <DialogTrigger
+                  render={
+                    <Button variant="outline" size="sm" className="rounded-full">
+                      修改
+                    </Button>
+                  }
+                />
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>修改密码</DialogTitle>
+                    <DialogDescription>请输入当前密码和新密码。</DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <PassField
+                      id="oldPass"
+                      label="当前密码"
+                      value={oldPass}
+                      onChange={setOldPass}
+                      autoComplete="current-password"
+                    />
+                    <PassField
+                      id="newPass"
+                      label="新密码"
+                      value={newPass}
+                      onChange={setNewPass}
+                      autoComplete="new-password"
+                    />
+                    <PassField
+                      id="confirmPass"
+                      label="确认新密码"
+                      value={confirmPass}
+                      onChange={setConfirmPass}
+                      autoComplete="new-password"
+                    />
                   </div>
-                </div>
-                <Dialog open={changePasswordOpen} onOpenChange={setChangePasswordOpen}>
-                  <DialogTrigger
-                    render={
-                      <Button variant="outline" size="sm" className="rounded-full" onClick={() => setChangePasswordOpen(true)}>
-                        修改密码
-                      </Button>
-                    }
-                  />
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>修改密码</DialogTitle>
-                      <DialogDescription>
-                        请输入当前密码和新密码。
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="currentPassword">当前密码</Label>
-                        <Input
-                          id="currentPassword"
-                          type="password"
-                          placeholder="输入当前密码"
-                          value={currentPassword}
-                          onChange={(e) => setCurrentPassword(e.target.value)}
-                          autoComplete="current-password"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="newPassword">新密码</Label>
-                        <Input
-                          id="newPassword"
-                          type="password"
-                          placeholder="输入新密码（至少 8 位）"
-                          value={newPassword}
-                          onChange={(e) => setNewPassword(e.target.value)}
-                          autoComplete="new-password"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="confirmPassword">确认新密码</Label>
-                        <Input
-                          id="confirmPassword"
-                          type="password"
-                          placeholder="再次输入新密码"
-                          value={confirmPassword}
-                          onChange={(e) => setConfirmPassword(e.target.value)}
-                          autoComplete="new-password"
-                        />
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button variant="outline" onClick={() => setChangePasswordOpen(false)}>
-                        取消
-                      </Button>
-                      <Button
-                        onClick={handleChangePassword}
-                        disabled={changePasswordMutation.isPending}
-                      >
-                        {changePasswordMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                        更新密码
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setPassOpen(false)}>
+                      取消
+                    </Button>
+                    <Button onClick={submitPass} disabled={changePass.isPending}>
+                      {changePass.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                      更新密码
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            }
+          />
+        </div>
+      </section>
 
-              <div className="flex items-center justify-between py-3">
-                <div className="flex items-center gap-3">
-                  <Trash2 className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">删除账户</p>
-                    <p className="text-sm text-muted-foreground">删除后所有数据将被永久移除</p>
-                  </div>
-                </div>
-                <AlertDialog>
-                  <AlertDialogTrigger
-                    render={
-                      <Button variant="destructive" size="sm" className="rounded-full">
-                        删除账户
-                      </Button>
-                    }
-                  />
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>确定要删除账户吗？</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        此操作不可撤销，你的所有数据将被永久删除。
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>取消</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={handleDeleteAccount}
-                        className={buttonVariants({ variant: 'destructive' })}
-                        disabled={deleting}
-                      >
-                        {deleting ? '删除中...' : '确认删除'}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+      <section className="space-y-4">
+        <h2 className="text-base font-medium text-destructive">危险操作</h2>
+        <div className="border-y border-border py-5">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex gap-3">
+              <Trash2 className="mt-1 h-4 w-4 text-muted-foreground" />
+              <div>
+                <p className="text-sm font-medium">删除账户</p>
+                <p className="mt-1 text-sm text-muted-foreground">删除后所有数据将被永久移除。</p>
               </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+            </div>
+            <AlertDialog>
+              <AlertDialogTrigger
+                render={
+                  <Button variant="destructive" size="sm" className="rounded-full">
+                    删除账户
+                  </Button>
+                }
+              />
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>确定要删除账户吗？</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    此操作不可撤销，你的所有数据将被永久删除。
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>取消</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={deleteAccount}
+                    className={buttonVariants({ variant: 'destructive' })}
+                    disabled={deleting}
+                  >
+                    {deleting ? '删除中...' : '确认删除'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="grid gap-2 py-5 md:grid-cols-[9rem_1fr]">
+      <p className="text-sm text-muted-foreground">{label}</p>
+      <p className="break-all text-sm">{value}</p>
+    </div>
+  )
+}
+
+function ActionRow({
+  icon,
+  label,
+  value,
+  action,
+}: {
+  icon: ReactNode
+  label: string
+  value: string
+  action: ReactNode
+}) {
+  return (
+    <div className="flex flex-col gap-4 py-5 md:flex-row md:items-center md:justify-between">
+      <div className="flex gap-3">
+        <span className="mt-1 text-muted-foreground">{icon}</span>
+        <div>
+          <p className="text-sm font-medium">{label}</p>
+          <p className="mt-1 break-all text-sm text-muted-foreground">{value}</p>
+        </div>
+      </div>
+      {action}
+    </div>
+  )
+}
+
+function PassField({
+  id,
+  label,
+  value,
+  onChange,
+  autoComplete,
+}: {
+  id: string
+  label: string
+  value: string
+  onChange: (value: string) => void
+  autoComplete: string
+}) {
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{label}</Label>
+      <Input
+        id={id}
+        type="password"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        autoComplete={autoComplete}
+      />
     </div>
   )
 }

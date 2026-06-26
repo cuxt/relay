@@ -8,6 +8,23 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.6.0',
+    date: '2026-06-26',
+    type: 'minor',
+    title: 'Elysia 后端与文档系统重构',
+    changes: [
+      '后端接口统一迁移到 Elysia，拆分认证、更新日志、OpenAPI 等服务端模块',
+      '认证接口改为 Better Auth 原生挂载，移除独立会话接口和多余兼容逻辑',
+      'OpenAPI 页面改用 @elysia/openapi 官方 Scalar 渲染，并自动合并 Better Auth 文档',
+      '接口文档补全中文标签、摘要和说明，版本信息从 package.json 自动读取',
+      '移除配置页面，重新设计个人设置页面与用户菜单体验',
+      '侧边栏折叠状态改为本地持久化，避免刷新时出现折叠再展开的闪烁',
+      '修复 Calendar 组件在新版依赖下的显示与交互问题',
+      '移除 GitHub Release 查询、user-context、query-keys 等不再需要的封装与接口',
+      '首页调整为更克制的书信风格，减少大面积卡片背景',
+    ],
+  },
+  {
     version: '1.5.1',
     date: '2026-06-17',
     type: 'patch',
@@ -70,7 +87,7 @@ export const releases: Release[] = [
     changes: [
       '重构路由目录结构：从 _app/_auth 迁移到 _user/_public 双层架构',
       '新增公开路由：/login 登录页、/register 注册页、/ 公共首页',
-      '用户路由优化：/dashboard、/profile、/users、/settings',
+      '用户路由优化：/dashboard、/profile、/users',
       '统一用户区域根路由 _user/route.tsx',
       '优化 Logo/SiteIcon 组件，移除不必要的依赖',
       '删除弃用的 API 路由 (favicon.ts)',
@@ -162,7 +179,6 @@ export const releases: Release[] = [
       '集成 Recharts 图表库',
       '添加 shadcn/ui 组件库（60+ 组件）',
       '实现用户管理页面',
-      '实现系统配置页面',
       '实现更新日志页面',
       '添加 Carousel 轮播组件',
       '添加 Field 输入域组件',

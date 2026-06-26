@@ -2,7 +2,7 @@ import { Settings, LogOut, ArrowLeftRight } from 'lucide-react'
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { authClient } from '@/lib/auth/client'
-import { userRouteContextQueryKey } from '@/lib/query-keys'
+import { sessionKey } from '@/lib/auth/session'
 import { Avatar } from '@/components/x/avatar'
 import { cn } from '@/lib/utils'
 import {
@@ -32,25 +32,25 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
 
-  const logoutMutation = useMutation({
+  const logout = useMutation({
     mutationFn: async () => {
       const res = await authClient.signOut()
       if (res.error) throw res.error
     },
     onSuccess: async () => {
-      queryClient.removeQueries({ queryKey: userRouteContextQueryKey })
+      queryClient.removeQueries({ queryKey: sessionKey })
       await router.invalidate()
       await navigate({ to: ROUTES.LOGIN })
     },
   })
 
-  const stopImpersonateMutation = useMutation({
+  const stop = useMutation({
     mutationFn: async () => {
       const res = await authClient.admin.stopImpersonating()
       if (res.error) throw res.error
     },
     onSuccess: async () => {
-      queryClient.removeQueries({ queryKey: userRouteContextQueryKey })
+      queryClient.removeQueries({ queryKey: sessionKey })
       await router.invalidate()
       await navigate({ to: ROUTES.USERS })
     },
@@ -90,14 +90,14 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         {impersonating ? (
-          <DropdownMenuItem onClick={() => stopImpersonateMutation.mutate()}>
+          <DropdownMenuItem onClick={() => stop.mutate()}>
             <ArrowLeftRight className="mr-2 h-4 w-4" />
-            {stopImpersonateMutation.isPending ? '退出中...' : '退出模拟'}
+            {stop.isPending ? '退出中...' : '退出模拟'}
           </DropdownMenuItem>
         ) : (
-          <DropdownMenuItem onClick={() => logoutMutation.mutate()}>
+          <DropdownMenuItem onClick={() => logout.mutate()}>
             <LogOut className="mr-2 h-4 w-4" />
-            {logoutMutation.isPending ? '退出中...' : '退出登录'}
+            {logout.isPending ? '退出中...' : '退出登录'}
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

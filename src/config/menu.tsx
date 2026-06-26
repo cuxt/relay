@@ -1,9 +1,4 @@
-import {
-  Home,
-  User,
-  Users,
-  Wrench,
-} from 'lucide-react'
+import { Home, User, Users } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { ROLES, ROUTES, type Role } from '@/constants'
 
@@ -55,14 +50,6 @@ export const mainMenuItems: MenuItem[] = [
         label: '用户管理',
         icon: <Users className="h-4 w-4" />,
         to: ROUTES.USERS,
-        role: ROLES.ADMIN,
-        group: '管理员',
-      },
-      {
-        key: 'settings-system',
-        label: '系统配置',
-        icon: <Wrench className="h-4 w-4" />,
-        to: ROUTES.SETTINGS,
         role: ROLES.ADMIN,
         group: '管理员',
       },
