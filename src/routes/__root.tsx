@@ -14,6 +14,7 @@ interface RouterContext {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
+  ssr: true,
   head: () => {
     return {
       meta: [
@@ -31,23 +32,19 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
   errorComponent: RootErrorComponent,
   notFoundComponent: () => (
-    <RootDocument>
-      <div className="flex flex-col items-center justify-center min-h-screen p-12 text-center font-sans">
-        <h1 className="text-[120px] font-extrabold text-primary/15 leading-none select-none">
-          404
-        </h1>
-        <h2 className="text-2xl font-bold -mt-5">页面未找到</h2>
-        <p className="text-base text-muted-foreground mt-3 mb-8 max-w-100">
-          抱歉，你访问的页面不存在。请检查 URL 或返回首页。
-        </p>
-        <a
-          href="/"
-          className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium no-underline hover:bg-primary/90 transition-colors"
-        >
-          返回首页
-        </a>
-      </div>
-    </RootDocument>
+    <div className="flex flex-col items-center justify-center min-h-screen p-12 text-center font-sans">
+      <h1 className="text-[120px] font-extrabold text-primary/15 leading-none select-none">404</h1>
+      <h2 className="text-2xl font-bold -mt-5">页面未找到</h2>
+      <p className="text-base text-muted-foreground mt-3 mb-8 max-w-100">
+        抱歉，你访问的页面不存在。请检查 URL 或返回首页。
+      </p>
+      <a
+        href="/"
+        className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium no-underline hover:bg-primary/90 transition-colors"
+      >
+        返回首页
+      </a>
+    </div>
   ),
 })
 
@@ -70,21 +67,19 @@ function RootComponent() {
 
 function RootErrorComponent({ error }: { error: Error }) {
   return (
-    <RootDocument>
-      <div className="flex flex-col items-center justify-center min-h-screen p-6 font-sans">
-        <h1 className="text-5xl font-bold text-destructive">500</h1>
-        <p className="text-lg text-muted-foreground mb-6">服务器出现了错误</p>
-        <pre className="p-4 rounded-lg bg-muted max-w-150 overflow-auto text-[13px]">
-          {error.message}
-        </pre>
-        <a
-          href="/"
-          className="mt-6 px-6 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium no-underline hover:bg-primary/90 transition-colors"
-        >
-          返回首页
-        </a>
-      </div>
-    </RootDocument>
+    <div className="flex flex-col items-center justify-center min-h-screen p-6 font-sans">
+      <h1 className="text-5xl font-bold text-destructive">500</h1>
+      <p className="text-lg text-muted-foreground mb-6">服务器出现了错误</p>
+      <pre className="p-4 rounded-lg bg-muted max-w-150 overflow-auto text-[13px]">
+        {error.message}
+      </pre>
+      <a
+        href="/"
+        className="mt-6 px-6 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium no-underline hover:bg-primary/90 transition-colors"
+      >
+        返回首页
+      </a>
+    </div>
   )
 }
 

@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Card, CardContent } from '@/components/ui/card'
 import { siteConfig } from '@/config/site'
 
 export const Route = createFileRoute('/_user/dashboard')({
@@ -20,13 +19,14 @@ function DashboardPage() {
   const greeting = getGreeting()
 
   return (
-    <Card className="mt-0">
-      <CardContent className="p-6 md:p-7">
-        <h3 className="text-xl font-bold">
-          {greeting}，{user.name}
-        </h3>
-        <p className="text-muted-foreground mt-2 text-[15px]">欢迎使用 {siteConfig.name}</p>
-      </CardContent>
-    </Card>
+    <section className="max-w-2xl border-b border-border pb-8">
+      <p className="text-sm text-muted-foreground">{siteConfig.name}</p>
+      <h1 className="mt-4 text-3xl font-semibold">
+        {greeting}，{user.name}
+      </h1>
+      <p className="mt-4 leading-7 text-muted-foreground">
+        这里是你的工作台。没有额外背景，没有多余卡片，只留下接下来要做的事。
+      </p>
+    </section>
   )
 }

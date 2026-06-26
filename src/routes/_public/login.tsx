@@ -4,8 +4,7 @@ import { Mail, Lock, Loader2 } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { authClient } from '@/lib/auth/client'
-import { getSession } from '@/lib/auth/session'
-import { userRouteContextQueryKey } from '@/lib/query-keys'
+import { getSession, sessionKey } from '@/lib/auth/session'
 import { Input } from '@/components/x/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -46,7 +45,7 @@ function LoginPage() {
         toast.error(result.error.message || '登录失败')
         return
       }
-      queryClient.removeQueries({ queryKey: userRouteContextQueryKey })
+      queryClient.removeQueries({ queryKey: sessionKey })
       await router.invalidate()
       await navigate({ to: ROUTES.DASHBOARD })
     } catch {

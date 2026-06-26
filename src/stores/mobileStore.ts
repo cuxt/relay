@@ -6,29 +6,24 @@ interface MobileStore {
   setIsMobile: (value: boolean) => void
 }
 
-function subscribeMobile(callback: () => void) {
-  if (typeof window === 'undefined') return () => {}
-  const mql = window.matchMedia(`(max-width: ${UI.MOBILE_BREAKPOINT - 1}px)`)
-  mql.addEventListener('change', callback)
-  return () => mql.removeEventListener('change', callback)
-}
+const query = `(max-width: ${UI.MOBILE_BREAKPOINT - 1}px)`
 
-function getSnapshot(): boolean {
+function snapshot() {
   if (typeof window === 'undefined') return false
   return window.innerWidth < UI.MOBILE_BREAKPOINT
 }
 
 export const useMobileStore = create<MobileStore>((set) => ({
-  isMobile: getSnapshot(),
-  setIsMobile: (value: boolean) => set({ isMobile: value }),
+  isMobile: snapshot(),
+  setIsMobile: (value) => set({ isMobile: value }),
 }))
 
-// Initialize and subscribe to changes
 if (typeof window !== 'undefined') {
-  useMobileStore.setState({ isMobile: getSnapshot() })
+  const mql = window.matchMedia(query)
+  const sync = () => useMobileStore.setState({ isMobile: snapshot() })
 
-  const mql = window.matchMedia(`(max-width: ${UI.MOBILE_BREAKPOINT - 1}px)`)
-  mql.addEventListener('change', () => {
-    useMobileStore.setState({ isMobile: getSnapshot() })
-  })
+  sync()
+  mql.addEventListener('change', sync)
+
+  import.meta.hot?.dispose(() => mql.removeEventListener('change', sync))
 }

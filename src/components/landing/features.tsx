@@ -1,35 +1,32 @@
-import { Shield, Palette, Cable } from 'lucide-react'
 import { motion } from 'motion/react'
 import { Separator } from '@/components/ui/separator'
 import { EASE } from '@/constants'
 
 const highlights = [
   {
-    icon: Shield,
     title: '认证与用户管理',
-    description: '登录注册、会话管理、角色权限、Admin 面板，一站配齐',
+    description: '登录注册、会话、角色权限和用户管理保留在清晰的后台工作流里。',
   },
   {
-    icon: Palette,
-    title: '仪表盘与主题',
-    description: '统计图表、活动时间线、亮暗模式与多主色动态切换',
+    title: 'Elysia 后端',
+    description: '业务 API 统一挂在 Elysia app 下，Better Auth 按官方 handler 直接接入。',
   },
   {
-    icon: Cable,
-    title: '全栈类型安全',
-    description: 'Server Functions + Middleware + Zod，端到端类型推导',
+    title: '安静界面',
+    description: '页面减少卡片背景和装饰层级，保留文字、间距和必要的操作。',
   },
 ]
 
 export function Features() {
   return (
-    <div className="px-6 md:px-12 py-24">
-      <div className="max-w-5xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+    <div className="px-6 pb-24 md:px-12">
+      <div className="mx-auto max-w-3xl">
+        <Separator className="mb-10" />
+        <div className="space-y-8">
           {highlights.map((item, index) => (
             <motion.div
               key={item.title}
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{
@@ -37,26 +34,10 @@ export function Features() {
                 delay: index * 0.1,
                 ease: EASE
               }}
-              className="flex flex-col md:flex-row"
+              className="grid gap-2 border-b border-border pb-8 md:grid-cols-[10rem_1fr]"
             >
-              {/* Separator between items */}
-              {index > 0 && (
-                <>
-                  <Separator
-                    orientation="vertical"
-                    className="hidden md:block mx-8 h-auto self-stretch"
-                  />
-                  <Separator className="md:hidden my-8" />
-                </>
-              )}
-
-              <div className="flex-1 text-center md:text-left">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 mb-4">
-                  <item.icon className="h-5 w-5 text-primary" />
-                </div>
-                <h3 className="text-base font-semibold mb-2">{item.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
-              </div>
+              <h3 className="text-sm font-medium">{item.title}</h3>
+              <p className="text-sm leading-7 text-muted-foreground">{item.description}</p>
             </motion.div>
           ))}
         </div>

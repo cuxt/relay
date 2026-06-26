@@ -17,6 +17,4 @@ export const ROUTES = {
   PROFILE: '/profile',
   /** 用户管理（管理员） */
   USERS: '/users',
-  /** 系统配置（管理员） */
-  SETTINGS: '/settings',
 } as const

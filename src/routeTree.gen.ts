@@ -9,21 +9,25 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as OpenapiRouteImport } from './routes/openapi'
 import { Route as UserRouteRouteImport } from './routes/_user/route'
 import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
-import { Route as ApiReleasesRouteImport } from './routes/api/releases'
+import { Route as OpenapiSplatRouteImport } from './routes/openapi/$'
+import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as UserProfileRouteImport } from './routes/_user/profile'
 import { Route as UserDashboardRouteImport } from './routes/_user/dashboard'
 import { Route as PublicReleaseRouteImport } from './routes/_public/release'
 import { Route as PublicRegisterRouteImport } from './routes/_public/register'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as UserAdminRouteRouteImport } from './routes/_user/_admin/route'
-import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as UserAdminUsersRouteImport } from './routes/_user/_admin/users'
-import { Route as UserAdminSettingsRouteRouteImport } from './routes/_user/_admin/settings/route'
-import { Route as UserAdminSettingsIndexRouteImport } from './routes/_user/_admin/settings/index'
 
+const OpenapiRoute = OpenapiRouteImport.update({
+  id: '/openapi',
+  path: '/openapi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UserRouteRoute = UserRouteRouteImport.update({
   id: '/_user',
   getParentRoute: () => rootRouteImport,
@@ -37,9 +41,14 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PublicRouteRoute,
 } as any)
-const ApiReleasesRoute = ApiReleasesRouteImport.update({
-  id: '/api/releases',
-  path: '/api/releases',
+const OpenapiSplatRoute = OpenapiSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => OpenapiRoute,
+} as any)
+const ApiSplatRoute = ApiSplatRouteImport.update({
+  id: '/api/$',
+  path: '/api/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UserProfileRoute = UserProfileRouteImport.update({
@@ -71,122 +80,110 @@ const UserAdminRouteRoute = UserAdminRouteRouteImport.update({
   id: '/_admin',
   getParentRoute: () => UserRouteRoute,
 } as any)
-const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const UserAdminUsersRoute = UserAdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
   getParentRoute: () => UserAdminRouteRoute,
 } as any)
-const UserAdminSettingsRouteRoute = UserAdminSettingsRouteRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => UserAdminRouteRoute,
-} as any)
-const UserAdminSettingsIndexRoute = UserAdminSettingsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => UserAdminSettingsRouteRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
+  '/openapi': typeof OpenapiRouteWithChildren
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
   '/release': typeof PublicReleaseRoute
   '/dashboard': typeof UserDashboardRoute
   '/profile': typeof UserProfileRoute
-  '/api/releases': typeof ApiReleasesRoute
-  '/settings': typeof UserAdminSettingsRouteRouteWithChildren
+  '/api/$': typeof ApiSplatRoute
+  '/openapi/$': typeof OpenapiSplatRoute
   '/users': typeof UserAdminUsersRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
-  '/settings/': typeof UserAdminSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
+  '/openapi': typeof OpenapiRouteWithChildren
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
   '/release': typeof PublicReleaseRoute
   '/dashboard': typeof UserDashboardRoute
   '/profile': typeof UserProfileRoute
-  '/api/releases': typeof ApiReleasesRoute
+  '/api/$': typeof ApiSplatRoute
+  '/openapi/$': typeof OpenapiSplatRoute
   '/users': typeof UserAdminUsersRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
-  '/settings': typeof UserAdminSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_public': typeof PublicRouteRouteWithChildren
   '/_user': typeof UserRouteRouteWithChildren
+  '/openapi': typeof OpenapiRouteWithChildren
   '/_user/_admin': typeof UserAdminRouteRouteWithChildren
   '/_public/login': typeof PublicLoginRoute
   '/_public/register': typeof PublicRegisterRoute
   '/_public/release': typeof PublicReleaseRoute
   '/_user/dashboard': typeof UserDashboardRoute
   '/_user/profile': typeof UserProfileRoute
-  '/api/releases': typeof ApiReleasesRoute
+  '/api/$': typeof ApiSplatRoute
+  '/openapi/$': typeof OpenapiSplatRoute
   '/_public/': typeof PublicIndexRoute
-  '/_user/_admin/settings': typeof UserAdminSettingsRouteRouteWithChildren
   '/_user/_admin/users': typeof UserAdminUsersRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
-  '/_user/_admin/settings/': typeof UserAdminSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/openapi'
     | '/login'
     | '/register'
     | '/release'
     | '/dashboard'
     | '/profile'
-    | '/api/releases'
-    | '/settings'
+    | '/api/$'
+    | '/openapi/$'
     | '/users'
-    | '/api/auth/$'
-    | '/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/openapi'
     | '/login'
     | '/register'
     | '/release'
     | '/dashboard'
     | '/profile'
-    | '/api/releases'
+    | '/api/$'
+    | '/openapi/$'
     | '/users'
-    | '/api/auth/$'
-    | '/settings'
   id:
     | '__root__'
     | '/_public'
     | '/_user'
+    | '/openapi'
     | '/_user/_admin'
     | '/_public/login'
     | '/_public/register'
     | '/_public/release'
     | '/_user/dashboard'
     | '/_user/profile'
-    | '/api/releases'
+    | '/api/$'
+    | '/openapi/$'
     | '/_public/'
-    | '/_user/_admin/settings'
     | '/_user/_admin/users'
-    | '/api/auth/$'
-    | '/_user/_admin/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
   UserRouteRoute: typeof UserRouteRouteWithChildren
-  ApiReleasesRoute: typeof ApiReleasesRoute
-  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  OpenapiRoute: typeof OpenapiRouteWithChildren
+  ApiSplatRoute: typeof ApiSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/openapi': {
+      id: '/openapi'
+      path: '/openapi'
+      fullPath: '/openapi'
+      preLoaderRoute: typeof OpenapiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_user': {
       id: '/_user'
       path: ''
@@ -208,11 +205,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicIndexRouteImport
       parentRoute: typeof PublicRouteRoute
     }
-    '/api/releases': {
-      id: '/api/releases'
-      path: '/api/releases'
-      fullPath: '/api/releases'
-      preLoaderRoute: typeof ApiReleasesRouteImport
+    '/openapi/$': {
+      id: '/openapi/$'
+      path: '/$'
+      fullPath: '/openapi/$'
+      preLoaderRoute: typeof OpenapiSplatRouteImport
+      parentRoute: typeof OpenapiRoute
+    }
+    '/api/$': {
+      id: '/api/$'
+      path: '/api/$'
+      fullPath: '/api/$'
+      preLoaderRoute: typeof ApiSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_user/profile': {
@@ -257,33 +261,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserAdminRouteRouteImport
       parentRoute: typeof UserRouteRoute
     }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_user/_admin/users': {
       id: '/_user/_admin/users'
       path: '/users'
       fullPath: '/users'
       preLoaderRoute: typeof UserAdminUsersRouteImport
       parentRoute: typeof UserAdminRouteRoute
-    }
-    '/_user/_admin/settings': {
-      id: '/_user/_admin/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof UserAdminSettingsRouteRouteImport
-      parentRoute: typeof UserAdminRouteRoute
-    }
-    '/_user/_admin/settings/': {
-      id: '/_user/_admin/settings/'
-      path: '/'
-      fullPath: '/settings/'
-      preLoaderRoute: typeof UserAdminSettingsIndexRouteImport
-      parentRoute: typeof UserAdminSettingsRouteRoute
     }
   }
 }
@@ -306,27 +289,11 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
   PublicRouteRouteChildren,
 )
 
-interface UserAdminSettingsRouteRouteChildren {
-  UserAdminSettingsIndexRoute: typeof UserAdminSettingsIndexRoute
-}
-
-const UserAdminSettingsRouteRouteChildren: UserAdminSettingsRouteRouteChildren =
-  {
-    UserAdminSettingsIndexRoute: UserAdminSettingsIndexRoute,
-  }
-
-const UserAdminSettingsRouteRouteWithChildren =
-  UserAdminSettingsRouteRoute._addFileChildren(
-    UserAdminSettingsRouteRouteChildren,
-  )
-
 interface UserAdminRouteRouteChildren {
-  UserAdminSettingsRouteRoute: typeof UserAdminSettingsRouteRouteWithChildren
   UserAdminUsersRoute: typeof UserAdminUsersRoute
 }
 
 const UserAdminRouteRouteChildren: UserAdminRouteRouteChildren = {
-  UserAdminSettingsRouteRoute: UserAdminSettingsRouteRouteWithChildren,
   UserAdminUsersRoute: UserAdminUsersRoute,
 }
 
@@ -350,21 +317,33 @@ const UserRouteRouteWithChildren = UserRouteRoute._addFileChildren(
   UserRouteRouteChildren,
 )
 
+interface OpenapiRouteChildren {
+  OpenapiSplatRoute: typeof OpenapiSplatRoute
+}
+
+const OpenapiRouteChildren: OpenapiRouteChildren = {
+  OpenapiSplatRoute: OpenapiSplatRoute,
+}
+
+const OpenapiRouteWithChildren =
+  OpenapiRoute._addFileChildren(OpenapiRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   PublicRouteRoute: PublicRouteRouteWithChildren,
   UserRouteRoute: UserRouteRouteWithChildren,
-  ApiReleasesRoute: ApiReleasesRoute,
-  ApiAuthSplatRoute: ApiAuthSplatRoute,
+  OpenapiRoute: OpenapiRouteWithChildren,
+  ApiSplatRoute: ApiSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './start.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }

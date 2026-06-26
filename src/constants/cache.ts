@@ -9,8 +9,6 @@ export const CACHE = {
   DEFAULT_PRELOAD_STALE_TIME: 1000 * 30,
   /** Releases 查询 staleTime（30 分钟） */
   RELEASES_STALE_TIME: 1000 * 60 * 30,
-  /** 系统信息 staleTime（1 分钟） */
-  SYSTEM_INFO_STALE_TIME: 1000 * 60,
   /** 用户路由上下文 staleTime（永不过期） */
   USER_ROUTE_STALE_TIME: Infinity,
 } as const

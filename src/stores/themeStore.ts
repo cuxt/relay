@@ -22,7 +22,7 @@ function subscribeSystemTheme(callback: () => void) {
   return () => mediaQuery?.removeEventListener('change', callback)
 }
 
-export const useThemeStore = create<ThemeStore>((set, get) => ({
+export const useThemeStore = create<ThemeStore>((set) => ({
   // Start with defaults to avoid hydration mismatch
   mode: 'system',
   resolvedMode: 'light',

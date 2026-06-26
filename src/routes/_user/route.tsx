@@ -1,7 +1,4 @@
-import { createFileRoute, Outlet, useLocation, Link } from '@tanstack/react-router'
-import { createServerFn } from '@tanstack/react-start'
-import { getRequestHeaders } from '@tanstack/react-start/server'
-import { userRouteContextQueryKey } from '@/lib/query-keys'
+import { createFileRoute, Link, Outlet, useLocation } from '@tanstack/react-router'
 import { UserMenu } from '@/components/layout/user-menu'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -21,37 +18,21 @@ import {
   SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar'
-import { mainMenuItems, filterMenuByRole } from '@/config/menu'
 import { Logo } from '@/components/x/logo'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { authMiddleware } from '@/middleware/auth'
 import { CACHE } from '@/constants'
-
-const getUserRouteContext = createServerFn({ method: 'GET' })
-  .middleware([authMiddleware])
-  .handler(async ({ context: { user, session } }) => {
-    const headers = getRequestHeaders()
-    const cookie = headers.get('cookie')
-    const sidebarState = cookie
-      ?.split(';')
-      .map((item) => item.trim())
-      .find((item) => item.startsWith('sidebar_state='))
-      ?.split('=')[1]
-
-    return {
-      user: user,
-      session: session,
-      sidebarOpen: sidebarState === undefined ? true : sidebarState === 'true',
-    }
-  })
+import { filterMenuByRole, mainMenuItems } from '@/config/menu'
+import { requireSession, sessionKey } from '@/lib/auth/session'
+import { useSidebarStore } from '@/stores/sidebarStore'
 
 export const Route = createFileRoute('/_user')({
   beforeLoad: async ({ context }) => {
-    return context.queryClient.ensureQueryData({
-      queryKey: userRouteContextQueryKey,
-      queryFn: () => getUserRouteContext(),
+    const session = await context.queryClient.ensureQueryData({
+      queryKey: sessionKey,
+      queryFn: requireSession,
       staleTime: CACHE.USER_ROUTE_STALE_TIME,
     })
+
+    return session
   },
   staleTime: CACHE.USER_ROUTE_STALE_TIME,
   preloadStaleTime: CACHE.USER_ROUTE_STALE_TIME,
@@ -59,13 +40,18 @@ export const Route = createFileRoute('/_user')({
 })
 
 function AppLayout() {
-  const { user, session, sidebarOpen } = Route.useRouteContext()
+  const { user, session } = Route.useRouteContext()
   const location = useLocation()
-  const isMobile = useIsMobile()
-  const filteredMainItems = filterMenuByRole(mainMenuItems, user.role ?? undefined)
+  const collapsed = useSidebarStore((state) => state.collapsed)
+  const setCollapsed = useSidebarStore((state) => state.setCollapsed)
+  const items = filterMenuByRole(mainMenuItems, user.role ?? undefined)
 
   return (
-    <SidebarProvider defaultOpen={isMobile ? false : sidebarOpen}>
+    <SidebarProvider
+      defaultOpen={!collapsed}
+      open={!collapsed}
+      onOpenChange={(open) => setCollapsed(!open)}
+    >
       <div className="flex h-svh w-full">
         <Sidebar variant="inset" collapsible="icon">
           <SidebarContent className="p-0">
@@ -73,7 +59,7 @@ function AppLayout() {
               <LogoArea />
             </SidebarHeader>
             <TooltipProvider>
-              <MainSidebarContent items={filteredMainItems} location={location} />
+              <MainNav items={items} location={location} />
             </TooltipProvider>
           </SidebarContent>
           <SidebarRail />
@@ -97,11 +83,10 @@ function AppLayout() {
 
 function LogoArea() {
   const { state } = useSidebar()
-
   return <Logo variant={state === 'collapsed' ? 'icon' : 'full'} />
 }
 
-function MainSidebarContent({
+function MainNav({
   items,
   location,
 }: {
@@ -109,62 +94,34 @@ function MainSidebarContent({
   location: ReturnType<typeof useLocation>
 }) {
   const { setOpenMobile, isMobile } = useSidebar()
+  const close = () => {
+    if (isMobile) setOpenMobile(false)
+  }
 
   return (
     <>
-      {items.map((item) => {
-        if (item.children) {
-          return (
-            <SidebarGroup key={item.key}>
-              <SidebarGroupLabel>{item.label}</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {item.children.map((child) => (
-                    <SidebarMenuItem key={child.key}>
-                      <SidebarMenuButton
-                        isActive={location.pathname === child.to}
-                        tooltip={child.label}
-                        render={<Link to={child.to!} />}
-                        onClick={() => {
-                          if (isMobile) {
-                            setOpenMobile(false)
-                          }
-                        }}
-                      >
-                        {child.icon}
-                        <span>{child.label}</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          )
-        }
-        return (
-          <SidebarGroup key={item.key}>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <SidebarMenuItem key={item.key}>
+      {items.map((item) => (
+        <SidebarGroup key={item.key}>
+          {item.children ? <SidebarGroupLabel>{item.label}</SidebarGroupLabel> : null}
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {(item.children ?? [item]).map((child) => (
+                <SidebarMenuItem key={child.key}>
                   <SidebarMenuButton
-                    isActive={location.pathname === item.to}
-                    tooltip={item.label}
-                    render={<Link to={item.to!} />}
-                    onClick={() => {
-                      if (isMobile) {
-                        setOpenMobile(false)
-                      }
-                    }}
+                    isActive={location.pathname === child.to}
+                    tooltip={child.label}
+                    render={<Link to={child.to!} />}
+                    onClick={close}
                   >
-                    {item.icon}
-                    <span>{item.label}</span>
+                    {child.icon}
+                    <span>{child.label}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )
-      })}
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      ))}
     </>
   )
 }

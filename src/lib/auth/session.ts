@@ -1,18 +1,27 @@
-import { createServerFn } from '@tanstack/react-start'
-import { getRequestHeaders } from '@tanstack/react-start/server'
-import { auth } from './auth'
-import { authMiddleware } from '@/middleware/auth'
+import { redirect } from '@tanstack/react-router'
+import type { auth } from './auth'
+import { ROUTES } from '@/constants'
+import { authClient } from '@/lib/auth/client'
 
 export type Session = typeof auth.$Infer.Session
+export const sessionKey = ['auth', 'session'] as const
 
-export const getSession = createServerFn({ method: 'GET' }).handler(async () => {
-  const headers = getRequestHeaders()
-  const session = await auth.api.getSession({ headers })
-  return session as Session | null
-})
+export async function getSession() {
+  const { data, error } = await authClient.getSession()
 
-export const getAuthenticatedUser = createServerFn({ method: 'GET' })
-  .middleware([authMiddleware])
-  .handler(async ({ context }) => {
-    return { user: context.user, session: context.session }
-  })
+  if (error) {
+    throw error
+  }
+
+  return data as Session | null
+}
+
+export async function requireSession() {
+  const session = await getSession()
+
+  if (!session) {
+    throw redirect({ to: ROUTES.LOGIN })
+  }
+
+  return session
+}
