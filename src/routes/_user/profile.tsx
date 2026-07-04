@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useRef, useState, type ReactNode } from 'react'
 import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Lock, Mail, Shield, Trash2 } from 'lucide-react'
@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Avatar } from '@/components/x/avatar'
+import { uploadFile } from '@/lib/storage/upload'
 import { Input } from '@/components/x/input'
 import { AUTH, ROLES, ROUTES } from '@/constants'
 import { authClient } from '@/lib/auth/client'
@@ -47,6 +48,7 @@ function ProfilePage() {
   const [oldPass, setOldPass] = useState('')
   const [newPass, setNewPass] = useState('')
   const [confirmPass, setConfirmPass] = useState('')
+  const fileRef = useRef<HTMLInputElement>(null)
 
   const changeEmail = useMutation({
     mutationFn: async () => {
@@ -85,6 +87,27 @@ function ProfilePage() {
     newPass.length >= AUTH.PASSWORD_MIN_LENGTH &&
     newPass === confirmPass
 
+  const changeAvatar = useMutation({
+    mutationFn: async (file: File) => {
+      const { accessUrl } = await uploadFile(file, { prefix: 'avatars' })
+      const res = await authClient.updateUser({ image: accessUrl })
+      if (res.error) throw res.error
+      return accessUrl
+    },
+    onSuccess: async () => {
+      queryClient.removeQueries({ queryKey: sessionKey })
+      await router.invalidate()
+      toast.success('头像已更新')
+    },
+    onError: () => toast.error('更新头像失败，请重试'),
+  })
+
+  const onPickAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (file) changeAvatar.mutate(file)
+  }
+
   const deleteAccount = useMutation({
     mutationFn: async () => {
       const res = await authClient.deleteUser()
@@ -108,7 +131,25 @@ function ProfilePage() {
             管理登录身份、邮箱和账户安全。这里保留必要操作，其他信息交给系统自动维护。
           </p>
         </div>
-        <Avatar id={user.id} src={user.image} size="lg" className="h-20 w-20" />
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={changeAvatar.isPending}
+          title="更换头像"
+          className="group relative inline-flex rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed"
+        >
+          <Avatar id={user.id} src={user.image} size="lg" className="h-20 w-20" />
+          <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
+            {changeAvatar.isPending ? '上传中…' : '更换'}
+          </span>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={onPickAvatar}
+          />
+        </button>
       </header>
 
       <section className="space-y-4">

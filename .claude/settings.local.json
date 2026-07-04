@@ -24,7 +24,9 @@
       "mcp__chrome-devtools-mcp__fill_form",
       "mcp__chrome-devtools-mcp__list_network_requests",
       "mcp__chrome-devtools-mcp__evaluate_script",
-      "mcp__chrome-devtools-mcp__press_key"
+      "mcp__chrome-devtools-mcp__press_key",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs"
     ]
   }
 }
