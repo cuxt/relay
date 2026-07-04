@@ -3,5 +3,11 @@ import { docs } from './docs'
 import { authRoutes } from './routes/auth'
 import { releaseRoutes } from './routes/releases'
 import { emailRoutes } from './routes/email'
+import { storageRoutes } from './routes/storage'
 
-export const api = new Elysia().use(docs).use(authRoutes).use(releaseRoutes).use(emailRoutes)
+export const api = new Elysia()
+  .use(docs)
+  .use(authRoutes)
+  .use(releaseRoutes)
+  .use(emailRoutes)
+  .use(storageRoutes)

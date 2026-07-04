@@ -8,6 +8,17 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.8.0',
+    date: '2026-07-04',
+    type: 'minor',
+    title: '新增对象存储与文件上传能力',
+    changes: [
+      '新增「对象存储」管理页面，可在后台配置存储桶与访问域名',
+      '提供通用上传接口，前端获取上传地址后直传，支持公开与私有桶',
+      '个人设置页支持上传更换头像',
+    ],
+  },
+  {
     version: '1.7.1',
     date: '2026-07-04',
     type: 'patch',

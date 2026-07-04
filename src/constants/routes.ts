@@ -19,4 +19,6 @@ export const ROUTES = {
   USERS: '/users',
   /** 邮件设置（管理员） */
   EMAIL: '/email',
+  /** 对象存储（管理员） */
+  STORAGE: '/storage',
 } as const

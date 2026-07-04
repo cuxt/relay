@@ -18,3 +18,20 @@ export const requireAdmin = new Elysia({ name: 'require-admin' }).macro({
     },
   },
 })
+
+/**
+ * 登录鉴权守卫插件。
+ * 用法：new Elysia().use(requireLogin).get('/x', ({ session }) => ..., { requireLogin: true })
+ * 路由声明 `requireLogin: true` 即解析 session，未登录返回 401。
+ */
+export const requireLogin = new Elysia({ name: 'require-login' }).macro({
+  requireLogin: {
+    resolve: async ({ request, status }) => {
+      const session = await auth.api.getSession({ headers: request.headers })
+      if (!session) {
+        return status(401, { error: '未登录' })
+      }
+      return { session }
+    },
+  },
+})

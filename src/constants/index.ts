@@ -12,3 +12,8 @@ export {
   type EmailTransport,
   type EmailConfig,
 } from './email'
+export {
+  STORAGE_CONFIG_KEY,
+  StorageConfigSchema,
+  type StorageConfig,
+} from './storage'
