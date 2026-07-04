@@ -1,9 +1,8 @@
 import { redirect } from '@tanstack/react-router'
-import type { auth } from './auth'
-import { ROUTES } from '@/constants'
 import { authClient } from '@/lib/auth/client'
+import { ROUTES } from '@/constants'
 
-export type Session = typeof auth.$Infer.Session
+export type Session = NonNullable<Awaited<ReturnType<typeof authClient.getSession>>['data']>
 export const sessionKey = ['auth', 'session'] as const
 
 export async function getSession() {

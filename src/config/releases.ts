@@ -8,6 +8,16 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.6.4',
+    date: '2026-07-04',
+    type: 'patch',
+    title: '修复 better-auth 会话类型推导',
+    changes: [
+      'Session 类型改用 authClient.getSession 的返回推导，替代 typeof auth.$Infer.Session，使 admin 插件注入的 role/banned 与 session.impersonatedBy 字段被正确推导',
+      'trustedOrigins 对未定义的 BETTER_AUTH_URL 兜底空字符串，修复 TS 类型错误',
+    ],
+  },
+  {
     version: '1.6.3',
     date: '2026-07-04',
     type: 'patch',
