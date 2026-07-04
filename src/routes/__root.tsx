@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import type { QueryClient } from '@tanstack/react-query'
 import { Outlet, createRootRouteWithContext, HeadContent, Scripts } from '@tanstack/react-router'
 import { QueryClientProvider } from '@tanstack/react-query'
-import { Toaster as Sonner } from 'sonner'
+import { Toaster } from '@/components/ui/sonner'
 import { useTheme } from '@/hooks/use-theme'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { siteConfig } from '@/config/site'
@@ -57,7 +57,7 @@ function RootComponent() {
       <TooltipProvider>
         <QueryClientProvider client={queryClient}>
           <Outlet />
-          <AppToaster />
+          <Toaster richColors closeButton />
         </QueryClientProvider>
       </TooltipProvider>
     </RootDocument>
@@ -94,10 +94,4 @@ function RootDocument({ children }: { children: ReactNode }) {
       </body>
     </html>
   )
-}
-
-function AppToaster() {
-  const { resolvedMode } = useTheme()
-
-  return <Sonner theme={resolvedMode as 'light' | 'dark' | 'system'} richColors />
 }
