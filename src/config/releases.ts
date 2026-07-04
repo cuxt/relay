@@ -8,6 +8,15 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.7.1',
+    date: '2026-07-04',
+    type: 'patch',
+    title: '通知提示优化',
+    changes: [
+      '通知提示按类型显示不同颜色，并支持手动关闭',
+    ],
+  },
+  {
     version: '1.7.0',
     date: '2026-07-04',
     type: 'minor',
