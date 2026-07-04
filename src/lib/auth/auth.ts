@@ -78,7 +78,7 @@ const makeEmailHtml = (title: string, message: string, buttonText: string, butto
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
-  trustedOrigins: [process.env.BETTER_AUTH_URL, 'http://localhost:*'],
+  trustedOrigins: [process.env.BETTER_AUTH_URL ?? '', 'http://localhost:*'],
   database: drizzleAdapter(db, {
     provider: 'pg',
     schema,
