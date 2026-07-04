@@ -8,6 +8,20 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.6.3',
+    date: '2026-07-04',
+    type: 'patch',
+    title: 'shadcn 组件同步与新增聊天类组件',
+    changes: [
+      '新增 bubble、message、attachment、message-scroller、marker 五个聊天/AI 场景组件',
+      'drawer 由 vaul 迁移至 @base-ui/react/drawer（Viewport+Popup 结构），新增 snapPoints/swipeDirection/showSwipeHandle 支持，移除已无引用的 vaul 依赖',
+      '新增 @shadcn/react、date-fns 依赖（message-scroller 与 calendar 使用）',
+      'sidebar 改为写 cookie 持久化展开状态，移除 ready 防闪烁逻辑',
+      'calendar 补充 month_grid 样式，carousel 前后按钮改为 my-auto 垂直居中',
+      'spinner 补充 data-slot，drawer description 增加 text-balance',
+    ],
+  },
+  {
     version: '1.6.2',
     date: '2026-07-04',
     type: 'patch',
