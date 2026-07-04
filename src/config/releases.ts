@@ -8,6 +8,13 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.8.1',
+    date: '2026-07-04',
+    type: 'patch',
+    title: '头像加载提速',
+    changes: ['资源中转地址增加浏览器缓存，刷新页面后头像更快显示'],
+  },
+  {
     version: '1.8.0',
     date: '2026-07-04',
     type: 'minor',
