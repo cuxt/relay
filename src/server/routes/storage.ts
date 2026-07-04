@@ -88,8 +88,11 @@ export const storageRoutes = new Elysia({ name: 'storage' })
       const cfg = await get<StorageConfig>(STORAGE_CONFIG_KEY)
       if (!cfg) return status(503, { error: '存储服务未配置' })
       const client = createStorageClient(cfg)
-      const { url } = await accessUrl({ client, config: cfg, key })
+      const { url, expiresAt } = await accessUrl({ client, config: cfg, key })
       set.headers['location'] = url
+      // 公开链接永不过期，长缓存；私有桶签名有寿命，缓存不超过剩余有效期（留 60s 余量）
+      const maxAge = expiresAt ? Math.max(60, Math.floor((expiresAt - Date.now()) / 1000) - 60) : 86400
+      set.headers['cache-control'] = `public, max-age=${maxAge}`
       set.status = 302
       return ''
     },
