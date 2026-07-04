@@ -8,6 +8,16 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.7.0',
+    date: '2026-07-04',
+    type: 'minor',
+    title: '邮件服务支持页面配置',
+    changes: [
+      '邮件服务配置由环境变量迁移至管理后台「邮件设置」页面，支持 SMTP 与 Resend 两种传输方式',
+      '新增 /email 管理页面，可在线配置并测试邮件发送',
+    ],
+  },
+  {
     version: '1.6.4',
     date: '2026-07-04',
     type: 'patch',

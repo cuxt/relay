@@ -1,4 +1,4 @@
-import { Home, User, Users } from 'lucide-react'
+import { Home, Mail, User, Users } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { ROLES, ROUTES, type Role } from '@/constants'
 
@@ -50,6 +50,14 @@ export const mainMenuItems: MenuItem[] = [
         label: '用户管理',
         icon: <Users className="h-4 w-4" />,
         to: ROUTES.USERS,
+        role: ROLES.ADMIN,
+        group: '管理员',
+      },
+      {
+        key: 'settings-email',
+        label: '邮件设置',
+        icon: <Mail className="h-4 w-4" />,
+        to: ROUTES.EMAIL,
         role: ROLES.ADMIN,
         group: '管理员',
       },

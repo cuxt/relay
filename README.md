@@ -120,9 +120,9 @@ cp .env.example .env
 | `DATABASE_URL`       | PostgreSQL 连接字符串 | `postgresql://user:pass@localhost:5432/db` |
 | `BETTER_AUTH_SECRET` | Auth 加密密钥         | 随机字符串                                 |
 | `BETTER_AUTH_URL`    | 应用 URL              | `http://localhost:3000`                    |
-| `RESEND_API_KEY`     | Resend 邮件 API Key   | `re_xxxx`                                  |
-| `EMAIL_FROM`         | 发件人地址            | `noreply@example.com`                      |
 | `VITE_SITE_NAME`     | 站点名称              | `My App`                                   |
+
+邮件服务在管理后台「邮件设置」页面（`/email`）配置，支持 SMTP 与 Resend，无需在环境变量中配置。
 
 ### 数据库
 

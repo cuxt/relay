@@ -1,12 +1,10 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { admin, openAPI } from 'better-auth/plugins'
-import { Resend } from 'resend'
 import { db } from '@/lib/db'
 import * as schema from '@/lib/db/schema'
+import { send } from '@/lib/email/send'
 import { AUTH } from '@/constants'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 const makeEmailHtml = (title: string, message: string, buttonText: string, buttonUrl: string) => {
   return `<!DOCTYPE html>
@@ -103,8 +101,7 @@ export const auth = betterAuth({
       enabled: true,
       sendChangeEmailConfirmation: async ({ newEmail, url }) => {
         try {
-          await resend.emails.send({
-            from: process.env.EMAIL_FROM || 'noreply@xbxin.com',
+          await send({
             to: newEmail,
             subject: '验证邮箱变更',
             html: makeEmailHtml(
@@ -115,7 +112,7 @@ export const auth = betterAuth({
             ),
           })
         } catch (error) {
-          console.error('[Resend] 发送邮箱变更确认邮件失败:', error)
+          console.error('[Email] 发送邮箱变更确认邮件失败:', error)
           throw error
         }
       },
@@ -125,8 +122,7 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     sendVerificationEmail: async ({ user, url }) => {
       try {
-        await resend.emails.send({
-          from: process.env.EMAIL_FROM || 'noreply@xbxin.com',
+        await send({
           to: user.email,
           subject: '验证邮箱',
           html: makeEmailHtml(
@@ -137,7 +133,7 @@ export const auth = betterAuth({
           ),
         })
       } catch (error) {
-        console.error('[Resend] 发送邮箱验证邮件失败:', error)
+        console.error('[Email] 发送邮箱验证邮件失败:', error)
         throw error
       }
     },
