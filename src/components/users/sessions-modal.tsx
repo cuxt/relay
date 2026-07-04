@@ -1,15 +1,14 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { authClient } from '@/lib/auth/client'
 import { Loader2, Globe, Monitor, Clock, X } from 'lucide-react'
 import {
-  Dialog,
-  DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog'
+import { Modal } from '@/components/x/modal'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -25,26 +24,11 @@ import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { I18N } from '@/constants'
+import type { UserModalProps } from './types'
 
-interface UserSessionsModalProps {
-  user: {
-    id: string
-    name: string
-    email: string
-  } | null
-  onClose: () => void
-}
+type SessionsModalProps = Omit<UserModalProps, 'onSuccess'>
 
-interface SessionRecord {
-  id: string
-  token: string
-  createdAt: string
-  expiresAt: string
-  ipAddress: string | null
-  userAgent: string | null
-}
-
-export function UserSessionsModal({ user, onClose }: UserSessionsModalProps) {
+export function SessionsModal({ user, onClose }: SessionsModalProps) {
   const queryClient = useQueryClient()
   const [revokeToken, setRevokeToken] = useState<string | null>(null)
 
@@ -53,10 +37,18 @@ export function UserSessionsModal({ user, onClose }: UserSessionsModalProps) {
     queryFn: async () => {
       if (!user) return []
       const res = await authClient.admin.listUserSessions({ userId: user.id })
-      return (res.data?.sessions ?? []) as unknown as SessionRecord[]
+      return res.data?.sessions ?? []
     },
     enabled: !!user,
   })
+
+  const sortedSessions = useMemo(
+    () =>
+      [...sessions].sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      ),
+    [sessions]
+  )
 
   const revokeMutation = useMutation({
     mutationFn: async (sessionToken: string) => {
@@ -70,16 +62,16 @@ export function UserSessionsModal({ user, onClose }: UserSessionsModalProps) {
         queryKey: ['admin', 'user-sessions', user?.id],
       })
     },
+    onError: () => toast.error('撤销会话失败，请重试'),
   })
 
   return (
     <>
-      <Dialog open={!!user} onOpenChange={(v) => !v && onClose()}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{user?.name} 的会话</DialogTitle>
-            <DialogDescription>共 {sessions.length} 个会话</DialogDescription>
-          </DialogHeader>
+      <Modal open={!!user} onClose={onClose} className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>{user ? `${user.name} 的会话` : '用户会话'}</DialogTitle>
+          <DialogDescription>共 {sessions.length} 个会话</DialogDescription>
+        </DialogHeader>
 
           {isLoading ? (
             <div className="flex justify-center py-8">
@@ -90,7 +82,7 @@ export function UserSessionsModal({ user, onClose }: UserSessionsModalProps) {
           ) : (
             <ScrollArea className="max-h-96">
               <div className="space-y-3 pr-3">
-                {sessions.map((record) => {
+                {sortedSessions.map((record) => {
                   const expired = new Date(record.expiresAt) < new Date()
                   return (
                     <div key={record.id} className="rounded-lg border p-3 space-y-2">
@@ -142,8 +134,7 @@ export function UserSessionsModal({ user, onClose }: UserSessionsModalProps) {
               </div>
             </ScrollArea>
           )}
-        </DialogContent>
-      </Dialog>
+        </Modal>
 
       <AlertDialog open={!!revokeToken} onOpenChange={(v) => !v && setRevokeToken(null)}>
         <AlertDialogContent>

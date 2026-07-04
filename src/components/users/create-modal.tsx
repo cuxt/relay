@@ -4,13 +4,12 @@ import { toast } from 'sonner'
 import { authClient } from '@/lib/auth/client'
 import { Loader2 } from 'lucide-react'
 import {
-  Dialog,
-  DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog'
+import { Modal } from '@/components/x/modal'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -24,13 +23,13 @@ import {
 } from '@/components/ui/select'
 import { ROLES, AUTH, type Role } from '@/constants'
 
-interface CreateUserModalProps {
+interface CreateModalProps {
   open: boolean
   onClose: () => void
   onSuccess: () => void
 }
 
-export function CreateUserModal({ open, onClose, onSuccess }: CreateUserModalProps) {
+export function CreateModal({ open, onClose, onSuccess }: CreateModalProps) {
   const formRef = useRef<HTMLFormElement>(null)
 
   const createMutation = useMutation({
@@ -49,26 +48,26 @@ export function CreateUserModal({ open, onClose, onSuccess }: CreateUserModalPro
       onClose()
       onSuccess()
     },
+    onError: () => toast.error('创建用户失败，请重试'),
   })
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     createMutation.mutate({
-      name: formData.get('name') as string,
-      email: formData.get('email') as string,
+      name: (formData.get('name') as string).trim(),
+      email: (formData.get('email') as string).trim(),
       password: formData.get('password') as string,
-      role: (formData.get('role') as Role) || ROLES.USER,
+      role: formData.get('role') as Role,
     })
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>创建用户</DialogTitle>
-          <DialogDescription>填写以下信息创建新用户</DialogDescription>
-        </DialogHeader>
+    <Modal open={open} onClose={onClose}>
+      <DialogHeader>
+        <DialogTitle>创建用户</DialogTitle>
+        <DialogDescription>填写以下信息创建新用户</DialogDescription>
+      </DialogHeader>
         <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="create-name">姓名</Label>
@@ -117,7 +116,6 @@ export function CreateUserModal({ open, onClose, onSuccess }: CreateUserModalPro
             </Button>
           </DialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+    </Modal>
   )
 }

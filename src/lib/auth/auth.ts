@@ -78,6 +78,7 @@ const makeEmailHtml = (title: string, message: string, buttonText: string, butto
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
+  trustedOrigins: [process.env.BETTER_AUTH_URL, 'http://localhost:*'],
   database: drizzleAdapter(db, {
     provider: 'pg',
     schema,
@@ -100,7 +101,7 @@ export const auth = betterAuth({
     },
     changeEmail: {
       enabled: true,
-      sendChangeEmailConfirmation: async ({ user: _user, newEmail, url }) => {
+      sendChangeEmailConfirmation: async ({ newEmail, url }) => {
         try {
           await resend.emails.send({
             from: process.env.EMAIL_FROM || 'noreply@xbxin.com',
@@ -115,6 +116,7 @@ export const auth = betterAuth({
           })
         } catch (error) {
           console.error('[Resend] 发送邮箱变更确认邮件失败:', error)
+          throw error
         }
       },
     },
@@ -136,6 +138,7 @@ export const auth = betterAuth({
         })
       } catch (error) {
         console.error('[Resend] 发送邮箱验证邮件失败:', error)
+        throw error
       }
     },
   },

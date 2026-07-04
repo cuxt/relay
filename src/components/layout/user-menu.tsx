@@ -1,5 +1,5 @@
 import { Settings, LogOut, ArrowLeftRight } from 'lucide-react'
-import { useNavigate, useRouter } from '@tanstack/react-router'
+import { useNavigate, useRouter, Link } from '@tanstack/react-router'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { authClient } from '@/lib/auth/client'
@@ -84,7 +84,7 @@ export function UserMenu({ user, impersonating }: UserMenuProps) {
           </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate({ to: ROUTES.PROFILE })}>
+        <DropdownMenuItem render={<Link to={ROUTES.PROFILE} />}>
           <Settings className="mr-2 h-4 w-4" />
           设置
         </DropdownMenuItem>

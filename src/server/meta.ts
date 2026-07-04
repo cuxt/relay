@@ -1,10 +1,10 @@
 import pkg from '../../package.json'
+import { siteConfig } from '@/config/site'
 
-const meta = pkg as { name: string; version: string; description?: string }
-const description = meta.description || 'TanStack Start 模板的 Elysia 与 Better Auth 接口文档。'
+const meta = pkg as { version: string }
 
 export const apiInfo = {
-  title: `${meta.name} API`,
+  title: `${siteConfig.name} API`,
   version: meta.version,
-  description,
+  description: `${siteConfig.name} 的 Elysia 与 Better Auth 接口文档。`,
 } as const

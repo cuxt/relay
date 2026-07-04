@@ -8,6 +8,22 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.6.2',
+    date: '2026-07-04',
+    type: 'patch',
+    title: '弹窗目录重组与冗余封装清理',
+    changes: [
+      'src/components/settings 目录更名为 users，与所属的用户管理页面对应',
+      '弹窗组件去掉冗余的 User 维度命名（BanUserModal → BanModal 等），文件名同步简化',
+      '新增 src/components/x/modal.tsx，基于 shadcn 封装通用弹窗组件',
+      'use-theme 由 .tsx 拆为 .ts，移除未使用的 ThemeProvider/ThemeContext，根布局直接调用 useTheme',
+      '移除未使用的 use-sidebar hook 与 mobileStore，改由 sidebarStore 统一管理',
+      '移除 router 全局 MutationCache 的统一 toast 兜底，错误交由各 mutation 自行处理',
+      '用户菜单「设置」项改用 render={<Link/>}，Avatar 合并 src 分支，确认邮件发送失败时抛出错误',
+      'OpenAPI 文档标题从 package.json 的 name 改为 siteConfig.name，src/server/meta.ts 不再读取 name/description',
+    ],
+  },
+  {
     version: '1.6.1',
     date: '2026-06-26',
     type: 'patch',

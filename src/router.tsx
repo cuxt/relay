@@ -1,7 +1,6 @@
 import { createRouter as createTanStackRouter } from '@tanstack/react-router'
 import { routerWithQueryClient } from '@tanstack/react-router-with-query'
-import { QueryClient, MutationCache } from '@tanstack/react-query'
-import { toast } from 'sonner'
+import { QueryClient } from '@tanstack/react-query'
 import { routeTree } from './routeTree.gen'
 import { CACHE } from '@/constants'
 
@@ -13,11 +12,6 @@ export function createRouter() {
         retry: 1,
       },
     },
-    mutationCache: new MutationCache({
-      onError: (error) => {
-        toast.error(error?.message || '操作失败')
-      },
-    }),
   })
 
   const router = createTanStackRouter({

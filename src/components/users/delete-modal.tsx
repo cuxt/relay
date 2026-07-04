@@ -12,18 +12,9 @@ import {
   AlertDialogAction,
 } from '@/components/ui/alert-dialog'
 import { buttonVariants } from '@/components/ui/button'
+import type { UserModalProps } from './types'
 
-interface DeleteUserModalProps {
-  user: {
-    id: string
-    name: string
-    email: string
-  } | null
-  onClose: () => void
-  onSuccess: () => void
-}
-
-export function DeleteUserModal({ user, onClose, onSuccess }: DeleteUserModalProps) {
+export function DeleteModal({ user, onClose, onSuccess }: UserModalProps) {
   const deleteMutation = useMutation({
     mutationFn: async (userId: string) => {
       const res = await authClient.admin.removeUser({ userId })
@@ -34,6 +25,7 @@ export function DeleteUserModal({ user, onClose, onSuccess }: DeleteUserModalPro
       onClose()
       onSuccess()
     },
+    onError: () => toast.error('删除用户失败，请重试'),
   })
 
   return (
@@ -42,9 +34,15 @@ export function DeleteUserModal({ user, onClose, onSuccess }: DeleteUserModalPro
         <AlertDialogHeader>
           <AlertDialogTitle>删除用户</AlertDialogTitle>
           <AlertDialogDescription>
-            确定要删除用户 <strong>{user?.name}</strong> ({user?.email}) 吗？
-            <br />
-            <span className="text-destructive">此操作不可撤销，用户的所有数据将被永久删除。</span>
+            {user ? (
+              <>
+                确定要删除用户 <strong>{user.name}</strong> ({user.email}) 吗？
+                <br />
+                <span className="text-destructive">此操作不可撤销，用户的所有数据将被永久删除。</span>
+              </>
+            ) : (
+              '确定要删除该用户吗？'
+            )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -12,9 +12,9 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
       <BaseInput
         type={isPassword && showPassword ? "text" : type}
         data-slot="input"
-        autoComplete={isPassword ? "current-password" : undefined}
-        className={cn(isPassword && "pr-9", className)}
         {...props}
+        autoComplete={isPassword ? "current-password" : props.autoComplete}
+        className={cn(isPassword && "pr-9", className)}
       />
       {isPassword && (
         <button
