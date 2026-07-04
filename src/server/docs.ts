@@ -8,6 +8,7 @@ export const docs = openapi({
     info: apiInfo,
     tags: [
       { name: '更新日志', description: '本地版本记录' },
+      { name: '邮箱', description: '管理员邮件传输配置与发送' },
     ],
   },
   scalar: {

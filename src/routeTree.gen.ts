@@ -22,6 +22,7 @@ import { Route as PublicRegisterRouteImport } from './routes/_public/register'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as UserAdminRouteRouteImport } from './routes/_user/_admin/route'
 import { Route as UserAdminUsersRouteImport } from './routes/_user/_admin/users'
+import { Route as UserAdminEmailRouteImport } from './routes/_user/_admin/email'
 
 const OpenapiRoute = OpenapiRouteImport.update({
   id: '/openapi',
@@ -85,6 +86,11 @@ const UserAdminUsersRoute = UserAdminUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => UserAdminRouteRoute,
 } as any)
+const UserAdminEmailRoute = UserAdminEmailRouteImport.update({
+  id: '/email',
+  path: '/email',
+  getParentRoute: () => UserAdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof UserProfileRoute
   '/api/$': typeof ApiSplatRoute
   '/openapi/$': typeof OpenapiSplatRoute
+  '/email': typeof UserAdminEmailRoute
   '/users': typeof UserAdminUsersRoute
 }
 export interface FileRoutesByTo {
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/profile': typeof UserProfileRoute
   '/api/$': typeof ApiSplatRoute
   '/openapi/$': typeof OpenapiSplatRoute
+  '/email': typeof UserAdminEmailRoute
   '/users': typeof UserAdminUsersRoute
 }
 export interface FileRoutesById {
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/api/$': typeof ApiSplatRoute
   '/openapi/$': typeof OpenapiSplatRoute
   '/_public/': typeof PublicIndexRoute
+  '/_user/_admin/email': typeof UserAdminEmailRoute
   '/_user/_admin/users': typeof UserAdminUsersRoute
 }
 export interface FileRouteTypes {
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/api/$'
     | '/openapi/$'
+    | '/email'
     | '/users'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -150,6 +160,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/api/$'
     | '/openapi/$'
+    | '/email'
     | '/users'
   id:
     | '__root__'
@@ -165,6 +176,7 @@ export interface FileRouteTypes {
     | '/api/$'
     | '/openapi/$'
     | '/_public/'
+    | '/_user/_admin/email'
     | '/_user/_admin/users'
   fileRoutesById: FileRoutesById
 }
@@ -268,6 +280,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserAdminUsersRouteImport
       parentRoute: typeof UserAdminRouteRoute
     }
+    '/_user/_admin/email': {
+      id: '/_user/_admin/email'
+      path: '/email'
+      fullPath: '/email'
+      preLoaderRoute: typeof UserAdminEmailRouteImport
+      parentRoute: typeof UserAdminRouteRoute
+    }
   }
 }
 
@@ -290,10 +309,12 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 )
 
 interface UserAdminRouteRouteChildren {
+  UserAdminEmailRoute: typeof UserAdminEmailRoute
   UserAdminUsersRoute: typeof UserAdminUsersRoute
 }
 
 const UserAdminRouteRouteChildren: UserAdminRouteRouteChildren = {
+  UserAdminEmailRoute: UserAdminEmailRoute,
   UserAdminUsersRoute: UserAdminUsersRoute,
 }
 
