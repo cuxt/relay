@@ -3,7 +3,7 @@ import type { QueryClient } from '@tanstack/react-query'
 import { Outlet, createRootRouteWithContext, HeadContent, Scripts } from '@tanstack/react-router'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { Toaster as Sonner } from 'sonner'
-import { ThemeProvider, useTheme } from '@/hooks/use-theme'
+import { useTheme } from '@/hooks/use-theme'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { siteConfig } from '@/config/site'
 import { I18N } from '@/constants'
@@ -50,17 +50,16 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext()
+  useTheme()
 
   return (
     <RootDocument>
-      <ThemeProvider>
-        <TooltipProvider>
-          <QueryClientProvider client={queryClient}>
-            <Outlet />
-            <AppToaster />
-          </QueryClientProvider>
-        </TooltipProvider>
-      </ThemeProvider>
+      <TooltipProvider>
+        <QueryClientProvider client={queryClient}>
+          <Outlet />
+          <AppToaster />
+        </QueryClientProvider>
+      </TooltipProvider>
     </RootDocument>
   )
 }

@@ -5,34 +5,24 @@ import { authClient } from '@/lib/auth/client'
 import { Loader2, Dices, Copy } from 'lucide-react'
 import { customAlphabet } from 'nanoid'
 import {
-  Dialog,
-  DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog'
+import { Modal } from '@/components/x/modal'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/x/input'
 import { AUTH } from '@/constants'
+import type { UserModalProps } from './types'
 
 const generatePassword = customAlphabet(
   'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%&*',
   AUTH.GENERATED_PASSWORD_LENGTH
 )
 
-interface ResetPasswordModalProps {
-  user: {
-    id: string
-    name: string
-    email: string
-  } | null
-  onClose: () => void
-  onSuccess: () => void
-}
-
-export function ResetPasswordModal({ user, onClose, onSuccess }: ResetPasswordModalProps) {
+export function ResetPasswordModal({ user, onClose, onSuccess }: UserModalProps) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const resetMutation = useMutation({
@@ -48,6 +38,7 @@ export function ResetPasswordModal({ user, onClose, onSuccess }: ResetPasswordMo
       onClose()
       onSuccess()
     },
+    onError: () => toast.error('重置密码失败，请重试'),
   })
 
   const handleGenerate = () => {
@@ -80,14 +71,19 @@ export function ResetPasswordModal({ user, onClose, onSuccess }: ResetPasswordMo
   }
 
   return (
-    <Dialog open={!!user} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>重置密码</DialogTitle>
-          <DialogDescription>
-            为用户 <strong>{user?.name}</strong> ({user?.email}) 设置新密码
-          </DialogDescription>
-        </DialogHeader>
+    <Modal open={!!user} onClose={onClose}>
+      <DialogHeader>
+        <DialogTitle>重置密码</DialogTitle>
+        <DialogDescription>
+          {user ? (
+            <>
+              为用户 <strong>{user.name}</strong> ({user.email}) 设置新密码
+            </>
+          ) : (
+            '设置新密码'
+          )}
+        </DialogDescription>
+      </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="reset-password">新密码</Label>
@@ -136,7 +132,6 @@ export function ResetPasswordModal({ user, onClose, onSuccess }: ResetPasswordMo
             </Button>
           </DialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+    </Modal>
   )
 }

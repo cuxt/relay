@@ -19,12 +19,12 @@ import {
   X,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { BanUserModal } from '@/components/settings/ban-user-modal'
-import { CreateUserModal } from '@/components/settings/create-user-modal'
-import { DeleteUserModal } from '@/components/settings/delete-user-modal'
-import { EditUserModal } from '@/components/settings/edit-user-modal'
-import { ResetPasswordModal } from '@/components/settings/reset-password-modal'
-import { UserSessionsModal } from '@/components/settings/user-sessions-modal'
+import { BanModal } from '@/components/users/ban-modal'
+import { CreateModal } from '@/components/users/create-modal'
+import { DeleteModal } from '@/components/users/delete-modal'
+import { EditModal } from '@/components/users/edit-modal'
+import { ResetPasswordModal } from '@/components/users/reset-password-modal'
+import { SessionsModal } from '@/components/users/sessions-modal'
 import { Avatar } from '@/components/x/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -41,27 +41,17 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ROLES, ROUTES, UI, type Role } from '@/constants'
 import { authClient } from '@/lib/auth/client'
-import { sessionKey } from '@/lib/auth/session'
+import { sessionKey, type Session } from '@/lib/auth/session'
 
 export const Route = createFileRoute('/_user/_admin/users')({
   component: UsersPage,
 })
 
-interface UserRecord {
-  id: string
-  name: string
-  email: string
-  role: string | null
-  banned: boolean | null
-  banReason: string | null
-  banExpires: string | null
-  image: string | null
-  createdAt: string
-  emailVerified: boolean
-}
+type UserRecord = Session['user']
 
 function UsersPage() {
   const { user: currentUser } = Route.useRouteContext()
@@ -99,7 +89,7 @@ function UsersPage() {
     },
   })
 
-  const users = (data?.users ?? []) as unknown as UserRecord[]
+  const users = data?.users ?? []
   const total = data?.total ?? 0
   const pages = Math.ceil(total / page.size)
 
@@ -217,12 +207,27 @@ function UsersPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">
-                        <Badge
-                          variant={record.banned ? 'destructive' : 'secondary'}
-                          className="shrink-0"
-                        >
-                          {record.banned ? '已封禁' : '正常'}
-                        </Badge>
+                        {record.banned && record.banReason ? (
+                          <Tooltip>
+                            <TooltipTrigger
+                              render={
+                                <Badge variant="destructive" className="shrink-0 cursor-default" />
+                              }
+                            >
+                              已封禁
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs break-all">
+                              {record.banReason}
+                            </TooltipContent>
+                          </Tooltip>
+                        ) : (
+                          <Badge
+                            variant={record.banned ? 'destructive' : 'secondary'}
+                            className="shrink-0"
+                          >
+                            {record.banned ? '已封禁' : '正常'}
+                          </Badge>
+                        )}
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">
                         {record.emailVerified ? (
@@ -279,19 +284,19 @@ function UsersPage() {
         )}
       </section>
 
-      <CreateUserModal
+      <CreateModal
         open={createOpen}
         onClose={() => setCreateOpen(false)}
         onSuccess={invalidateUsers}
       />
-      <EditUserModal user={editUser} onClose={() => setEditUser(null)} onSuccess={invalidateUsers} />
-      <BanUserModal user={banUser} onClose={() => setBanUser(null)} onSuccess={invalidateUsers} />
-      <DeleteUserModal
+      <EditModal user={editUser} onClose={() => setEditUser(null)} onSuccess={invalidateUsers} />
+      <BanModal user={banUser} onClose={() => setBanUser(null)} onSuccess={invalidateUsers} />
+      <DeleteModal
         user={deleteUser}
         onClose={() => setDeleteUser(null)}
         onSuccess={invalidateUsers}
       />
-      <UserSessionsModal user={sessionsUser} onClose={() => setSessionsUser(null)} />
+      <SessionsModal user={sessionsUser} onClose={() => setSessionsUser(null)} />
       <ResetPasswordModal user={resetUser} onClose={() => setResetUser(null)} onSuccess={invalidateUsers} />
     </>
   )
@@ -373,7 +378,11 @@ function UserActions({
           <Ban className="mr-2 h-4 w-4" />
           {user.banned ? '解封' : '封禁'}
         </DropdownMenuItem>
-        <DropdownMenuItem className="text-destructive" onClick={() => setDeleteUser(user)}>
+        <DropdownMenuItem
+          className="text-destructive"
+          onClick={() => setDeleteUser(user)}
+          disabled={user.id === currentUserId}
+        >
           <Trash2 className="mr-2 h-4 w-4" />
           删除
         </DropdownMenuItem>

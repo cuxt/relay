@@ -3,28 +3,18 @@ import { toast } from 'sonner'
 import { authClient } from '@/lib/auth/client'
 import { Loader2 } from 'lucide-react'
 import {
-  Dialog,
-  DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog'
+import { Modal } from '@/components/x/modal'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import type { UserModalProps } from './types'
 
-interface EditUserModalProps {
-  user: {
-    id: string
-    name: string
-    email: string
-  } | null
-  onClose: () => void
-  onSuccess: () => void
-}
-
-export function EditUserModal({ user, onClose, onSuccess }: EditUserModalProps) {
+export function EditModal({ user, onClose, onSuccess }: UserModalProps) {
   const editMutation = useMutation({
     mutationFn: async ({
       userId,
@@ -60,9 +50,8 @@ export function EditUserModal({ user, onClose, onSuccess }: EditUserModalProps) 
   }
 
   return (
-    <Dialog open={!!user} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent>
-        <DialogHeader>
+    <Modal open={!!user} onClose={onClose}>
+      <DialogHeader>
           <DialogTitle>编辑用户</DialogTitle>
           <DialogDescription>修改用户姓名和邮箱</DialogDescription>
         </DialogHeader>
@@ -91,7 +80,6 @@ export function EditUserModal({ user, onClose, onSuccess }: EditUserModalProps) 
             </Button>
           </DialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+    </Modal>
   )
 }

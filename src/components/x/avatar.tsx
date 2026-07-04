@@ -14,27 +14,12 @@ const sizeMap = {
   lg: 40,
 }
 
-export function Avatar({
-  id,
-  src,
-  size = 'default',
-  className,
-}: AvatarProps) {
+export function Avatar({ id, src, size = 'default', className }: AvatarProps) {
   const avatarSize = sizeMap[size]
-
-  if (src) {
-    return (
-      <BaseAvatar size={size} className={className}>
-        <AvatarImage src={src} alt={id} />
-        <AvatarFallback>
-          <BoringAvatar size={avatarSize} name={id} variant="beam" />
-        </AvatarFallback>
-      </BaseAvatar>
-    )
-  }
 
   return (
     <BaseAvatar size={size} className={className}>
+      {src && <AvatarImage src={src} alt={id} />}
       <AvatarFallback>
         <BoringAvatar size={avatarSize} name={id} variant="beam" />
       </AvatarFallback>

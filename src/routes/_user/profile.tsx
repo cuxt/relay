@@ -47,7 +47,6 @@ function ProfilePage() {
   const [oldPass, setOldPass] = useState('')
   const [newPass, setNewPass] = useState('')
   const [confirmPass, setConfirmPass] = useState('')
-  const [deleting, setDeleting] = useState(false)
 
   const changeEmail = useMutation({
     mutationFn: async () => {
@@ -59,6 +58,7 @@ function ProfilePage() {
       setEmailOpen(false)
       setEmail('')
     },
+    onError: () => toast.error('发送验证邮件失败，请重试'),
   })
 
   const changePass = useMutation({
@@ -76,37 +76,27 @@ function ProfilePage() {
       setNewPass('')
       setConfirmPass('')
     },
+    onError: () => toast.error('更新密码失败，请重试'),
   })
 
-  function submitPass() {
-    if (!oldPass || !newPass) {
-      toast.error('请填写所有字段')
-      return
-    }
-    if (newPass.length < AUTH.PASSWORD_MIN_LENGTH) {
-      toast.error(`新密码至少 ${AUTH.PASSWORD_MIN_LENGTH} 位`)
-      return
-    }
-    if (newPass !== confirmPass) {
-      toast.error('两次密码不一致')
-      return
-    }
-    changePass.mutate()
-  }
+  const canSubmitPass =
+    !!oldPass &&
+    !!newPass &&
+    newPass.length >= AUTH.PASSWORD_MIN_LENGTH &&
+    newPass === confirmPass
 
-  async function deleteAccount() {
-    setDeleting(true)
-    try {
+  const deleteAccount = useMutation({
+    mutationFn: async () => {
       const res = await authClient.deleteUser()
       if (res.error) throw res.error
+    },
+    onSuccess: async () => {
       queryClient.removeQueries({ queryKey: sessionKey })
       await router.invalidate()
       await navigate({ to: ROUTES.HOME })
-    } catch {
-      setDeleting(false)
-      toast.error('删除失败，请重试')
-    }
-  }
+    },
+    onError: () => toast.error('删除账户失败，请重试'),
+  })
 
   return (
     <div className="mx-auto max-w-3xl space-y-12">
@@ -231,7 +221,7 @@ function ProfilePage() {
                     <Button variant="outline" onClick={() => setPassOpen(false)}>
                       取消
                     </Button>
-                    <Button onClick={submitPass} disabled={changePass.isPending}>
+                    <Button onClick={() => changePass.mutate()} disabled={!canSubmitPass || changePass.isPending}>
                       {changePass.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                       更新密码
                     </Button>
@@ -272,11 +262,11 @@ function ProfilePage() {
                 <AlertDialogFooter>
                   <AlertDialogCancel>取消</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={deleteAccount}
+                    onClick={() => deleteAccount.mutate()}
                     className={buttonVariants({ variant: 'destructive' })}
-                    disabled={deleting}
+                    disabled={deleteAccount.isPending}
                   >
-                    {deleting ? '删除中...' : '确认删除'}
+                    {deleteAccount.isPending ? '删除中...' : '确认删除'}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
