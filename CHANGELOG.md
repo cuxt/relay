@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.9.1] - 2026-07-05
+
+### Bug Fixes
+
+- **端点表单 AI 插入菜单崩溃修复**：点击「ai()」插入预设时报错 `MenuGroupContext is missing`，错误冒泡至路由 CatchBoundary 导致组件树重建。原因是 `DropdownMenuLabel`（base-ui `Menu.GroupLabel`）未包裹在 `DropdownMenuGroup` 内，缺失 `MenuGroupContext`。已用 `DropdownMenuGroup` 包裹预设列表项，复现路径已消除
+
+### Features
+
+- **AI 预设项长名称 hover 显示完整内容**：预设列表中 `name` 较长时改用 `truncate` 单行截断，并包裹 base-ui Tooltip，hover 300ms 后于条目下方弹出完整名称（`max-w-md` + `break-all`），避免撑破菜单宽度
+
+- **消息模板支持 Ctrl+Z/Y 撤销重做**：原通过按钮插入变量 token 时直接 `setState` 替换 textarea 值，会清空浏览器原生 undo 历史，导致无法撤销。改为自管 undo/redo 历史栈：
+  - 统一写入入口 `commitTemplate(value, forceNew)`，手动键入 600ms 内合并为一步、按钮插入强制新建一步并清空 redo
+  - `Ctrl+Z` 撤销、`Ctrl+Y` / `Ctrl+Shift+Z` 重做，撤销后光标回退到末尾
+  - 不再依赖 deprecated 的 `document.execCommand`
+
 ## [0.9.0] - 2025-06-13
 
 ### ⚠️ Breaking Changes

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
 import { Loader2, Sparkles } from 'lucide-react'
@@ -22,8 +22,15 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuGroup,
   DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '@/components/ui/tooltip'
 import { ChannelIcon } from '@/components/shared/channel-icon'
 import { useChannelList } from '@/hooks/use-channels'
 import { useCreateEndpoint, useUpdateEndpoint } from '@/hooks/use-endpoints'
@@ -69,17 +76,92 @@ export function EndpointForm({ mode, defaultValues }: EndpointFormProps) {
   )
   const templateRef = useRef<HTMLTextAreaElement>(null)
 
+  // 自管撤销/重做栈，使 Ctrl+Z 可撤销通过按钮插入的 token
+  // （受控 setState 替换值会清空浏览器原生 undo 历史）
+  const undoStack = useRef<string[]>([defaultValues?.messageTemplate || ''])
+  const redoStack = useRef<string[]>([])
+  const lastEditAt = useRef(0)
+
+  /**
+   * 统一模板写入入口：
+   * - forceNew=true（如插入 token）：新压一条历史，清空 redo
+   * - forceNew=false（如手动键入）：600ms 内视为同一次连续编辑，覆盖末条
+   */
+  const commitTemplate = useCallback(
+    (next: string, forceNew: boolean) => {
+      setMessageTemplate(next)
+      const now = performance.now()
+      if (!forceNew && now - lastEditAt.current < 600) {
+        undoStack.current[undoStack.current.length - 1] = next
+      } else {
+        undoStack.current.push(next)
+        redoStack.current = []
+      }
+      lastEditAt.current = now
+    },
+    []
+  )
+
+  const undoTemplate = useCallback(() => {
+    if (undoStack.current.length <= 1) return
+    const current = undoStack.current.pop()
+    if (current === undefined) return
+    redoStack.current.push(current)
+    const prev = undoStack.current[undoStack.current.length - 1]
+    if (prev === undefined) return
+    setMessageTemplate(prev)
+    requestAnimationFrame(() => {
+      const el = templateRef.current
+      if (el) {
+        el.focus()
+        el.selectionStart = el.selectionEnd = el.value.length
+      }
+    })
+  }, [])
+
+  const redoTemplate = useCallback(() => {
+    if (!redoStack.current.length) return
+    const next = redoStack.current.pop()
+    if (next === undefined) return
+    undoStack.current.push(next)
+    setMessageTemplate(next)
+    requestAnimationFrame(() => {
+      const el = templateRef.current
+      if (el) {
+        el.focus()
+        el.selectionStart = el.selectionEnd = el.value.length
+      }
+    })
+  }, [])
+
+  const handleTemplateKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      const mod = e.ctrlKey || e.metaKey
+      if (!mod) return
+      if (e.key === 'z' && !e.shiftKey) {
+        e.preventDefault()
+        undoTemplate()
+      } else if (e.key === 'y' || (e.key === 'z' && e.shiftKey)) {
+        e.preventDefault()
+        redoTemplate()
+      }
+    },
+    [undoTemplate, redoTemplate]
+  )
+
   const insertToken = (token: string, cursorOffset?: number) => {
     const el = templateRef.current
     if (!el) {
-      setMessageTemplate(prev => prev + token)
+      commitTemplate(messageTemplate + token, true)
       return
     }
+    el.focus()
     const start = el.selectionStart
     const end = el.selectionEnd
     const before = messageTemplate.slice(0, start)
     const after = messageTemplate.slice(end)
-    setMessageTemplate(before + token + after)
+    const next = before + token + after
+    commitTemplate(next, true)
     // 恢复光标位置
     const cursorPos = cursorOffset
       ? start + token.length - cursorOffset
@@ -241,7 +323,8 @@ export function EndpointForm({ mode, defaultValues }: EndpointFormProps) {
                 '使用 ${payload.xxx} 引用请求体中的字段\n例如：${payload.content}'
               }
               value={messageTemplate}
-              onChange={e => setMessageTemplate(e.target.value)}
+              onChange={e => commitTemplate(e.target.value, false)}
+              onKeyDown={handleTemplateKeyDown}
               disabled={isLoading}
               rows={4}
               className="font-mono text-sm"
@@ -279,7 +362,7 @@ export function EndpointForm({ mode, defaultValues }: EndpointFormProps) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start">
                     {presetsList?.length ? (
-                      <>
+                      <DropdownMenuGroup>
                         <DropdownMenuLabel>选择 AI 预设</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         {presetsList.map((p: any) => (
@@ -291,19 +374,30 @@ export function EndpointForm({ mode, defaultValues }: EndpointFormProps) {
                               insertToken(token, 2)
                             }}
                           >
-                            <div className="flex flex-col gap-0.5">
-                              <div className="flex items-center gap-2">
-                                <code className="text-xs font-semibold">
-                                  {p.key}
-                                </code>
-                                <span className="text-xs text-muted-foreground">
-                                  {p.name}
-                                </span>
-                              </div>
-                            </div>
+                            <TooltipProvider delay={300}>
+                              <Tooltip>
+                                <TooltipTrigger
+                                  render={
+                                    <div className="flex items-center gap-2 min-w-0" />
+                                  }
+                                >
+                                  <code className="text-xs font-semibold shrink-0">
+                                    {p.key}
+                                  </code>
+                                  <span className="text-xs text-muted-foreground truncate">
+                                    {p.name}
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent side="bottom" className="max-w-md">
+                                  <p className="text-xs break-all">
+                                    {p.name}
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </DropdownMenuItem>
                         ))}
-                      </>
+                      </DropdownMenuGroup>
                     ) : (
                       <div className="px-2 py-3 text-center">
                         <p className="text-xs text-muted-foreground">
