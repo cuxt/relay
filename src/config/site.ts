@@ -4,7 +4,7 @@
 
 export const siteConfig = {
   /** 站点名称，用于 Logo、标题、版权等 */
-  name: import.meta.env.VITE_SITE_NAME || 'Start Template',
+  name: import.meta.env.VITE_SITE_NAME || 'Relay',
   /** 站点描述，用于 meta */
-  description: '通用全栈起步模板',
+  description: '自部署的多渠道消息推送服务',
 } as const
