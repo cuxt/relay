@@ -51,9 +51,9 @@ auth 表已确认可安全对齐（见 [[template-schema-safe-merge]]）。
 
 ## 同步冲突面（预判）
 
-- 已确认骨架 files（vite/tsconfig/router/__root/styles）共 ~600 行 diff，共享祖先存在，三方合并可行。
+- 已确认骨架 files（vite/tsconfig/router/__root/styles）共 ~600 行 diff，**阶段 7 已与 upstream 建立共同祖先（见下），三方合并现可执行**。
 - 增量文件因与模板物理隔离，冲突不波及骨架。
-- 主要风险：drizzle 迁移序列两边 0000 冲突（模板建 5 表 vs relay 建 4 表），需手动处理的合并迁移。
+- 主要风险：drizzle 迁移序列两边 0000 冲突（模板建 5 表 vs relay 建 4 表），需手动处理的合并迁移——阶段 7 建立祖先时已显式排除 upstream 0000。
 
 ## 阶段 1 完成情况（2026-07-11）
 
@@ -72,7 +72,23 @@ auth 表已确认可安全对齐（见 [[template-schema-safe-merge]]）。
 
 ## 阶段推进顺序
 
-阶段 0（git 拓扑）✅ → **阶段 1（骨架覆盖）✅** → **阶段 4（schema 迁移）✅** → **阶段 3（后端 Elysia 迁移）✅** → **阶段 5（前端路由归入 _user/ + 侧边栏）✅** → **阶段 6（state/theme/form/工具迁移）✅** → 阶段 7（全量回归 + 上游同步模拟验证）。
+阶段 0（git 拓扑）✅ → **阶段 1（骨架覆盖）✅** → **阶段 4（schema 迁移）✅** → **阶段 3（后端 Elysia 迁移）✅** → **阶段 5（前端路由归入 _user/ + 侧边栏）✅** → **阶段 6（state/theme/form/工具迁移）✅** → **阶段 7（共同祖先建立）✅** → 阶段 8（全量运行回归，用户已决策暂不做）。
+
+## 阶段 7 完成情况（2026-07-11）
+
+发现关键拓扑事实：阶段 1 是**手动复制模板文件覆盖**而非 `git merge`，故 `upstream/main`（3d6a409，模板 1.8.2）与我们 HEAD **无共同祖先**——`git merge upstream/main` 被拒绝为 unrelated histories。TEMPLATE_SYNC 旧文写的"共享祖先存在、三方合并可行"是假设，非事实。阶段 7 一次性修补该拓扑。
+
+**操作**：`git merge --allow-unrelated-histories upstream/main`（merge commit `9101242`）。落实的全量与 upstream 的重叠分析：
+- 284（ours）vs 157（upstream）文件，**150 重名**，其中 **131 个 blob 逐字一致**（骨架在阶段 1 已对齐到 3d6a409）+ **19 个真差异**（全为 relay 有意增量）。
+- git 3-way 合并：131 个 SAME 自动并入无冲突；19 个 DIFFER 中能行级自动合并的合并成功，**18 个有行重叠的报 add/add 冲突**（AA）。
+- 仲裁：18 个 AA **全部取 ours**（auth.ts 的 GitHub OAuth + userRelations、db schema 业务表导出、`src/server/api.ts` 业务路由挂载、`src/config/menu.tsx`、`src/constants/routes.ts`、`routeTree.gen.ts`、`package.json`、`bun.lock`、`drizzle/meta/{_journal,0000_snapshot}.json`、`_public/{login,register}.tsx`、`.gitignore`、`.oxfmtrc.json`、`README.md`、`.vscode/settings.json`、`favicon.svg`、`.claude/settings.local.json`）。
+- 7 个 upstream 独有文件：**接受** `.env.example`、`.github/dependabot.yml`、`.vscode/extensions.json`、`scripts/seed.ts`（不被 build 调用，孤立但无害）；**拒绝** `drizzle/0000_peaceful_sandman.sql`（relay 保留自有 0000_melodic_leo→0007 序列，避免迁覆盖现数据）、`src/routes/_user/dashboard.tsx`（relay 用 `dashboard/index.tsx`，stub 同 `/_user/dashboard/` fullPath 会触发 routeTree 重复）、`.tanstack/tmp/*`（上游临时垃圾）。
+
+**合并零内容变化**：最终 staged 差异仅上述 4 个接受的 upstream-only 文件 +113 行。131 个 SAME 并入无 diff，19 个 ours 增量保留无 diff——纯属拓扑修补。
+
+**验证全绿**：建立祖先后 `bun run typecheck` 0 错误、`bun run build` 通过（drizzle 跑完 relay 0000→0007 无报错，证明 upstream 0000 未漏入干扰）。`git merge-base HEAD upstream/main` 返回 `3d6a409`（建立前退码 1 = 不存在）；`git merge --is-ancestor 3d6a409 HEAD` 成功；再 `git merge upstream/main` 显示 `Already up to date`（正常三方行为，不再被拒）。
+
+**从此** `git fetch upstream && git merge upstream/main` 是标准三方合并，本文件开头"同步流程（重复执行）"的 `git merge upstream/main` 正式可用。未来上游增量在 131 个骨架文件上若双方都改才需手解；relay 增量文件与 upstream 物理隔离，冲突不波及骨架。注意：**未来若 upstream 新增/重写了 `drizzle/0000_*` 或其自身的 dashboard stub，会再现本次排除的两类冲突，需同样取 ours**。
 
 ## 阶段 6 完成情况（2026-07-11）
 
