@@ -8,6 +8,15 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.8.2',
+    date: '2026-07-11',
+    type: 'patch',
+    title: '修复 Dependabot 配置失效',
+    changes: [
+      '移除 Dependabot 中无对应工作流文件的 github-actions 生态块，避免其报 dependency_file_not_found 并导致整次更新运行失败',
+    ],
+  },
+  {
     version: '1.8.1',
     date: '2026-07-04',
     type: 'patch',
