@@ -24,7 +24,7 @@
     "@better-auth/drizzle-adapter": "^1.6.23",
     "@elysia/openapi": "^1.4.15",
     "@icons-pack/react-simple-icons": "^13.13.0",
-    "@shadcn/react": "^0.2.0",
+    "@shadcn/react": "^0.2.1",
     "@tailwindcss/typography": "^0.5.20",
     "@tanstack/react-query": "^5.101.2",
     "@tanstack/react-router": "^1.170.17",
