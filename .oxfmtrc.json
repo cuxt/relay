@@ -1,0 +1,9 @@
+{
+  "ignorePatterns": ["node_modules", "dist", ".vinxi", ".output", "src/components/ui"],
+  "printWidth": 100,
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": false,
+  "singleQuote": true,
+  "trailingComma": "es5"
+}

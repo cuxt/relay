@@ -13,8 +13,8 @@ export const aiPresetKeys = {
 async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, init)
   const json = await res.json()
-  if (!res.ok) throw new Error(json.error?.message || '请求失败')
-  return json.data
+  if (!res.ok) throw new Error(json.error || '请求失败')
+  return json as T
 }
 
 export function useAiPresetList() {

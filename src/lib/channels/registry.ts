@@ -11,7 +11,7 @@ import { webhookConfigSchema, webhookConfigFields } from './definitions/webhook'
 import { emailConfigSchema, emailConfigFields } from './definitions/email'
 import { barkConfigSchema, barkConfigFields } from './definitions/bark'
 
-import type { channelTypeEnum } from '@/db/schemas/channels.schema'
+import type { channelTypeEnum } from '@/lib/db/schema/channels'
 
 export type ChannelType = (typeof channelTypeEnum.enumValues)[number]
 

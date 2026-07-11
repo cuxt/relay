@@ -1,100 +1,95 @@
-import {
-  HeadContent,
-  Scripts,
-  createRootRouteWithContext,
-  redirect,
-  isRedirect
-} from '@tanstack/react-router'
-
-import { ThemeProvider } from '@/components/theme'
-import { AppHeader } from '@/components/layout/app-header'
-import { AnimatedOutlet } from '@/components/layout/animated-outlet'
-import { getSession } from '@/lib/auth/session'
-import { Toaster } from 'sonner'
-import { TooltipProvider } from '@/components/ui/tooltip'
-
-import appCss from '../styles.css?url'
-
+import type { ReactNode } from 'react'
 import type { QueryClient } from '@tanstack/react-query'
+import { Outlet, createRootRouteWithContext, HeadContent, Scripts } from '@tanstack/react-router'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { Toaster } from '@/components/ui/sonner'
+import { useTheme } from '@/hooks/use-theme'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import { siteConfig } from '@/config/site'
+import { I18N } from '@/constants'
+import appCSS from '@/styles.css?url'
 
-interface MyRouterContext {
+interface RouterContext {
   queryClient: QueryClient
 }
 
-const publicRoutes = [
-  '/auth/login',
-  '/auth/sign-up',
-  '/api/auth/',
-  '/api/push/'
-]
-
-export const Route = createRootRouteWithContext<MyRouterContext>()({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'Relay' }
-    ],
-    links: [{ rel: 'stylesheet', href: appCss }]
-  }),
-
-  beforeLoad: async ({ location }) => {
-    const isPublicRoute = publicRoutes.some(route =>
-      location.pathname.startsWith(route)
-    )
-
-    if (!isPublicRoute) {
-      try {
-        const session = await getSession()
-        if (!session) {
-          throw redirect({ to: '/auth/login' })
-        }
-      } catch (error) {
-        if (isRedirect(error)) {
-          throw error
-        }
-        throw redirect({ to: '/auth/login' })
-      }
+export const Route = createRootRouteWithContext<RouterContext>()({
+  ssr: true,
+  head: () => {
+    return {
+      meta: [
+        { charSet: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { title: siteConfig.name },
+        { name: 'description', content: siteConfig.description },
+      ],
+      links: [
+        { rel: 'icon', href: '/favicon.svg' },
+        { rel: 'stylesheet', href: appCSS },
+      ],
     }
   },
-
-  shellComponent: RootDocument,
-  notFoundComponent: NotFound
+  component: RootComponent,
+  errorComponent: RootErrorComponent,
+  notFoundComponent: () => (
+    <div className="flex flex-col items-center justify-center min-h-screen p-12 text-center font-sans">
+      <h1 className="text-[120px] font-extrabold text-primary/15 leading-none select-none">404</h1>
+      <h2 className="text-2xl font-bold -mt-5">页面未找到</h2>
+      <p className="text-base text-muted-foreground mt-3 mb-8 max-w-100">
+        抱歉，你访问的页面不存在。请检查 URL 或返回首页。
+      </p>
+      <a
+        href="/"
+        className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium no-underline hover:bg-primary/90 transition-colors"
+      >
+        返回首页
+      </a>
+    </div>
+  ),
 })
 
-function NotFound() {
+function RootComponent() {
+  const { queryClient } = Route.useRouteContext()
+  useTheme()
+
   return (
-    <div className="flex-1 flex items-center justify-center px-4">
-      <div className="text-center space-y-4">
-        <h1 className="text-6xl font-bold text-muted-foreground/30">404</h1>
-        <p className="text-muted-foreground">页面未找到</p>
-        <a
-          href="/"
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-        >
-          返回首页
-        </a>
-      </div>
+    <RootDocument>
+      <TooltipProvider>
+        <QueryClientProvider client={queryClient}>
+          <Outlet />
+          <Toaster richColors closeButton />
+        </QueryClientProvider>
+      </TooltipProvider>
+    </RootDocument>
+  )
+}
+
+function RootErrorComponent({ error }: { error: Error }) {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen p-6 font-sans">
+      <h1 className="text-5xl font-bold text-destructive">500</h1>
+      <p className="text-lg text-muted-foreground mb-6">服务器出现了错误</p>
+      <pre className="p-4 rounded-lg bg-muted max-w-150 overflow-auto text-[13px]">
+        {error.message}
+      </pre>
+      <a
+        href="/"
+        className="mt-6 px-6 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium no-underline hover:bg-primary/90 transition-colors"
+      >
+        返回首页
+      </a>
     </div>
   )
 }
 
-function RootDocument() {
+function RootDocument({ children }: { children: ReactNode }) {
   return (
-    <html lang="zh-CN" suppressHydrationWarning>
+    <html lang={I18N.LOCALE}>
       <head>
         <HeadContent />
       </head>
-      <body className="flex flex-col h-screen bg-background font-sans antialiased overflow-hidden">
-        <ThemeProvider defaultTheme="system" storageKey="relay-theme">
-          <TooltipProvider>
-            <AppHeader />
-            <main className="flex flex-col flex-1 overflow-hidden">
-              <AnimatedOutlet />
-            </main>
-            <Toaster position="bottom-right" richColors closeButton />
-          </TooltipProvider>
-        </ThemeProvider>
+      <body>
+        {children}
         <Scripts />
       </body>
     </html>

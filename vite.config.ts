@@ -1,33 +1,27 @@
-import { defineConfig } from 'vite'
-import { devtools } from '@tanstack/devtools-vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
-import react, { reactCompilerPreset } from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
+import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { nitro } from 'nitro/vite'
-import babel from '@rolldown/plugin-babel'
-import { fileURLToPath } from 'url'
-import { resolve } from 'path'
+import { devtools } from '@tanstack/devtools-vite'
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url))
-
-const config = defineConfig({
+export default defineConfig({
+  server: {
+    port: 3000,
+  },
+  resolve: {
+    tsconfigPaths: true,
+  },
   plugins: [
     devtools(),
     nitro(),
     tailwindcss(),
-    tanstackStart(),
-    react(),
-    babel({ presets: [reactCompilerPreset()] })
+    tanstackStart({
+      srcDirectory: 'src',
+      start: {
+        entry: 'start.ts',
+      },
+    }),
+    viteReact(),
   ],
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, 'src')
-    }
-  },
-  ssr: {
-    external: ['pg', 'drizzle-orm'],
-    noExternal: ['better-auth']
-  }
 })
-
-export default config

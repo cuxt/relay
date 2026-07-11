@@ -1,8 +1,8 @@
-import { useSession } from '@/lib/auth/client'
+import { authClient } from '@/lib/auth/client'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export function ProfileForm() {
-  const { data: session } = useSession()
+  const { data: session } = authClient.useSession()
 
   if (!session) return null
 
