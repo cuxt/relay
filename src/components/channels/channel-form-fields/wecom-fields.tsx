@@ -1,39 +1,17 @@
-import { useFormContext } from 'react-hook-form'
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormDescription,
-  FormMessage
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+import { ChannelField, type ChannelFieldsProps } from './channel-field'
 
-export function WecomFields() {
-  const form = useFormContext()
-
+export function WecomFields({ config, onChange, errors, disabled }: ChannelFieldsProps) {
   return (
-    <FormField
-      control={form.control}
-      name="config.webhook"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>
-            Webhook 地址
-            <span className="text-red-500 ml-1">*</span>
-          </FormLabel>
-          <FormControl>
-            <Input
-              placeholder="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=..."
-              {...field}
-            />
-          </FormControl>
-          <FormDescription>
-            企业微信群机器人的 Webhook 地址
-          </FormDescription>
-          <FormMessage />
-        </FormItem>
-      )}
+    <ChannelField
+      label="Webhook 地址"
+      path="config.webhook"
+      required
+      value={config.webhook}
+      onChange={onChange}
+      disabled={disabled}
+      placeholder="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=..."
+      description="企业微信群机器人的 Webhook 地址"
+      error={errors['config.webhook']}
     />
   )
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { createFileRoute, redirect, Link, useNavigate, useRouter } from '@tanstack/react-router'
 import { Mail, Lock, Loader2 } from 'lucide-react'
+import { SiGithub } from 'react-icons/si'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { authClient } from '@/lib/auth/client'
@@ -146,6 +147,24 @@ function LoginPage() {
             登录
           </Button>
         </form>
+
+        <div className="relative my-6">
+          <Separator />
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-3 text-xs text-muted-foreground">
+            或
+          </span>
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full rounded-full"
+          size="lg"
+          onClick={() => authClient.signIn.social({ provider: 'github', callbackURL: ROUTES.DASHBOARD })}
+        >
+          <SiGithub className="h-4 w-4" />
+          GitHub 登录
+        </Button>
 
         <div className="relative my-6">
           <Separator />

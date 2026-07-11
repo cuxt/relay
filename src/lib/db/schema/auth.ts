@@ -1,5 +1,11 @@
 import { relations } from 'drizzle-orm'
 import { pgTable, text, timestamp, boolean, index } from 'drizzle-orm/pg-core'
+import { channels } from './channels'
+import { endpoints } from './endpoints'
+import { pushLogs } from './push-logs'
+import { apiKeys } from './api-keys'
+import { aiProviders } from './ai-providers'
+import { aiPresets } from './ai-presets'
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -81,6 +87,12 @@ export const verification = pgTable(
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
+  channels: many(channels),
+  endpoints: many(endpoints),
+  pushLogs: many(pushLogs),
+  apiKeys: many(apiKeys),
+  aiProviders: many(aiProviders),
+  aiPresets: many(aiPresets),
 }))
 
 export const sessionRelations = relations(session, ({ one }) => ({

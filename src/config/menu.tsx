@@ -1,4 +1,4 @@
-import { HardDrive, Home, Mail, User, Users } from 'lucide-react'
+import { HardDrive, Home, Mail, Radio, Plug, ScrollText, Settings, User, Users } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { ROLES, ROUTES, type Role } from '@/constants'
 
@@ -25,6 +25,27 @@ export const mainMenuItems: MenuItem[] = [
         to: ROUTES.DASHBOARD,
         group: '常规',
       },
+      {
+        key: 'channels',
+        label: '渠道',
+        icon: <Radio className="h-4 w-4" />,
+        to: ROUTES.CHANNELS,
+        group: '常规',
+      },
+      {
+        key: 'endpoints',
+        label: '端点',
+        icon: <Plug className="h-4 w-4" />,
+        to: ROUTES.ENDPOINTS,
+        group: '常规',
+      },
+      {
+        key: 'logs',
+        label: '推送日志',
+        icon: <ScrollText className="h-4 w-4" />,
+        to: ROUTES.LOGS,
+        group: '常规',
+      },
     ],
   },
   {
@@ -36,6 +57,13 @@ export const mainMenuItems: MenuItem[] = [
         label: '个人设置',
         icon: <User className="h-4 w-4" />,
         to: ROUTES.PROFILE,
+        group: '个人',
+      },
+      {
+        key: 'settings',
+        label: '系统设置',
+        icon: <Settings className="h-4 w-4" />,
+        to: ROUTES.SETTINGS,
         group: '个人',
       },
     ],

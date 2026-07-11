@@ -16,14 +16,23 @@ import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as OpenapiSplatRouteImport } from './routes/openapi/$'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as UserProfileRouteImport } from './routes/_user/profile'
-import { Route as UserDashboardRouteImport } from './routes/_user/dashboard'
 import { Route as PublicReleaseRouteImport } from './routes/_public/release'
 import { Route as PublicRegisterRouteImport } from './routes/_public/register'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as UserAdminRouteRouteImport } from './routes/_user/_admin/route'
+import { Route as UserSettingsIndexRouteImport } from './routes/_user/settings/index'
+import { Route as UserLogsIndexRouteImport } from './routes/_user/logs/index'
+import { Route as UserEndpointsIndexRouteImport } from './routes/_user/endpoints/index'
+import { Route as UserDashboardIndexRouteImport } from './routes/_user/dashboard/index'
+import { Route as UserChannelsIndexRouteImport } from './routes/_user/channels/index'
+import { Route as UserLogsIdRouteImport } from './routes/_user/logs/$id'
+import { Route as UserEndpointsNewRouteImport } from './routes/_user/endpoints/new'
+import { Route as UserChannelsNewRouteImport } from './routes/_user/channels/new'
 import { Route as UserAdminUsersRouteImport } from './routes/_user/_admin/users'
 import { Route as UserAdminStorageRouteImport } from './routes/_user/_admin/storage'
 import { Route as UserAdminEmailRouteImport } from './routes/_user/_admin/email'
+import { Route as UserEndpointsIdEditRouteImport } from './routes/_user/endpoints/$id/edit'
+import { Route as UserChannelsIdEditRouteImport } from './routes/_user/channels/$id/edit'
 
 const OpenapiRoute = OpenapiRouteImport.update({
   id: '/openapi',
@@ -58,11 +67,6 @@ const UserProfileRoute = UserProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => UserRouteRoute,
 } as any)
-const UserDashboardRoute = UserDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => UserRouteRoute,
-} as any)
 const PublicReleaseRoute = PublicReleaseRouteImport.update({
   id: '/release',
   path: '/release',
@@ -82,6 +86,46 @@ const UserAdminRouteRoute = UserAdminRouteRouteImport.update({
   id: '/_admin',
   getParentRoute: () => UserRouteRoute,
 } as any)
+const UserSettingsIndexRoute = UserSettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserLogsIndexRoute = UserLogsIndexRouteImport.update({
+  id: '/logs/',
+  path: '/logs/',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserEndpointsIndexRoute = UserEndpointsIndexRouteImport.update({
+  id: '/endpoints/',
+  path: '/endpoints/',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserDashboardIndexRoute = UserDashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserChannelsIndexRoute = UserChannelsIndexRouteImport.update({
+  id: '/channels/',
+  path: '/channels/',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserLogsIdRoute = UserLogsIdRouteImport.update({
+  id: '/logs/$id',
+  path: '/logs/$id',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserEndpointsNewRoute = UserEndpointsNewRouteImport.update({
+  id: '/endpoints/new',
+  path: '/endpoints/new',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserChannelsNewRoute = UserChannelsNewRouteImport.update({
+  id: '/channels/new',
+  path: '/channels/new',
+  getParentRoute: () => UserRouteRoute,
+} as any)
 const UserAdminUsersRoute = UserAdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -97,6 +141,16 @@ const UserAdminEmailRoute = UserAdminEmailRouteImport.update({
   path: '/email',
   getParentRoute: () => UserAdminRouteRoute,
 } as any)
+const UserEndpointsIdEditRoute = UserEndpointsIdEditRouteImport.update({
+  id: '/endpoints/$id/edit',
+  path: '/endpoints/$id/edit',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserChannelsIdEditRoute = UserChannelsIdEditRouteImport.update({
+  id: '/channels/$id/edit',
+  path: '/channels/$id/edit',
+  getParentRoute: () => UserRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
@@ -104,13 +158,22 @@ export interface FileRoutesByFullPath {
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
   '/release': typeof PublicReleaseRoute
-  '/dashboard': typeof UserDashboardRoute
   '/profile': typeof UserProfileRoute
   '/api/$': typeof ApiSplatRoute
   '/openapi/$': typeof OpenapiSplatRoute
   '/email': typeof UserAdminEmailRoute
   '/storage': typeof UserAdminStorageRoute
   '/users': typeof UserAdminUsersRoute
+  '/channels/new': typeof UserChannelsNewRoute
+  '/endpoints/new': typeof UserEndpointsNewRoute
+  '/logs/$id': typeof UserLogsIdRoute
+  '/channels/': typeof UserChannelsIndexRoute
+  '/dashboard/': typeof UserDashboardIndexRoute
+  '/endpoints/': typeof UserEndpointsIndexRoute
+  '/logs/': typeof UserLogsIndexRoute
+  '/settings/': typeof UserSettingsIndexRoute
+  '/channels/$id/edit': typeof UserChannelsIdEditRoute
+  '/endpoints/$id/edit': typeof UserEndpointsIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
@@ -118,13 +181,22 @@ export interface FileRoutesByTo {
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
   '/release': typeof PublicReleaseRoute
-  '/dashboard': typeof UserDashboardRoute
   '/profile': typeof UserProfileRoute
   '/api/$': typeof ApiSplatRoute
   '/openapi/$': typeof OpenapiSplatRoute
   '/email': typeof UserAdminEmailRoute
   '/storage': typeof UserAdminStorageRoute
   '/users': typeof UserAdminUsersRoute
+  '/channels/new': typeof UserChannelsNewRoute
+  '/endpoints/new': typeof UserEndpointsNewRoute
+  '/logs/$id': typeof UserLogsIdRoute
+  '/channels': typeof UserChannelsIndexRoute
+  '/dashboard': typeof UserDashboardIndexRoute
+  '/endpoints': typeof UserEndpointsIndexRoute
+  '/logs': typeof UserLogsIndexRoute
+  '/settings': typeof UserSettingsIndexRoute
+  '/channels/$id/edit': typeof UserChannelsIdEditRoute
+  '/endpoints/$id/edit': typeof UserEndpointsIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -135,7 +207,6 @@ export interface FileRoutesById {
   '/_public/login': typeof PublicLoginRoute
   '/_public/register': typeof PublicRegisterRoute
   '/_public/release': typeof PublicReleaseRoute
-  '/_user/dashboard': typeof UserDashboardRoute
   '/_user/profile': typeof UserProfileRoute
   '/api/$': typeof ApiSplatRoute
   '/openapi/$': typeof OpenapiSplatRoute
@@ -143,6 +214,16 @@ export interface FileRoutesById {
   '/_user/_admin/email': typeof UserAdminEmailRoute
   '/_user/_admin/storage': typeof UserAdminStorageRoute
   '/_user/_admin/users': typeof UserAdminUsersRoute
+  '/_user/channels/new': typeof UserChannelsNewRoute
+  '/_user/endpoints/new': typeof UserEndpointsNewRoute
+  '/_user/logs/$id': typeof UserLogsIdRoute
+  '/_user/channels/': typeof UserChannelsIndexRoute
+  '/_user/dashboard/': typeof UserDashboardIndexRoute
+  '/_user/endpoints/': typeof UserEndpointsIndexRoute
+  '/_user/logs/': typeof UserLogsIndexRoute
+  '/_user/settings/': typeof UserSettingsIndexRoute
+  '/_user/channels/$id/edit': typeof UserChannelsIdEditRoute
+  '/_user/endpoints/$id/edit': typeof UserEndpointsIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -152,13 +233,22 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/release'
-    | '/dashboard'
     | '/profile'
     | '/api/$'
     | '/openapi/$'
     | '/email'
     | '/storage'
     | '/users'
+    | '/channels/new'
+    | '/endpoints/new'
+    | '/logs/$id'
+    | '/channels/'
+    | '/dashboard/'
+    | '/endpoints/'
+    | '/logs/'
+    | '/settings/'
+    | '/channels/$id/edit'
+    | '/endpoints/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -166,13 +256,22 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/release'
-    | '/dashboard'
     | '/profile'
     | '/api/$'
     | '/openapi/$'
     | '/email'
     | '/storage'
     | '/users'
+    | '/channels/new'
+    | '/endpoints/new'
+    | '/logs/$id'
+    | '/channels'
+    | '/dashboard'
+    | '/endpoints'
+    | '/logs'
+    | '/settings'
+    | '/channels/$id/edit'
+    | '/endpoints/$id/edit'
   id:
     | '__root__'
     | '/_public'
@@ -182,7 +281,6 @@ export interface FileRouteTypes {
     | '/_public/login'
     | '/_public/register'
     | '/_public/release'
-    | '/_user/dashboard'
     | '/_user/profile'
     | '/api/$'
     | '/openapi/$'
@@ -190,6 +288,16 @@ export interface FileRouteTypes {
     | '/_user/_admin/email'
     | '/_user/_admin/storage'
     | '/_user/_admin/users'
+    | '/_user/channels/new'
+    | '/_user/endpoints/new'
+    | '/_user/logs/$id'
+    | '/_user/channels/'
+    | '/_user/dashboard/'
+    | '/_user/endpoints/'
+    | '/_user/logs/'
+    | '/_user/settings/'
+    | '/_user/channels/$id/edit'
+    | '/_user/endpoints/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -250,13 +358,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserProfileRouteImport
       parentRoute: typeof UserRouteRoute
     }
-    '/_user/dashboard': {
-      id: '/_user/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof UserDashboardRouteImport
-      parentRoute: typeof UserRouteRoute
-    }
     '/_public/release': {
       id: '/_public/release'
       path: '/release'
@@ -285,6 +386,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserAdminRouteRouteImport
       parentRoute: typeof UserRouteRoute
     }
+    '/_user/settings/': {
+      id: '/_user/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof UserSettingsIndexRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/logs/': {
+      id: '/_user/logs/'
+      path: '/logs'
+      fullPath: '/logs/'
+      preLoaderRoute: typeof UserLogsIndexRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/endpoints/': {
+      id: '/_user/endpoints/'
+      path: '/endpoints'
+      fullPath: '/endpoints/'
+      preLoaderRoute: typeof UserEndpointsIndexRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/dashboard/': {
+      id: '/_user/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof UserDashboardIndexRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/channels/': {
+      id: '/_user/channels/'
+      path: '/channels'
+      fullPath: '/channels/'
+      preLoaderRoute: typeof UserChannelsIndexRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/logs/$id': {
+      id: '/_user/logs/$id'
+      path: '/logs/$id'
+      fullPath: '/logs/$id'
+      preLoaderRoute: typeof UserLogsIdRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/endpoints/new': {
+      id: '/_user/endpoints/new'
+      path: '/endpoints/new'
+      fullPath: '/endpoints/new'
+      preLoaderRoute: typeof UserEndpointsNewRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/channels/new': {
+      id: '/_user/channels/new'
+      path: '/channels/new'
+      fullPath: '/channels/new'
+      preLoaderRoute: typeof UserChannelsNewRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
     '/_user/_admin/users': {
       id: '/_user/_admin/users'
       path: '/users'
@@ -305,6 +462,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/email'
       preLoaderRoute: typeof UserAdminEmailRouteImport
       parentRoute: typeof UserAdminRouteRoute
+    }
+    '/_user/endpoints/$id/edit': {
+      id: '/_user/endpoints/$id/edit'
+      path: '/endpoints/$id/edit'
+      fullPath: '/endpoints/$id/edit'
+      preLoaderRoute: typeof UserEndpointsIdEditRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/channels/$id/edit': {
+      id: '/_user/channels/$id/edit'
+      path: '/channels/$id/edit'
+      fullPath: '/channels/$id/edit'
+      preLoaderRoute: typeof UserChannelsIdEditRouteImport
+      parentRoute: typeof UserRouteRoute
     }
   }
 }
@@ -345,14 +516,32 @@ const UserAdminRouteRouteWithChildren = UserAdminRouteRoute._addFileChildren(
 
 interface UserRouteRouteChildren {
   UserAdminRouteRoute: typeof UserAdminRouteRouteWithChildren
-  UserDashboardRoute: typeof UserDashboardRoute
   UserProfileRoute: typeof UserProfileRoute
+  UserChannelsNewRoute: typeof UserChannelsNewRoute
+  UserEndpointsNewRoute: typeof UserEndpointsNewRoute
+  UserLogsIdRoute: typeof UserLogsIdRoute
+  UserChannelsIndexRoute: typeof UserChannelsIndexRoute
+  UserDashboardIndexRoute: typeof UserDashboardIndexRoute
+  UserEndpointsIndexRoute: typeof UserEndpointsIndexRoute
+  UserLogsIndexRoute: typeof UserLogsIndexRoute
+  UserSettingsIndexRoute: typeof UserSettingsIndexRoute
+  UserChannelsIdEditRoute: typeof UserChannelsIdEditRoute
+  UserEndpointsIdEditRoute: typeof UserEndpointsIdEditRoute
 }
 
 const UserRouteRouteChildren: UserRouteRouteChildren = {
   UserAdminRouteRoute: UserAdminRouteRouteWithChildren,
-  UserDashboardRoute: UserDashboardRoute,
   UserProfileRoute: UserProfileRoute,
+  UserChannelsNewRoute: UserChannelsNewRoute,
+  UserEndpointsNewRoute: UserEndpointsNewRoute,
+  UserLogsIdRoute: UserLogsIdRoute,
+  UserChannelsIndexRoute: UserChannelsIndexRoute,
+  UserDashboardIndexRoute: UserDashboardIndexRoute,
+  UserEndpointsIndexRoute: UserEndpointsIndexRoute,
+  UserLogsIndexRoute: UserLogsIndexRoute,
+  UserSettingsIndexRoute: UserSettingsIndexRoute,
+  UserChannelsIdEditRoute: UserChannelsIdEditRoute,
+  UserEndpointsIdEditRoute: UserEndpointsIdEditRoute,
 }
 
 const UserRouteRouteWithChildren = UserRouteRoute._addFileChildren(

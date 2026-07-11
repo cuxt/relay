@@ -25,7 +25,7 @@ export function RecentLogs() {
             variant="ghost"
             size="sm"
             nativeButton={false}
-            render={<Link to="/logs" />}
+            render={<Link to="/logs" search={{ page: 1 }} />}
           >
             查看全部
             <ArrowRight className="ml-1 h-3.5 w-3.5" />
@@ -53,6 +53,7 @@ export function RecentLogs() {
                   key={log.id}
                   to="/logs/$id"
                   params={{ id: log.id }}
+                  search={{ page: 1 }}
                   className="flex items-center justify-between py-3 first:pt-0 last:pb-0 group transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
