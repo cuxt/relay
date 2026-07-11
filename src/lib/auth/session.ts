@@ -1,11 +1,26 @@
-import { createServerFn } from '@tanstack/react-start'
-import { getRequestHeaders } from '@tanstack/react-start/server'
-import { auth } from '@/lib/auth/auth'
+import { redirect } from '@tanstack/react-router'
+import { authClient } from '@/lib/auth/client'
+import { ROUTES } from '@/constants'
 
-export const getSession = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const headers = getRequestHeaders()
-    const session = await auth.api.getSession({ headers })
-    return session
+export type Session = NonNullable<Awaited<ReturnType<typeof authClient.getSession>>['data']>
+export const sessionKey = ['auth', 'session'] as const
+
+export async function getSession() {
+  const { data, error } = await authClient.getSession()
+
+  if (error) {
+    throw error
   }
-)
+
+  return data as Session | null
+}
+
+export async function requireSession() {
+  const session = await getSession()
+
+  if (!session) {
+    throw redirect({ to: ROUTES.LOGIN })
+  }
+
+  return session
+}

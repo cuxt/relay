@@ -1,0 +1,106 @@
+import { Settings, LogOut, ArrowLeftRight } from 'lucide-react'
+import { useNavigate, useRouter, Link } from '@tanstack/react-router'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { authClient } from '@/lib/auth/client'
+import { sessionKey, type Session } from '@/lib/auth/session'
+import { Avatar } from '@/components/x/avatar'
+import { cn } from '@/lib/utils'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu'
+import { ROUTES } from '@/constants'
+
+interface UserMenuProps {
+  user: Session['user']
+  impersonating?: boolean
+}
+
+export function UserMenu({ user, impersonating }: UserMenuProps) {
+  const navigate = useNavigate()
+  const router = useRouter()
+  const queryClient = useQueryClient()
+
+  const logout = useMutation({
+    mutationFn: async () => {
+      const res = await authClient.signOut()
+      if (res.error) throw res.error
+    },
+    onSuccess: async () => {
+      queryClient.removeQueries({ queryKey: sessionKey })
+      await router.invalidate()
+      await navigate({ to: ROUTES.LOGIN })
+    },
+    onError: () => toast.error('退出登录失败，请重试'),
+  })
+
+  const stop = useMutation({
+    mutationFn: async () => {
+      const res = await authClient.admin.stopImpersonating()
+      if (res.error) throw res.error
+    },
+    onSuccess: async () => {
+      queryClient.removeQueries({ queryKey: sessionKey })
+      await router.invalidate()
+      await navigate({ to: ROUTES.USERS })
+    },
+    onError: () => toast.error('退出模拟失败，请重试'),
+  })
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <button
+            aria-label="用户菜单"
+            className="cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          />
+        }
+      >
+        <Avatar
+          id={user.id}
+          src={user.image}
+          className={cn(impersonating ? 'ring-2 ring-destructive' : '')}
+        />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">
+                {user.name}
+                {impersonating && (
+                  <span className="ml-1.5 text-xs text-muted-foreground">模拟中</span>
+                )}
+              </p>
+              <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+            </div>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem render={<Link to={ROUTES.PROFILE} />}>
+          <Settings className="mr-2 h-4 w-4" />
+          设置
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        {impersonating ? (
+          <DropdownMenuItem onClick={() => stop.mutate()} disabled={stop.isPending}>
+            <ArrowLeftRight className="mr-2 h-4 w-4" />
+            {stop.isPending ? '退出中...' : '退出模拟'}
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem onClick={() => logout.mutate()} disabled={logout.isPending}>
+            <LogOut className="mr-2 h-4 w-4" />
+            {logout.isPending ? '退出中...' : '退出登录'}
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
