@@ -1,14 +1,14 @@
-import { db } from '@/db'
-import { endpoints } from '@/db/schemas/endpoints.schema'
-import { channels } from '@/db/schemas/channels.schema'
-import { pushLogs } from '@/db/schemas/push-logs.schema'
-import { aiPresets } from '@/db/schemas/ai-presets.schema'
+import { db } from '@/lib/db'
+import { endpoints } from '@/lib/db/schema/endpoints'
+import { channels } from '@/lib/db/schema/channels'
+import { pushLogs } from '@/lib/db/schema/push-logs'
+import { aiPresets } from '@/lib/db/schema/ai-presets'
 import { eq, and } from 'drizzle-orm'
 import { sendMessage } from '@/lib/channels/sender.server'
 import { evaluate } from './template.server'
 import type { AiResolver, AiCallMeta } from './template'
 import { processMessageWithAi } from '@/lib/ai/process'
-import type { ChannelType } from '@/lib/channels/constants'
+import type { ChannelType } from '@/lib/channels/registry'
 
 interface PushRequest {
   token: string

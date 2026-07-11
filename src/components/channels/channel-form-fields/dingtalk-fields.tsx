@@ -1,59 +1,28 @@
-import { useFormContext } from 'react-hook-form'
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormDescription,
-  FormMessage
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+import { ChannelField, type ChannelFieldsProps } from './channel-field'
 
-export function DingtalkFields() {
-  const form = useFormContext()
-
+export function DingtalkFields({ config, onChange, errors, disabled }: ChannelFieldsProps) {
   return (
     <>
-      <FormField
-        control={form.control}
-        name="config.webhook"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>
-              Webhook 地址
-              <span className="text-red-500 ml-1">*</span>
-            </FormLabel>
-            <FormControl>
-              <Input
-                placeholder="https://oapi.dingtalk.com/robot/send?access_token=..."
-                {...field}
-              />
-            </FormControl>
-            <FormDescription>
-              钉钉自定义机器人的 Webhook 地址
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
+      <ChannelField
+        label="Webhook 地址"
+        path="config.webhook"
+        required
+        value={config.webhook}
+        onChange={onChange}
+        disabled={disabled}
+        placeholder="https://oapi.dingtalk.com/robot/send?access_token=..."
+        description="钉钉自定义机器人的 Webhook 地址"
+        error={errors['config.webhook']}
       />
-      <FormField
-        control={form.control}
-        name="config.secret"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>签名密钥</FormLabel>
-            <FormControl>
-              <Input
-                placeholder="签名密钥（可选）"
-                {...field}
-              />
-            </FormControl>
-            <FormDescription>
-              如果启用了加签，请填写密钥
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
+      <ChannelField
+        label="签名密钥"
+        path="config.secret"
+        value={config.secret}
+        onChange={onChange}
+        disabled={disabled}
+        placeholder="签名密钥（可选）"
+        description="如果启用了加签，请填写密钥"
+        error={errors['config.secret']}
       />
     </>
   )

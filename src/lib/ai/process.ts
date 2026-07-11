@@ -1,6 +1,6 @@
-import { db } from '@/db'
-import { aiPresets } from '@/db/schemas/ai-presets.schema'
-import { aiProviders } from '@/db/schemas/ai-providers.schema'
+import { db } from '@/lib/db'
+import { aiPresets } from '@/lib/db/schema/ai-presets'
+import { aiProviders } from '@/lib/db/schema/ai-providers'
 import { eq } from 'drizzle-orm'
 import { chatCompletion } from './chat'
 

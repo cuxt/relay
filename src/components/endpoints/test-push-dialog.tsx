@@ -104,7 +104,7 @@ export function TestPushDialog({
       } else {
         setResult({
           success: false,
-          message: json.error?.message || '推送失败'
+          message: json.error || '推送失败'
         })
       }
     } catch (err: any) {

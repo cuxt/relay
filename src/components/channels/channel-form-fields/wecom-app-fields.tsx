@@ -1,73 +1,41 @@
-import { useFormContext } from 'react-hook-form'
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormDescription,
-  FormMessage
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+import { ChannelField, type ChannelFieldsProps } from './channel-field'
 
-export function WecomAppFields() {
-  const form = useFormContext()
-
+export function WecomAppFields({ config, onChange, errors, disabled }: ChannelFieldsProps) {
   return (
     <>
-      <FormField
-        control={form.control}
-        name="config.corpId"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>
-              Corp ID
-              <span className="text-red-500 ml-1">*</span>
-            </FormLabel>
-            <FormControl>
-              <Input placeholder="企业 ID" {...field} />
-            </FormControl>
-            <FormDescription>企业微信的企业 ID</FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
+      <ChannelField
+        label="Corp ID"
+        path="config.corpId"
+        required
+        value={config.corpId}
+        onChange={onChange}
+        disabled={disabled}
+        placeholder="企业 ID"
+        description="企业微信的企业 ID"
+        error={errors['config.corpId']}
       />
-      <FormField
-        control={form.control}
-        name="config.agentId"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>
-              Agent ID
-              <span className="text-red-500 ml-1">*</span>
-            </FormLabel>
-            <FormControl>
-              <Input placeholder="应用 ID" {...field} />
-            </FormControl>
-            <FormDescription>企业微信应用的 Agent ID</FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
+      <ChannelField
+        label="Agent ID"
+        path="config.agentId"
+        required
+        value={config.agentId}
+        onChange={onChange}
+        disabled={disabled}
+        placeholder="应用 ID"
+        description="企业微信应用的 Agent ID"
+        error={errors['config.agentId']}
       />
-      <FormField
-        control={form.control}
-        name="config.secret"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>
-              App Secret
-              <span className="text-red-500 ml-1">*</span>
-            </FormLabel>
-            <FormControl>
-              <Input
-                type="password"
-                placeholder="应用密钥"
-                {...field}
-              />
-            </FormControl>
-            <FormDescription>企业微信应用的密钥</FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
+      <ChannelField
+        label="App Secret"
+        path="config.secret"
+        required
+        type="password"
+        value={config.secret}
+        onChange={onChange}
+        disabled={disabled}
+        placeholder="应用密钥"
+        description="企业微信应用的密钥"
+        error={errors['config.secret']}
       />
     </>
   )

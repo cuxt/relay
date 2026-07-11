@@ -8,14 +8,9 @@ import { DiscordFields } from './discord-fields'
 import { WebhookFields } from './webhook-fields'
 import { EmailFields } from './email-fields'
 import { BarkFields } from './bark-fields'
-import type { UseFormReturn } from 'react-hook-form'
+import type { ChannelFieldsProps } from './channel-field'
 
-interface ChannelFormFieldsProps {
-  type: ChannelType
-  form: UseFormReturn<any>
-}
-
-const fieldComponents: Record<ChannelType, React.ComponentType> = {
+const fieldComponents: Record<ChannelType, React.ComponentType<ChannelFieldsProps>> = {
   feishu: FeishuFields,
   wecom: WecomFields,
   wecom_app: WecomAppFields,
@@ -27,7 +22,16 @@ const fieldComponents: Record<ChannelType, React.ComponentType> = {
   bark: BarkFields
 }
 
-export function ChannelFormFields({ type }: ChannelFormFieldsProps) {
+export function ChannelFormFields({
+  type,
+  config,
+  onChange,
+  errors,
+  disabled
+}: { type: ChannelType } & ChannelFieldsProps) {
   const Component = fieldComponents[type]
-  return Component ? <Component /> : null
+  return Component ? (
+    <Component config={config} onChange={onChange} errors={errors} disabled={disabled} />
+  ) : null
 }
+

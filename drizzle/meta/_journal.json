@@ -50,6 +50,13 @@
       "when": 1781337910414,
       "tag": "0006_loud_post",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1783740011949,
+      "tag": "0007_bizarre_warbird",
+      "breakpoints": true
     }
   ]
 }
