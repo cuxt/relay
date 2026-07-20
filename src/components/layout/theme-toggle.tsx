@@ -39,16 +39,18 @@ export function ThemeToggle() {
     // light→dark: shrink old view; dark→light: expand new view
     const isDarkening = resolvedMode === 'light'
 
-    if (isDarkening) {
-      document.documentElement.dataset.themeTransition = 'shrink'
-    }
+    document.documentElement.dataset.themeTransition = isDarkening ? 'shrink' : 'expand'
+    document.documentElement.style.setProperty('--theme-transition-x', `${x}px`)
+    document.documentElement.style.setProperty('--theme-transition-y', `${y}px`)
 
     const transition = document.startViewTransition(() => {
       flushSync(() => setMode(nextMode))
     })
 
+    let animation: Animation | undefined
+
     transition.ready.then(() => {
-      document.documentElement.animate(
+      animation = document.documentElement.animate(
         {
           clipPath: isDarkening
             ? [`circle(${maxR}px at ${x}px ${y}px)`, `circle(0px at ${x}px ${y}px)`]
@@ -66,7 +68,10 @@ export function ThemeToggle() {
     })
 
     transition.finished.then(() => {
+      animation?.cancel()
       delete document.documentElement.dataset.themeTransition
+      document.documentElement.style.removeProperty('--theme-transition-x')
+      document.documentElement.style.removeProperty('--theme-transition-y')
     })
   }
 

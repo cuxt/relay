@@ -159,6 +159,13 @@
   z-index: 9999;
 }
 
+/* Keep the new light snapshot hidden until its reveal animation is attached. */
+[data-theme-transition='expand']::view-transition-new(root) {
+  clip-path: circle(
+    0 at var(--theme-transition-x) var(--theme-transition-y)
+  );
+}
+
 /* Shrink: old view on top, shrinks to reveal dark underneath */
 [data-theme-transition='shrink']::view-transition-old(root) {
   z-index: 9999;

@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet, useLocation } from '@tanstack/react-router'
+import { createFileRoute, Link, Outlet, redirect, useLocation } from '@tanstack/react-router'
 import { UserMenu } from '@/components/layout/user-menu'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -19,18 +19,22 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 import { Logo } from '@/components/x/logo'
-import { CACHE } from '@/constants'
+import { CACHE, ROUTES } from '@/constants'
 import { filterMenuByRole, mainMenuItems } from '@/config/menu'
-import { requireSession, sessionKey } from '@/lib/auth/session'
+import { getSession, sessionKey } from '@/lib/auth/session'
 import { useSidebarStore } from '@/stores/sidebarStore'
 
 export const Route = createFileRoute('/_user')({
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.ensureQueryData({
       queryKey: sessionKey,
-      queryFn: requireSession,
+      queryFn: getSession,
       staleTime: CACHE.USER_ROUTE_STALE_TIME,
     })
+
+    if (!session) {
+      throw redirect({ to: ROUTES.LOGIN })
+    }
 
     return session
   },

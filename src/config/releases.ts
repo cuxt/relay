@@ -8,6 +8,16 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.8.3',
+    date: '2026-07-20',
+    type: 'patch',
+    title: '修复主题切换动画与未登录跳转',
+    changes: [
+      '修复从深色切回浅色时主题切换动画会闪烁的问题',
+      '未登录访问用户页面时改为先读会话再跳转登录页，避免错误登录状态被缓存',
+    ],
+  },
+  {
     version: '1.8.2',
     date: '2026-07-11',
     type: 'patch',
