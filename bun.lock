@@ -19,7 +19,7 @@
         "@tanstack/react-start": "^1.168.27",
         "@upyo/core": "^0.5.0",
         "@upyo/resend": "^0.5.0",
-        "@upyo/smtp": "^0.5.0",
+        "@upyo/smtp": "^0.5.1",
         "better-auth": "^1.6.23",
         "boring-avatars": "^2.0.4",
         "class-variance-authority": "^0.7.1",
@@ -671,7 +671,7 @@
 
     "@upyo/resend": ["@upyo/resend@0.5.0", "", { "peerDependencies": { "@upyo/core": "0.5.0" } }, "sha512-K+5rbS8N59Djqa3QukhfODeAJxyDiJY2+KMbW0cCe9yvZV0vggW4ygXIkYnk298eyv2wwqeYNGL0wYIvQlLgYg=="],
 
-    "@upyo/smtp": ["@upyo/smtp@0.5.0", "", { "peerDependencies": { "@upyo/core": "0.5.0" } }, "sha512-NjRHQN8n9AnyKYLQFOTe/c1ODd58Vv++423RAWnj6GbhGweqM1RatxvwJF4GZCwSM/Z/L0Ef7bmmLFb+gqjjZQ=="],
+    "@upyo/smtp": ["@upyo/smtp@0.5.1", "", { "peerDependencies": { "@upyo/core": "0.5.1" } }, "sha512-TvJ32HSLLPTXdmlqgp4VNfHh8nyskL+hPDaE0Xvn12jERxCnadESYdbazOXd90Gtw/a1vXJXiKIiTZeLD11XOw=="],
 
     "@vitejs/plugin-react": ["@vitejs/plugin-react@6.0.3", "", { "dependencies": { "@rolldown/pluginutils": "^1.0.1" }, "peerDependencies": { "@rolldown/plugin-babel": "^0.1.7 || ^0.2.0", "babel-plugin-react-compiler": "^1.0.0", "vite": "^8.0.0" }, "optionalPeers": ["@rolldown/plugin-babel", "babel-plugin-react-compiler"] }, "sha512-vmFvco5/QuC2f9Oj+wTk0+9XeDFkHxSamwZKYc7MxYwKICfvUvlMhqKI0VuICPltGqh1neqBKDvO4kes1ya8vg=="],
 
