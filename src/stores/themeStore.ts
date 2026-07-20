@@ -1,12 +1,15 @@
 import { create } from 'zustand'
+import { isThemePreset, type ThemePreset } from '@/config/theme-presets'
 
 type ThemeMode = 'light' | 'dark' | 'system'
 
 interface ThemeStore {
   mode: ThemeMode
   resolvedMode: 'light' | 'dark'
+  preset: ThemePreset
   initialized: boolean
   setMode: (mode: ThemeMode) => void
+  setPreset: (preset: ThemePreset) => void
   init: () => void
 }
 
@@ -22,10 +25,15 @@ function subscribeSystemTheme(callback: () => void) {
   return () => mediaQuery?.removeEventListener('change', callback)
 }
 
+function applyPreset(preset: ThemePreset) {
+  document.documentElement.dataset.themePreset = preset
+}
+
 export const useThemeStore = create<ThemeStore>((set) => ({
   // Start with defaults to avoid hydration mismatch
   mode: 'system',
   resolvedMode: 'light',
+  preset: 'default',
   initialized: false,
 
   setMode: (mode: ThemeMode) => {
@@ -37,15 +45,29 @@ export const useThemeStore = create<ThemeStore>((set) => ({
     document.documentElement.setAttribute('data-theme', resolved)
   },
 
+  setPreset: (preset: ThemePreset) => {
+    localStorage.setItem('theme-preset', preset)
+    set({ preset })
+    applyPreset(preset)
+  },
+
   init: () => {
     const storedMode = localStorage.getItem('theme-mode') as ThemeMode | null
     const initialMode = storedMode || 'system'
     const initialResolved = initialMode === 'system' ? getSystemTheme() : initialMode
+    const storedPreset = localStorage.getItem('theme-preset')
+    const initialPreset = isThemePreset(storedPreset) ? storedPreset : 'default'
 
-    set({ mode: initialMode, resolvedMode: initialResolved, initialized: true })
+    set({
+      mode: initialMode,
+      resolvedMode: initialResolved,
+      preset: initialPreset,
+      initialized: true,
+    })
 
     document.documentElement.classList.toggle('dark', initialResolved === 'dark')
     document.documentElement.setAttribute('data-theme', initialResolved)
+    applyPreset(initialPreset)
   },
 }))
 

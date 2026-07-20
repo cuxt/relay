@@ -4,6 +4,8 @@
 
 @import 'shadcn/tailwind.css';
 
+@import './theme-presets.css';
+
 @plugin '@tailwindcss/typography';
 
 @custom-variant dark (&:is(.dark *));
@@ -59,12 +61,12 @@
 .dark {
   --background: oklch(0.22 0.002 106);
   --foreground: oklch(0.8074 0.0142 93.0137);
-  --card: oklch(0.30 0.006 106);
+  --card: oklch(0.3 0.006 106);
   --card-foreground: var(--foreground);
   --popover: oklch(0.32 0.006 106);
   --popover-foreground: var(--foreground);
   --primary: oklch(0.6724 0.1308 38.7559);
-  --primary-foreground: oklch(0.20 0.02 45);
+  --primary-foreground: oklch(0.2 0.02 45);
   --secondary: oklch(0.26 0.006 106);
   --secondary-foreground: var(--foreground);
   --muted: oklch(0.24 0.004 106);
@@ -90,9 +92,13 @@
   --sidebar-accent-foreground: oklch(0.8074 0.0142 93.0137);
   --sidebar-border: oklch(0.9401 0 0);
   --sidebar-ring: oklch(0.7731 0 0);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
   --shadow-2xs: 0 1px 3px 0px rgba(0, 0, 0, 0.3);
   --shadow-xs: 0 1px 3px 0px rgba(0, 0, 0, 0.3);
   --shadow-sm: 0 1px 3px 0px rgba(0, 0, 0, 0.3);
@@ -161,9 +167,7 @@
 
 /* Keep the new light snapshot hidden until its reveal animation is attached. */
 [data-theme-transition='expand']::view-transition-new(root) {
-  clip-path: circle(
-    0 at var(--theme-transition-x) var(--theme-transition-y)
-  );
+  clip-path: circle(0 at var(--theme-transition-x) var(--theme-transition-y));
 }
 
 /* Shrink: old view on top, shrinks to reveal dark underneath */

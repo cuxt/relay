@@ -8,6 +8,17 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.9.0',
+    date: '2026-07-20',
+    type: 'minor',
+    title: '新增主题配色预设',
+    changes: [
+      '新增颜色预设功能，内置默认、暖陶、地下森林、玫瑰花园等十套配色，可在页面顶部一键切换',
+      '所选配色持久化保存，刷新后仍保持',
+      '页面加载时提前写入主题与配色，避免刷新时出现配色闪烁',
+    ],
+  },
+  {
     version: '1.8.3',
     date: '2026-07-20',
     type: 'patch',

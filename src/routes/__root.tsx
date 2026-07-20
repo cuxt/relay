@@ -6,12 +6,32 @@ import { Toaster } from '@/components/ui/sonner'
 import { useTheme } from '@/hooks/use-theme'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { siteConfig } from '@/config/site'
+import { themePresets } from '@/config/theme-presets'
 import { I18N } from '@/constants'
 import appCSS from '@/styles.css?url'
 
 interface RouterContext {
   queryClient: QueryClient
 }
+
+const themeBootScript = `
+  (() => {
+    try {
+      const root = document.documentElement
+      const storedMode = localStorage.getItem('theme-mode')
+      const mode = ['light', 'dark', 'system'].includes(storedMode || '') ? storedMode : 'system'
+      const resolved = mode === 'system'
+        ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : mode
+      root.classList.toggle('dark', resolved === 'dark')
+      root.dataset.theme = resolved
+
+      const presets = ${JSON.stringify(themePresets.map((preset) => preset.value))}
+      const storedPreset = localStorage.getItem('theme-preset')
+      root.dataset.themePreset = presets.includes(storedPreset) ? storedPreset : 'default'
+    } catch {}
+  })()
+`
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   ssr: true,
@@ -84,8 +104,9 @@ function RootErrorComponent({ error }: { error: Error }) {
 
 function RootDocument({ children }: { children: ReactNode }) {
   return (
-    <html lang={I18N.LOCALE}>
+    <html lang={I18N.LOCALE} suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
         <HeadContent />
       </head>
       <body>
