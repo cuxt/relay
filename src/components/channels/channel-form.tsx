@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChannelTypeSelect, ChannelTypeBadge } from './channel-type-select'
 import { ChannelFormFields } from './channel-form-fields'
+import { CHANNEL_TYPES } from '@/lib/channels/constants'
 import type { ChannelType } from '@/lib/channels/registry'
 import { createChannelSchema } from '@/lib/channels/validation'
 import { useCreateChannel, useUpdateChannel } from '@/hooks/use-channels'
@@ -32,7 +32,7 @@ function initialConfig(type: ChannelType): Record<string, unknown> {
       provider: 'smtp',
       smtp: { host: '', port: 465, secure: true, user: '', password: '' },
       from: '',
-      to: ''
+      to: '',
     }
   }
   if (type === 'webhook') {
@@ -46,9 +46,7 @@ export function ChannelForm({ mode, defaultValues }: ChannelFormProps) {
   const createChannel = useCreateChannel()
   const updateChannel = useUpdateChannel()
 
-  const [type, setType] = useState<ChannelType>(
-    (defaultValues?.type || 'feishu') as ChannelType
-  )
+  const [type, setType] = useState<ChannelType>((defaultValues?.type || 'feishu') as ChannelType)
   const [name, setName] = useState(defaultValues?.name || '')
   const [enabled, setEnabled] = useState(defaultValues?.enabled ?? true)
   const [config, setConfig] = useState<Record<string, unknown>>(
@@ -68,8 +66,8 @@ export function ChannelForm({ mode, defaultValues }: ChannelFormProps) {
   function handleConfigChange(path: string, value: unknown) {
     // path 形如 `config.smtp.host`，去掉前缀 `config.`
     const rel = path.replace(/^config\./, '')
-    setConfig(prev => setIn(prev, rel, value))
-    setErrors(prev => {
+    setConfig((prev) => setIn(prev, rel, value))
+    setErrors((prev) => {
       if (!prev[path]) return prev
       const next = { ...prev }
       delete next[path]
@@ -83,11 +81,14 @@ export function ChannelForm({ mode, defaultValues }: ChannelFormProps) {
 
     // 编辑模式只提交 name / enabled / config（type 不可改）
     const schema = mode === 'edit' ? null : createChannelSchema
-    const payload = mode === 'edit' ? {
-      name,
-      enabled,
-      config
-    } : values
+    const payload =
+      mode === 'edit'
+        ? {
+            name,
+            enabled,
+            config,
+          }
+        : values
 
     if (schema) {
       const result = schema.safeParse(payload)
@@ -108,7 +109,7 @@ export function ChannelForm({ mode, defaultValues }: ChannelFormProps) {
       if (mode === 'edit' && defaultValues?.id) {
         await updateChannel.mutateAsync({
           id: defaultValues.id,
-          data: { name: data.name, enabled: data.enabled, config: data.config }
+          data: { name: data.name, enabled: data.enabled, config: data.config },
         })
         toast.success('渠道已更新')
       } else {
@@ -122,21 +123,18 @@ export function ChannelForm({ mode, defaultValues }: ChannelFormProps) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={onSubmit} className="space-y-10">
       {/* 创建模式：渠道类型选择 */}
       {mode === 'create' && (
-        <Card>
-          <CardHeader className="pb-4">
-            <CardTitle className="text-base">选择渠道类型</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChannelTypeSelect
-              value={type}
-              onChange={handleTypeChange}
-              disabled={isLoading}
-            />
-          </CardContent>
-        </Card>
+        <section className="space-y-4">
+          <div>
+            <h2 className="text-base font-medium">渠道类型</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              选择接收消息的平台，切换类型会重置下方连接配置。
+            </p>
+          </div>
+          <ChannelTypeSelect value={type} onChange={handleTypeChange} disabled={isLoading} />
+        </section>
       )}
 
       <AnimatePresence mode="wait">
@@ -146,70 +144,80 @@ export function ChannelForm({ mode, defaultValues }: ChannelFormProps) {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            className="space-y-6"
+            className="space-y-10"
           >
             {/* 基本信息 */}
-            <Card>
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">基本信息</CardTitle>
-                  {mode === 'edit' && <ChannelTypeBadge type={type} />}
+            <section className="space-y-4">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-base font-medium">基本信息</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    设置便于识别的名称，并决定渠道创建后是否立即启用。
+                  </p>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="channel-name">渠道名称</Label>
-                  <Input
-                    id="channel-name"
-                    placeholder="例如：技术团队飞书群"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    disabled={isLoading}
-                    aria-invalid={!!errors['name']}
-                  />
-                  {errors['name'] && (
-                    <p className="text-[0.8rem] font-medium text-destructive">
-                      {errors['name']}
-                    </p>
-                  )}
+                {mode === 'edit' && <ChannelTypeBadge type={type} />}
+              </div>
+
+              <div className="border-y border-border">
+                <div className="grid gap-2 py-5 md:grid-cols-[9rem_1fr] md:items-start">
+                  <Label htmlFor="channel-name" className="md:pt-2.5">
+                    渠道名称
+                  </Label>
+                  <div className="space-y-2">
+                    <Input
+                      id="channel-name"
+                      placeholder="例如：技术团队飞书群"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      disabled={isLoading}
+                      aria-invalid={!!errors['name']}
+                    />
+                    {errors['name'] && (
+                      <p className="text-[0.8rem] font-medium text-destructive">{errors['name']}</p>
+                    )}
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-between rounded-lg border p-4">
-                  <div>
-                    <Label>启用状态</Label>
-                    <p className="text-sm text-muted-foreground">禁用后该渠道将不会发送消息</p>
+                <div className="grid gap-3 py-5 md:grid-cols-[9rem_1fr] md:items-center">
+                  <Label htmlFor="channel-enabled">启用状态</Label>
+                  <div className="flex items-center justify-between gap-6">
+                    <p className="text-sm text-muted-foreground">
+                      禁用后，该渠道不会发送任何消息。
+                    </p>
+                    <Switch
+                      id="channel-enabled"
+                      checked={enabled}
+                      onCheckedChange={setEnabled}
+                      disabled={isLoading}
+                    />
                   </div>
-                  <Switch
-                    checked={enabled}
-                    onCheckedChange={setEnabled}
-                    disabled={isLoading}
-                  />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </section>
 
             {/* 渠道配置 */}
-            <Card>
-              <CardHeader className="pb-4">
-                <CardTitle className="text-base">渠道配置</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ChannelFormFields
-                  type={type}
-                  config={config}
-                  onChange={handleConfigChange}
-                  errors={errors}
-                  disabled={isLoading}
-                />
-              </CardContent>
-            </Card>
+            <section className="space-y-4">
+              <div>
+                <h2 className="text-base font-medium">连接配置</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  填写 {CHANNEL_TYPES[type]?.label ?? '当前渠道'} 所需的鉴权与接收信息。
+                </p>
+              </div>
+              <div className="border-t border-border pt-5">
+                <div className="space-y-5">
+                  <ChannelFormFields
+                    type={type}
+                    config={config}
+                    onChange={handleConfigChange}
+                    errors={errors}
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+            </section>
 
             {/* 提交按钮 */}
-            <div className="flex gap-3 pt-2">
-              <Button type="submit" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {mode === 'edit' ? '保存更改' : '创建渠道'}
-              </Button>
+            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <Button
                 type="button"
                 variant="outline"
@@ -217,6 +225,10 @@ export function ChannelForm({ mode, defaultValues }: ChannelFormProps) {
                 disabled={isLoading}
               >
                 取消
+              </Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading && <Loader2 className="size-4 animate-spin" />}
+                {mode === 'edit' ? '保存更改' : '创建渠道'}
               </Button>
             </div>
           </motion.div>

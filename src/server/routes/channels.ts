@@ -1,12 +1,9 @@
 import { Elysia, t } from 'elysia'
-import { eq, and } from 'drizzle-orm'
+import { and, count, eq, ilike, or, sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { channels } from '@/lib/db/schema/channels'
 import { ChannelType, getChannelMeta } from '@/lib/channels/registry'
-import {
-  createChannelSchema,
-  updateChannelSchema
-} from '@/lib/channels/validation'
+import { createChannelSchema, updateChannelSchema } from '@/lib/channels/validation'
 import { requireLogin } from '@/server/guards'
 
 /**
@@ -30,7 +27,55 @@ export const channelRoutes = new Elysia({ name: 'channels' })
     },
     {
       requireLogin: true,
-      detail: { tags: ['渠道'], summary: '获取当前用户渠道列表' }
+      detail: { tags: ['渠道'], summary: '获取当前用户渠道列表' },
+    }
+  )
+  .get(
+    '/api/channels/options',
+    async ({ session, query }) => {
+      const page = Math.max(1, Number(query.page || '1'))
+      const limit = Math.min(50, Math.max(1, Number(query.limit || '10')))
+      const search = query.search?.trim()
+      const searchCondition = search
+        ? or(
+            ilike(channels.name, `%${search}%`),
+            sql`${channels.type}::text ILIKE ${`%${search}%`}`
+          )
+        : undefined
+      const where = searchCondition
+        ? and(eq(channels.userId, session.user.id), searchCondition)
+        : eq(channels.userId, session.user.id)
+
+      const [{ total }] = await db.select({ total: count() }).from(channels).where(where)
+      const items = await db
+        .select({
+          id: channels.id,
+          name: channels.name,
+          type: channels.type,
+          enabled: channels.enabled,
+        })
+        .from(channels)
+        .where(where)
+        .orderBy(channels.createdAt)
+        .limit(limit)
+        .offset((page - 1) * limit)
+
+      return {
+        items,
+        total,
+        page,
+        limit,
+        totalPages: Math.max(1, Math.ceil(total / limit)),
+      }
+    },
+    {
+      requireLogin: true,
+      query: t.Object({
+        page: t.Optional(t.String()),
+        limit: t.Optional(t.String()),
+        search: t.Optional(t.String()),
+      }),
+      detail: { tags: ['渠道'], summary: '分页获取渠道选择项' },
     }
   )
   .post(
@@ -40,7 +85,7 @@ export const channelRoutes = new Elysia({ name: 'channels' })
       const parsed = createChannelSchema.safeParse(body)
       if (!parsed.success) {
         return status(400, {
-          error: parsed.error.issues.map(i => i.message).join(', ')
+          error: parsed.error.issues.map((i) => i.message).join(', '),
         })
       }
 
@@ -52,7 +97,7 @@ export const channelRoutes = new Elysia({ name: 'channels' })
           type: data.type,
           enabled: data.enabled,
           config: data.config,
-          userId: session.user.id
+          userId: session.user.id,
         })
         .returning()
 
@@ -60,7 +105,7 @@ export const channelRoutes = new Elysia({ name: 'channels' })
     },
     {
       requireLogin: true,
-      detail: { tags: ['渠道'], summary: '创建渠道' }
+      detail: { tags: ['渠道'], summary: '创建渠道' },
     }
   )
   .get(
@@ -79,7 +124,7 @@ export const channelRoutes = new Elysia({ name: 'channels' })
     },
     {
       requireLogin: true,
-      detail: { tags: ['渠道'], summary: '获取单个渠道' }
+      detail: { tags: ['渠道'], summary: '获取单个渠道' },
     }
   )
   .patch(
@@ -89,7 +134,7 @@ export const channelRoutes = new Elysia({ name: 'channels' })
       const parsed = updateChannelSchema.safeParse(body)
       if (!parsed.success) {
         return status(400, {
-          error: parsed.error.issues.map(i => i.message).join(', ')
+          error: parsed.error.issues.map((i) => i.message).join(', '),
         })
       }
 
@@ -108,7 +153,7 @@ export const channelRoutes = new Elysia({ name: 'channels' })
         const configParsed = meta.configSchema.safeParse(parsed.data.config)
         if (!configParsed.success) {
           return status(400, {
-            error: configParsed.error.issues.map(i => i.message).join(', ')
+            error: configParsed.error.issues.map((i) => i.message).join(', '),
           })
         }
       }
@@ -123,7 +168,7 @@ export const channelRoutes = new Elysia({ name: 'channels' })
     },
     {
       requireLogin: true,
-      detail: { tags: ['渠道'], summary: '更新渠道' }
+      detail: { tags: ['渠道'], summary: '更新渠道' },
     }
   )
   .delete(
@@ -147,7 +192,7 @@ export const channelRoutes = new Elysia({ name: 'channels' })
       detail: { tags: ['渠道'], summary: '删除渠道' },
       response: {
         204: t.Null(),
-        404: t.Object({ error: t.String() })
-      }
+        404: t.Object({ error: t.String() }),
+      },
     }
   )

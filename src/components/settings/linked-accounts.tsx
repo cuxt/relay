@@ -11,9 +11,9 @@ export function LinkedAccounts() {
   const [actionLoading, setActionLoading] = useState(false)
 
   useEffect(() => {
-    authClient.listAccounts().then(res => {
+    authClient.listAccounts().then((res) => {
       if (res.data) {
-        setGithubLinked(res.data.some(a => a.providerId === 'github'))
+        setGithubLinked(res.data.some((account) => account.providerId === 'github'))
       }
       setLoading(false)
     })
@@ -23,7 +23,7 @@ export function LinkedAccounts() {
     setActionLoading(true)
     await authClient.linkSocial({
       provider: 'github',
-      callbackURL: '/settings'
+      callbackURL: '/settings',
     })
   }
 
@@ -45,14 +45,14 @@ export function LinkedAccounts() {
   }
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-muted">
-          <SiGithub className="h-4.5 w-4.5" />
+    <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-muted/30 p-4">
+      <div className="flex min-w-0 items-center gap-3">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-background ring-1 ring-border">
+          <SiGithub className="size-4.5" />
         </div>
         <div>
           <p className="text-sm font-medium">GitHub</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="mt-0.5 text-xs text-muted-foreground">
             {loading ? '加载中...' : githubLinked ? '已绑定' : '未绑定'}
           </p>
         </div>
@@ -65,7 +65,7 @@ export function LinkedAccounts() {
           onClick={githubLinked ? handleUnlink : handleLink}
         >
           {actionLoading && (
-            <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+            <Loader2 className="size-3.5 animate-spin" />
           )}
           {githubLinked ? '解绑' : '绑定'}
         </Button>

@@ -1,9 +1,8 @@
 import { relations } from 'drizzle-orm'
 import { user } from './auth'
 import { channels } from './channels'
-import { endpoints } from './endpoints'
+import { endpointChannels, endpoints } from './endpoints'
 import { pushLogs } from './push-logs'
-import { apiKeys } from './api-keys'
 import { aiProviders } from './ai-providers'
 import { aiPresets } from './ai-presets'
 
@@ -15,7 +14,7 @@ export const channelsRelations = relations(channels, ({ one, many }) => ({
     fields: [channels.userId],
     references: [user.id],
   }),
-  endpoints: many(endpoints),
+  endpointChannels: many(endpointChannels),
   pushLogs: many(pushLogs),
 }))
 
@@ -24,11 +23,19 @@ export const endpointsRelations = relations(endpoints, ({ one, many }) => ({
     fields: [endpoints.userId],
     references: [user.id],
   }),
+  endpointChannels: many(endpointChannels),
+  pushLogs: many(pushLogs),
+}))
+
+export const endpointChannelsRelations = relations(endpointChannels, ({ one }) => ({
+  endpoint: one(endpoints, {
+    fields: [endpointChannels.endpointId],
+    references: [endpoints.id],
+  }),
   channel: one(channels, {
-    fields: [endpoints.channelId],
+    fields: [endpointChannels.channelId],
     references: [channels.id],
   }),
-  pushLogs: many(pushLogs),
 }))
 
 export const pushLogsRelations = relations(pushLogs, ({ one }) => ({
@@ -42,13 +49,6 @@ export const pushLogsRelations = relations(pushLogs, ({ one }) => ({
   }),
   user: one(user, {
     fields: [pushLogs.userId],
-    references: [user.id],
-  }),
-}))
-
-export const apiKeysRelations = relations(apiKeys, ({ one }) => ({
-  user: one(user, {
-    fields: [apiKeys.userId],
     references: [user.id],
   }),
 }))

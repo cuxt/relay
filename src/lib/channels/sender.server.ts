@@ -7,6 +7,7 @@ export async function sendMessage(
   ctx: {
     message: string
     config: Record<string, unknown>
+    params: Record<string, unknown>
     endpoint: {
       messageType: string | null
       mentionedUserIds: string | null

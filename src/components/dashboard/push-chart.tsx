@@ -25,6 +25,7 @@ interface PushChartProps {
     failed: number
   }>
   isLoading: boolean
+  isError?: boolean
   range: '7d' | '30d' | '90d'
   onRangeChange: (range: '7d' | '30d' | '90d') => void
 }
@@ -58,6 +59,7 @@ function CustomTooltip({ active, payload, label }: any) {
 export function PushChart({
   trend,
   isLoading,
+  isError,
   range,
   onRangeChange
 }: PushChartProps) {
@@ -99,6 +101,10 @@ export function PushChart({
       <CardContent>
         {isLoading ? (
           <Skeleton className="h-70 w-full rounded-lg" />
+        ) : isError ? (
+          <div className="flex h-70 items-center justify-center text-sm text-destructive">
+            图表加载失败，请稍后重试
+          </div>
         ) : !trend?.length ? (
           <div className="flex items-center justify-center h-70 text-sm text-muted-foreground">
             暂无数据

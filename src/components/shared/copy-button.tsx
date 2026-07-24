@@ -23,12 +23,10 @@ export function CopyButton({ value, className }: CopyButtonProps) {
       size="icon"
       className={cn('h-8 w-8', className)}
       onClick={copy}
+      title={copied ? '已复制' : '复制'}
+      aria-label={copied ? '已复制' : '复制到剪贴板'}
     >
-      {copied ? (
-        <Check className="h-4 w-4 text-green-500" />
-      ) : (
-        <Copy className="h-4 w-4" />
-      )}
+      {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
     </Button>
   )
 }

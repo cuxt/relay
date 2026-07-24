@@ -12,16 +12,16 @@ export function ProfileForm() {
     : user.email.slice(0, 2).toUpperCase()
 
   return (
-    <div className="flex items-center gap-4">
-      <Avatar className="h-14 w-14">
+    <div className="flex items-center gap-4 rounded-lg bg-muted/30 p-4">
+      <Avatar className="size-14 ring-2 ring-background">
         <AvatarImage src={user.image || undefined} alt={user.name} />
         <AvatarFallback className="text-lg">{initials}</AvatarFallback>
       </Avatar>
-      <div>
+      <div className="min-w-0">
         <p className="font-semibold">{user.name || '未设置姓名'}</p>
-        <p className="text-sm text-muted-foreground">{user.email}</p>
+        <p className="truncate text-sm text-muted-foreground">{user.email}</p>
         {user.createdAt && (
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="mt-1 text-xs text-muted-foreground">
             注册于 {new Date(user.createdAt).toLocaleDateString('zh-CN')}
           </p>
         )}

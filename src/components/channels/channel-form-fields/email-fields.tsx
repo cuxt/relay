@@ -38,7 +38,7 @@ export function EmailFields({ config, onChange, errors, disabled }: ChannelField
       <div className="space-y-2">
         <Label>邮件提供商</Label>
         <div className="flex gap-2">
-          {(['smtp', 'resend'] as const).map(v => (
+          {(['smtp', 'resend'] as const).map((v) => (
             <button
               key={v}
               type="button"
@@ -68,7 +68,7 @@ export function EmailFields({ config, onChange, errors, disabled }: ChannelField
             type="password"
             placeholder="re_..."
             value={(config.resend as { apiKey?: string })?.apiKey || ''}
-            onChange={e => onChange('config.resend.apiKey', e.target.value)}
+            onChange={(e) => onChange('config.resend.apiKey', e.target.value)}
             disabled={disabled}
             aria-invalid={!!errors['config.resend.apiKey']}
           />
@@ -91,7 +91,7 @@ export function EmailFields({ config, onChange, errors, disabled }: ChannelField
               id={smtpHostId}
               placeholder="smtp.example.com"
               value={smtp.host || ''}
-              onChange={e => onChange('config.smtp.host', e.target.value)}
+              onChange={(e) => onChange('config.smtp.host', e.target.value)}
               disabled={disabled}
               aria-invalid={!!errors['config.smtp.host']}
             />
@@ -108,7 +108,7 @@ export function EmailFields({ config, onChange, errors, disabled }: ChannelField
               type="number"
               placeholder="465"
               value={smtp.port ?? ''}
-              onChange={e =>
+              onChange={(e) =>
                 onChange('config.smtp.port', e.target.value ? Number(e.target.value) : undefined)
               }
               disabled={disabled}
@@ -129,7 +129,7 @@ export function EmailFields({ config, onChange, errors, disabled }: ChannelField
               id={smtpUserId}
               placeholder="user@example.com"
               value={smtp.user || ''}
-              onChange={e => onChange('config.smtp.user', e.target.value)}
+              onChange={(e) => onChange('config.smtp.user', e.target.value)}
               disabled={disabled}
               aria-invalid={!!errors['config.smtp.user']}
             />
@@ -149,7 +149,7 @@ export function EmailFields({ config, onChange, errors, disabled }: ChannelField
               type="password"
               placeholder="密码"
               value={smtp.password || ''}
-              onChange={e => onChange('config.smtp.password', e.target.value)}
+              onChange={(e) => onChange('config.smtp.password', e.target.value)}
               disabled={disabled}
               aria-invalid={!!errors['config.smtp.password']}
             />
@@ -162,44 +162,40 @@ export function EmailFields({ config, onChange, errors, disabled }: ChannelField
         </div>
       )}
 
-      {/* 发件人 / 收件人 */}
+      {/* 默认发件人 / 收件人 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t">
         <div className="space-y-2">
           <Label htmlFor={fromId}>
-            发件人
+            默认发件人
             <span className="text-red-500 ml-1">*</span>
           </Label>
           <Input
             id={fromId}
             placeholder="sender@example.com"
             value={(config.from as string) || ''}
-            onChange={e => onChange('config.from', e.target.value)}
+            onChange={(e) => onChange('config.from', e.target.value)}
             disabled={disabled}
             aria-invalid={!!errors['config.from']}
           />
           {errors['config.from'] && (
-            <p className="text-[0.8rem] font-medium text-destructive">
-              {errors['config.from']}
-            </p>
+            <p className="text-[0.8rem] font-medium text-destructive">{errors['config.from']}</p>
           )}
         </div>
         <div className="space-y-2">
           <Label htmlFor={toId}>
-            收件人
+            默认收件人
             <span className="text-red-500 ml-1">*</span>
           </Label>
           <Input
             id={toId}
-            placeholder="多个收件人用逗号分隔"
+            placeholder="请求未传 to 时使用，多个地址用逗号分隔"
             value={(config.to as string) || ''}
-            onChange={e => onChange('config.to', e.target.value)}
+            onChange={(e) => onChange('config.to', e.target.value)}
             disabled={disabled}
             aria-invalid={!!errors['config.to']}
           />
           {errors['config.to'] && (
-            <p className="text-[0.8rem] font-medium text-destructive">
-              {errors['config.to']}
-            </p>
+            <p className="text-[0.8rem] font-medium text-destructive">{errors['config.to']}</p>
           )}
         </div>
       </div>

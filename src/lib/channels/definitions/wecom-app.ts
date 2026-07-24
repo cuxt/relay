@@ -1,10 +1,11 @@
 import { z } from 'zod/v4'
 import type { ChannelDefinition, SendContext, SendResult } from '../types'
+import { wecomAppParamsSchema, type WecomAppParams } from '../request-params'
 
 export const wecomAppConfigSchema = z.object({
   corpId: z.string().min(1, '请输入 Corp ID'),
   agentId: z.string().min(1, '请输入 Agent ID'),
-  secret: z.string().min(1, '请输入 App Secret')
+  secret: z.string().min(1, '请输入 App Secret'),
 })
 
 export type WecomAppConfig = z.infer<typeof wecomAppConfigSchema>
@@ -15,14 +16,14 @@ export const wecomAppConfigFields = [
     label: 'Corp ID',
     placeholder: '企业 ID',
     required: true,
-    description: '企业微信的企业 ID'
+    description: '企业微信的企业 ID',
   },
   {
     key: 'agentId',
     label: 'Agent ID',
     placeholder: '应用 ID',
     required: true,
-    description: '企业微信应用的 Agent ID'
+    description: '企业微信应用的 Agent ID',
   },
   {
     key: 'secret',
@@ -30,8 +31,8 @@ export const wecomAppConfigFields = [
     placeholder: '应用密钥',
     type: 'password' as const,
     required: true,
-    description: '企业微信应用的密钥'
-  }
+    description: '企业微信应用的密钥',
+  },
 ]
 
 async function getAccessToken(corpId: string, secret: string): Promise<string> {
@@ -44,36 +45,47 @@ async function getAccessToken(corpId: string, secret: string): Promise<string> {
   return json.access_token
 }
 
-export const wecomAppDefinition: ChannelDefinition<WecomAppConfig> = {
+export const wecomAppDefinition: ChannelDefinition<WecomAppConfig, WecomAppParams> = {
   type: 'wecom_app',
   label: '企微应用',
   color: '#07c160',
 
   configSchema: wecomAppConfigSchema,
   configFields: wecomAppConfigFields,
+  requestSchema: wecomAppParamsSchema,
+  requestExample: { format: 'markdown', toUser: ['zhangsan'] },
 
-  sendMessage: async ({ message, config, endpoint }: SendContext<WecomAppConfig>): Promise<SendResult> => {
+  sendMessage: async ({
+    message,
+    config,
+    params,
+    endpoint,
+  }: SendContext<WecomAppConfig, WecomAppParams>): Promise<SendResult> => {
     if (!config.corpId || !config.secret || !config.agentId) {
       return { success: false, errorMessage: '企微应用配置不完整' }
     }
 
     try {
       const accessToken = await getAccessToken(config.corpId, config.secret)
-      const messageType = endpoint.messageType || 'text'
+      const recipients = {
+        touser: params.toUser?.join('|') ?? '@all',
+        toparty: params.toParty?.join('|'),
+        totag: params.toTag?.join('|'),
+      }
 
       const body =
-        messageType === 'markdown'
+        (params.format ?? endpoint.messageType ?? 'text') === 'markdown'
           ? {
-              touser: '@all',
+              ...recipients,
               msgtype: 'markdown',
               agentid: Number(config.agentId),
-              markdown: { content: message }
+              markdown: { content: message },
             }
           : {
-              touser: '@all',
+              ...recipients,
               msgtype: 'text',
               agentid: Number(config.agentId),
-              text: { content: message }
+              text: { content: message },
             }
 
       const res = await fetch(
@@ -81,7 +93,7 @@ export const wecomAppDefinition: ChannelDefinition<WecomAppConfig> = {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
+          body: JSON.stringify(body),
         }
       )
 
@@ -92,10 +104,10 @@ export const wecomAppDefinition: ChannelDefinition<WecomAppConfig> = {
         success: json.errcode === 0,
         responseBody: resBody,
         responseStatus: res.status,
-        errorMessage: json.errcode !== 0 ? json.errmsg : undefined
+        errorMessage: json.errcode !== 0 ? json.errmsg : undefined,
       }
     } catch (err: any) {
       return { success: false, errorMessage: err.message }
     }
-  }
+  },
 }

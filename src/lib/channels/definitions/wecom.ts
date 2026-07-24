@@ -1,8 +1,9 @@
 import { z } from 'zod/v4'
 import type { ChannelDefinition, SendContext, SendResult } from '../types'
+import { wecomParamsSchema, type WecomParams } from '../request-params'
 
 export const wecomConfigSchema = z.object({
-  webhook: z.url('请输入有效的 Webhook 地址')
+  webhook: z.url('请输入有效的 Webhook 地址'),
 })
 
 export type WecomConfig = z.infer<typeof wecomConfigSchema>
@@ -14,50 +15,61 @@ export const wecomConfigFields = [
     placeholder: 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=...',
     type: 'url' as const,
     required: true,
-    description: '企业微信群机器人的 Webhook 地址'
-  }
+    description: '企业微信群机器人的 Webhook 地址',
+  },
 ]
 
-export const wecomDefinition: ChannelDefinition<WecomConfig> = {
+export const wecomDefinition: ChannelDefinition<WecomConfig, WecomParams> = {
   type: 'wecom',
   label: '企微 Webhook',
   color: '#07c160',
 
   configSchema: wecomConfigSchema,
   configFields: wecomConfigFields,
+  requestSchema: wecomParamsSchema,
+  requestExample: { format: 'text', mentionedUserIds: ['@all'] },
 
-  sendMessage: async ({ message, config, endpoint }: SendContext<WecomConfig>): Promise<SendResult> => {
+  sendMessage: async ({
+    message,
+    config,
+    params,
+    endpoint,
+  }: SendContext<WecomConfig, WecomParams>): Promise<SendResult> => {
     if (!config.webhook) {
       return { success: false, errorMessage: '未配置 Webhook 地址' }
     }
 
-    const mentionedList = endpoint.mentionedUserIds
-      ? endpoint.mentionedUserIds.split(',').map(s => s.trim()).filter(Boolean)
-      : undefined
-
-    const mentionedMobileList = endpoint.mentionedMobiles
-      ? endpoint.mentionedMobiles.split(',').map(s => s.trim()).filter(Boolean)
-      : undefined
-
-    const messageType = endpoint.messageType || 'text'
+    const mentionedUserIds =
+      params.mentionedUserIds ??
+      endpoint.mentionedUserIds
+        ?.split(',')
+        .map((value) => value.trim())
+        .filter(Boolean)
+    const mentionedMobiles =
+      params.mentionedMobiles ??
+      endpoint.mentionedMobiles
+        ?.split(',')
+        .map((value) => value.trim())
+        .filter(Boolean)
+    const format = params.format ?? endpoint.messageType ?? 'text'
 
     const body =
-      messageType === 'markdown'
+      format === 'markdown'
         ? { msgtype: 'markdown', markdown: { content: message } }
         : {
             msgtype: 'text',
             text: {
               content: message,
-              mentioned_list: mentionedList,
-              mentioned_mobile_list: mentionedMobileList
-            }
+              mentioned_list: mentionedUserIds,
+              mentioned_mobile_list: mentionedMobiles,
+            },
           }
 
     try {
       const res = await fetch(config.webhook, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       })
 
       const resBody = await res.text()
@@ -67,10 +79,10 @@ export const wecomDefinition: ChannelDefinition<WecomConfig> = {
         success: json.errcode === 0,
         responseBody: resBody,
         responseStatus: res.status,
-        errorMessage: json.errcode !== 0 ? json.errmsg : undefined
+        errorMessage: json.errcode !== 0 ? json.errmsg : undefined,
       }
     } catch (err: any) {
       return { success: false, errorMessage: err.message }
     }
-  }
+  },
 }

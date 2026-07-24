@@ -10,9 +10,10 @@ interface EndpointRankingProps {
     failed: number
   }>
   isLoading: boolean
+  isError?: boolean
 }
 
-export function EndpointRanking({ ranking, isLoading }: EndpointRankingProps) {
+export function EndpointRanking({ ranking, isLoading, isError }: EndpointRankingProps) {
   const data = ranking || []
   const maxTotal = Math.max(...data.map(d => d.total), 1)
 
@@ -27,6 +28,10 @@ export function EndpointRanking({ ranking, isLoading }: EndpointRankingProps) {
             {Array.from({ length: 5 }).map((_, i) => (
               <Skeleton key={i} className="h-14 w-full rounded-lg" />
             ))}
+          </div>
+        ) : isError ? (
+          <div className="flex h-65 items-center justify-center text-sm text-destructive">
+            排行加载失败
           </div>
         ) : data.length === 0 ? (
           <div className="flex items-center justify-center h-65 text-sm text-muted-foreground">

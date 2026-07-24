@@ -21,7 +21,9 @@ export function Avatar({ id, src, size = 'default', className }: AvatarProps) {
     <BaseAvatar size={size} className={className}>
       {src && <AvatarImage src={src} alt={id} />}
       <AvatarFallback>
-        <BoringAvatar size={avatarSize} name={id} variant="beam" />
+        <span aria-hidden="true" className="flex">
+          <BoringAvatar size={avatarSize} name={id} variant="beam" />
+        </span>
       </AvatarFallback>
     </BaseAvatar>
   )

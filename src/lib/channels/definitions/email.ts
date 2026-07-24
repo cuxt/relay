@@ -4,8 +4,8 @@ import type { ConfigFieldDef } from '../types'
 export const emailConfigSchema = z.intersection(
   z.object({
     provider: z.enum(['smtp', 'resend']).default('smtp'),
-    from: z.string().min(1, '请输入发件人地址'),
-    to: z.string().min(1, '请输入收件人地址')
+    from: z.string().min(1, '请输入默认发件人地址'),
+    to: z.string().min(1, '请输入默认收件人地址'),
   }),
   z.union([
     z.object({
@@ -15,15 +15,15 @@ export const emailConfigSchema = z.intersection(
         port: z.number().int().min(1).max(65535).default(465),
         secure: z.boolean().default(true),
         user: z.string().min(1, '请输入 SMTP 用户名'),
-        password: z.string().min(1, '请输入 SMTP 密码')
-      })
+        password: z.string().min(1, '请输入 SMTP 密码'),
+      }),
     }),
     z.object({
       provider: z.literal('resend'),
       resend: z.object({
-        apiKey: z.string().min(1, '请输入 Resend API Key')
-      })
-    })
+        apiKey: z.string().min(1, '请输入 Resend API Key'),
+      }),
+    }),
   ])
 )
 

@@ -5,7 +5,7 @@ import type { ChannelType } from '@/lib/channels/constants'
 import { CHANNEL_TYPES } from '@/lib/channels/constants'
 import { cn } from '@/lib/utils'
 
-type IconProps = { className?: string; style?: React.CSSProperties }
+type IconProps = React.SVGProps<SVGSVGElement>
 
 function FeishuIcon({ className, style }: IconProps) {
   return (
@@ -41,7 +41,7 @@ const iconMap: Record<ChannelType, React.ComponentType<IconProps>> = {
   discord: SiDiscord,
   webhook: RiWebhookFill,
   email: Mail,
-  bark: RiSmartphoneFill
+  bark: RiSmartphoneFill,
 }
 
 interface ChannelIconProps {
@@ -55,7 +55,7 @@ export function ChannelIcon({
   type,
   className,
   size = 'md',
-  showBackground = false
+  showBackground = false,
 }: ChannelIconProps) {
   const config = CHANNEL_TYPES[type]
   if (!config) return null
@@ -66,13 +66,13 @@ export function ChannelIcon({
   const sizeClasses = {
     sm: 'h-4 w-4',
     md: 'h-5 w-5',
-    lg: 'h-6 w-6'
+    lg: 'h-6 w-6',
   }
 
   const bgSizeClasses = {
     sm: 'h-7 w-7',
     md: 'h-9 w-9',
-    lg: 'h-11 w-11'
+    lg: 'h-11 w-11',
   }
 
   if (showBackground) {
@@ -85,13 +85,15 @@ export function ChannelIcon({
         )}
         style={{ backgroundColor: `${config.color}15`, color: config.color }}
       >
-        <Icon className={sizeClasses[size]} />
+        <Icon aria-hidden="true" focusable="false" className={sizeClasses[size]} />
       </div>
     )
   }
 
   return (
     <Icon
+      aria-hidden="true"
+      focusable="false"
       className={cn(sizeClasses[size], className)}
       style={{ color: config.color }}
     />

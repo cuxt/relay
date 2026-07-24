@@ -15,7 +15,7 @@ export const Route = createFileRoute('/_user/dashboard/')({
 function DashboardPage() {
   const [range, setRange] = useState<'7d' | '30d' | '90d'>('7d')
   const { data: stats, isLoading: statsLoading } = useStatsOverview()
-  const { data: chartData, isLoading: chartLoading } = useStatsChart(range)
+  const { data: chartData, isLoading: chartLoading, isError: chartError } = useStatsChart(range)
 
   return (
     <PageContainer title="仪表盘" description="查看推送统计和系统概览">
@@ -25,6 +25,7 @@ function DashboardPage() {
         <PushChart
           trend={chartData?.trend}
           isLoading={chartLoading}
+          isError={chartError}
           range={range}
           onRangeChange={setRange}
         />
@@ -34,11 +35,13 @@ function DashboardPage() {
             <EndpointRanking
               ranking={chartData?.endpointRanking}
               isLoading={chartLoading}
+              isError={chartError}
             />
           </div>
           <ChannelBreakdown
             distribution={chartData?.distribution}
             isLoading={chartLoading}
+            isError={chartError}
           />
         </div>
 

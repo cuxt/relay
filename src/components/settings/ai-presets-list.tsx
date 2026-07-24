@@ -28,72 +28,75 @@ export function AiPresetsList() {
   return (
     <>
       {isLoading ? (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {Array.from({ length: 2 }).map((_, i) => (
-            <Skeleton key={i} className="h-14 w-full" />
+            <Skeleton key={i} className="h-20 w-full rounded-lg" />
           ))}
         </div>
       ) : !presets?.length ? (
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted mb-3">
-            <Sparkles className="h-5 w-5 text-muted-foreground" />
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12 text-center">
+          <div className="mb-3 flex size-10 items-center justify-center rounded-full bg-muted">
+            <Sparkles className="size-5 text-muted-foreground" />
           </div>
           <p className="text-sm text-muted-foreground">暂无 AI 预设</p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="mt-1 text-xs text-muted-foreground">
             创建一套 AI 处理配置用于消息处理
           </p>
         </div>
       ) : (
-        <div className="divide-y">
+        <div className="space-y-2">
           {presets.map((p: any) => (
             <div
               key={p.id}
-              className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-muted/30 p-3"
             >
-              <div className="flex items-center gap-3 min-w-0">
-                <Sparkles className="h-4 w-4 text-muted-foreground shrink-0" />
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-background text-muted-foreground ring-1 ring-border">
+                  <Sparkles className="size-4" />
+                </div>
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-1.5">
                     <p className="text-sm font-medium truncate">{p.name}</p>
                     {p.key && (
-                      <code className="rounded bg-muted px-1.5 py-0.5 text-xs font-mono text-muted-foreground shrink-0">
+                      <code className="shrink-0 rounded bg-background px-1.5 py-0.5 font-mono text-xs text-muted-foreground ring-1 ring-border">
                         {p.key}
                       </code>
                     )}
-                    <Badge variant="outline" className="text-xs shrink-0">
+                    <Badge variant="outline" className="shrink-0 text-xs font-normal">
                       {p.providerName || '-'}
                     </Badge>
-                    <Badge variant="secondary" className="text-xs shrink-0">
+                    <Badge variant="secondary" className="shrink-0 text-xs font-normal">
                       {p.model}
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground truncate mt-0.5">
+                  <p className="mt-1 truncate text-xs text-muted-foreground">
                     {p.systemPrompt}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0 ml-4">
+              <div className="ml-auto flex shrink-0 items-center gap-2">
                 <Badge
                   variant={p.enabled ? 'default' : 'secondary'}
-                  className="text-xs"
+                  className="text-xs font-normal"
                 >
                   {p.enabled ? '启用' : '禁用'}
                 </Badge>
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
+                  size="icon-sm"
                   onClick={() => setEditPreset(p)}
+                  aria-label="编辑 AI 预设"
                 >
-                  <Pencil className="h-4 w-4" />
+                  <Pencil className="size-4" />
                 </Button>
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-destructive hover:text-destructive"
+                  size="icon-sm"
+                  className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                   onClick={() => setDeleteId(p.id)}
+                  aria-label="删除 AI 预设"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="size-4" />
                 </Button>
               </div>
             </div>

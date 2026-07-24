@@ -8,6 +8,22 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '2.0.0',
+    date: '2026-07-24',
+    type: 'major',
+    title: '多渠道端点与推送架构升级',
+    changes: [
+      '端点由单渠道改为多渠道绑定，每个渠道独立校验、并行发送并分别记录执行日志',
+      '重构推送请求协议：payload 承载消息数据，params 按渠道 ID 覆盖本次发送参数，渠道配置继续作为默认值',
+      '渠道表单改为元数据驱动，端点关联渠道支持服务端搜索、分页多选与跨页选择保持',
+      '日志增加原始请求记录、服务端分页和详情展示，并统一渠道、端点、日志与系统设置页面的视觉风格',
+      '修复 Dashboard 图表统计字段类型错误，恢复推送趋势、渠道分布和端点排行展示',
+      '移除未实际参与接口认证的系统级 API Key 功能及 api_keys 数据表',
+      "移除 dayjs 依赖，消息模板改为直接使用 date-fns：${format(new Date(), 'yyyy-MM-dd HH:mm:ss')}",
+      '新增 endpoint_channels 关联表迁移；升级前请备份数据库，旧端点 channel_id 与 api_keys 表将在迁移中调整或删除',
+    ],
+  },
+  {
     version: '1.10.0',
     date: '2026-07-24',
     type: 'minor',
@@ -299,11 +315,11 @@ export const releases: Release[] = [
     title: '迁移到 TanStack Start 模板',
     changes: [
       '以 tanstack-start-template 1.8.2 为基线重铺骨架：vite/tsconfig/drizzle 配置与 60+ shadcn/ui 组件逐字对齐，弃 React Compiler 与 vitest，接入 oxlint + oxfmt',
-      '后端 9 个业务域（stats/channels/endpoints/logs/ai-presets/ai-providers/api-keys/telegram/push）从 TanStack API Routes 迁到 Elysia 单体 + requireLogin macro，统一返回契约（成功裸对象、错误 status + {error}）',
+      '后端 8 个业务域（stats/channels/endpoints/logs/ai-presets/ai-providers/telegram/push）从 TanStack API Routes 迁到 Elysia 单体 + requireLogin macro，统一返回契约（成功裸对象、错误 status + {error}）',
       '渠道 schema 7 张业务表迁到模板路径 src/lib/db/schema/*，新增 relations.ts 与 auth userRelations 扩展；drizzle 0007 增量迁移（建 config 表、user/session ADD COLUMN），对生产数据安全',
       '前端 6 个业务路由归入侧边栏布局 _user/，URL 字面量不变；删旧顶部 AppHeader 与 relay auth 路由，复用模板的 _public 登录/注册与 GitHub OAuth',
       '渠道表单弃 react-hook-form，改为与模板 endpoint-form 一致的受控范式（channel-field + form-helpers 嵌套点路径读写）',
-      '业务工具函数独立成 src/lib/crypto-tokens.ts（generateEndpointToken/generateApiKey），不污染模板 utils.ts',
+      '业务工具函数独立成 src/lib/crypto-tokens.ts（generateEndpointToken），不污染模板 utils.ts',
       '与 upstream 建立共同祖先（一次性 unrelated histories 合并），此后 git merge upstream 为标准三方合并，可持续享受模板更新',
     ],
   },

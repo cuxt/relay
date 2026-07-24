@@ -13,7 +13,7 @@ export const ROUTES = {
   ENDPOINTS: '/endpoints',
   /** 推送日志 */
   LOGS: '/logs',
-  /** 系统设置（账户只读资料 + API 密钥 + AI 配置） */
+  /** 系统设置（账户资料 + AI 配置） */
   SETTINGS: '/settings',
   /** 更新日志 */
   RELEASE: '/release',

@@ -75,12 +75,13 @@ export const statsRoutes = new Elysia({ name: 'stats' })
         .select({
           date: sql<string>`DATE(${pushLogs.createdAt})`.as('date'),
           total: count().as('total'),
-          success: sql<number>`COUNT(CASE WHEN ${pushLogs.status} = 'success' THEN 1 END)`.as(
-            'success'
-          ),
-          failed: sql<number>`COUNT(CASE WHEN ${pushLogs.status} = 'failed' THEN 1 END)`.as(
-            'failed'
-          ),
+          success:
+            sql<number>`COUNT(CASE WHEN ${pushLogs.status} = 'success' THEN 1 END)`
+              .mapWith(Number)
+              .as('success'),
+          failed: sql<number>`COUNT(CASE WHEN ${pushLogs.status} = 'failed' THEN 1 END)`
+            .mapWith(Number)
+            .as('failed'),
         })
         .from(pushLogs)
         .where(and(eq(pushLogs.userId, session.user.id), gte(pushLogs.createdAt, since)))
@@ -98,12 +99,13 @@ export const statsRoutes = new Elysia({ name: 'stats' })
         .select({
           name: endpoints.name,
           total: count().as('total'),
-          success: sql<number>`COUNT(CASE WHEN ${pushLogs.status} = 'success' THEN 1 END)`.as(
-            'success'
-          ),
-          failed: sql<number>`COUNT(CASE WHEN ${pushLogs.status} = 'failed' THEN 1 END)`.as(
-            'failed'
-          ),
+          success:
+            sql<number>`COUNT(CASE WHEN ${pushLogs.status} = 'success' THEN 1 END)`
+              .mapWith(Number)
+              .as('success'),
+          failed: sql<number>`COUNT(CASE WHEN ${pushLogs.status} = 'failed' THEN 1 END)`
+            .mapWith(Number)
+            .as('failed'),
         })
         .from(pushLogs)
         .innerJoin(endpoints, eq(pushLogs.endpointId, endpoints.id))

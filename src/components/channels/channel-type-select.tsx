@@ -1,8 +1,13 @@
-import { motion } from 'framer-motion'
 import { ChannelIcon } from '@/components/shared/channel-icon'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { CHANNEL_TYPE_LIST, CHANNEL_TYPES } from '@/lib/channels/constants'
 import type { ChannelType } from '@/lib/channels/constants'
-import { cn } from '@/lib/utils'
 
 interface ChannelTypeSelectProps {
   value?: ChannelType
@@ -10,36 +15,36 @@ interface ChannelTypeSelectProps {
   disabled?: boolean
 }
 
-export function ChannelTypeSelect({
-  value,
-  onChange,
-  disabled
-}: ChannelTypeSelectProps) {
+export function ChannelTypeSelect({ value, onChange, disabled }: ChannelTypeSelectProps) {
+  const selected = value ? CHANNEL_TYPES[value] : null
+
   return (
-    <div className="flex flex-wrap gap-2">
-      {CHANNEL_TYPE_LIST.map((item, index) => (
-        <motion.button
-          key={item.value}
-          type="button"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: index * 0.02, duration: 0.15 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={() => !disabled && onChange(item.value)}
-          disabled={disabled}
-          className={cn(
-            'flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors cursor-pointer',
-            value === item.value
-              ? 'border-primary bg-primary/10 text-foreground font-medium'
-              : 'border-border bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground',
-            disabled && 'opacity-60 cursor-not-allowed'
-          )}
-        >
-          <ChannelIcon type={item.value} size="sm" />
-          <span>{item.label}</span>
-        </motion.button>
-      ))}
-    </div>
+    <Select
+      value={value}
+      onValueChange={(next) => next && onChange(next as ChannelType)}
+      disabled={disabled}
+    >
+      <SelectTrigger className="w-full sm:max-w-sm" aria-label="渠道类型">
+        <SelectValue placeholder="选择渠道类型">
+          {selected && value ? (
+            <span className="inline-flex h-5 items-center gap-2 leading-none">
+              <ChannelIcon type={value} size="sm" className="shrink-0" />
+              <span className="leading-5">{selected.label}</span>
+            </span>
+          ) : null}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent align="start" alignItemWithTrigger={false}>
+        {CHANNEL_TYPE_LIST.map((item) => (
+          <SelectItem key={item.value} value={item.value}>
+            <span className="flex h-5 items-center gap-2 leading-none">
+              <ChannelIcon type={item.value} size="sm" className="shrink-0" />
+              <span className="leading-5">{item.label}</span>
+            </span>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   )
 }
 

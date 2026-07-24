@@ -11,6 +11,7 @@ import { CHANNEL_TYPES } from '@/lib/channels/constants'
 import type { ChannelType } from '@/lib/channels/constants'
 import { ChannelIcon } from '@/components/shared/channel-icon'
 import { ImageLightbox } from '@/components/shared/image-lightbox'
+import { CopyButton } from '@/components/shared/copy-button'
 import { cn } from '@/lib/utils'
 import {
   Clock,
@@ -20,24 +21,37 @@ import {
   MonitorSmartphone,
   Eye,
   Code,
-  Bot
+  Braces,
+  CheckCircle2,
+  XCircle,
+  LoaderCircle,
 } from 'lucide-react'
 import { buildLogsSearch, normalizeLogsSearch } from './-search'
 
 export const Route = createFileRoute('/_user/logs/$id')({
   validateSearch: normalizeLogsSearch,
-  component: LogDetailPage
+  component: LogDetailPage,
 })
 
 const md = createMarkdownExit()
+
+function formatRequestBody(value: string | null | undefined) {
+  if (!value) return ''
+
+  try {
+    return JSON.stringify(JSON.parse(value), null, 2)
+  } catch {
+    return value
+  }
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 12 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.06, duration: 0.35, ease: 'easeOut' as const }
-  })
+    transition: { delay: i * 0.06, duration: 0.35, ease: 'easeOut' as const },
+  }),
 }
 
 function LogDetailPage() {
@@ -45,15 +59,16 @@ function LogDetailPage() {
   const logsSearch = buildLogsSearch(Route.useSearch())
   const { data: log, isLoading } = usePushLogDetail(id)
   const [renderMarkdown, setRenderMarkdown] = useState(true)
-  const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(
-    null
-  )
+  const [formatRequest, setFormatRequest] = useState(true)
+  const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null)
   const backTo = { to: '/logs', search: logsSearch }
 
   const renderedHtml = useMemo(
     () => (log?.resolvedMessage ? md.render(log.resolvedMessage) : ''),
     [log?.resolvedMessage]
   )
+  const requestBody = log?.requestBody ?? ''
+  const formattedRequestBody = useMemo(() => formatRequestBody(requestBody), [requestBody])
 
   const handleMarkdownClick = (event: MouseEvent<HTMLDivElement>) => {
     const target = event.target as HTMLElement | null
@@ -68,11 +83,11 @@ function LogDetailPage() {
 
   if (isLoading) {
     return (
-      <PageContainer title="推送详情" backTo={backTo} backLabel="返回日志">
-        <div className="space-y-4">
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-48 w-full" />
-          <Skeleton className="h-32 w-full" />
+      <PageContainer title="日志详情" backTo={backTo} backLabel="返回日志">
+        <div className="space-y-6">
+          <Skeleton className="h-40 w-full rounded-xl" />
+          <Skeleton className="h-56 w-full rounded-xl" />
+          <Skeleton className="h-72 w-full rounded-xl" />
         </div>
       </PageContainer>
     )
@@ -80,8 +95,8 @@ function LogDetailPage() {
 
   if (!log) {
     return (
-      <PageContainer title="推送详情" backTo={backTo} backLabel="返回日志">
-        <Card>
+      <PageContainer title="日志详情" backTo={backTo} backLabel="返回日志">
+        <Card className="gap-0 py-0">
           <CardContent className="py-12 text-center text-muted-foreground">
             日志不存在或已被删除
           </CardContent>
@@ -91,11 +106,7 @@ function LogDetailPage() {
   }
 
   const statusLabel =
-    log.status === 'success'
-      ? '成功'
-      : log.status === 'failed'
-        ? '失败'
-        : '处理中'
+    log.status === 'success' ? '成功' : log.status === 'failed' ? '失败' : '处理中'
 
   const statusVariant =
     log.status === 'success'
@@ -105,95 +116,118 @@ function LogDetailPage() {
         : ('secondary' as const)
 
   return (
-    <PageContainer title="推送详情" backTo={backTo} backLabel="返回日志">
+    <PageContainer
+      title="日志详情"
+      description="查看本次推送的执行结果、消息内容与原始请求"
+      backTo={backTo}
+      backLabel="返回日志"
+    >
       <motion.div initial="hidden" animate="visible" className="space-y-6">
-        {/* 概览信息 */}
         <motion.div variants={fadeUp} custom={0}>
-          <Card className={cn(
-              'py-0 border-l-2',
-              log.status === 'success' && 'border-l-emerald-500 dark:border-l-emerald-400',
-              log.status === 'failed' && 'border-l-red-500 dark:border-l-red-400',
-              log.status === 'pending' && 'border-l-amber-500 dark:border-l-amber-400'
-            )}>
-            <CardContent className="p-0">
-              {/* Status + metrics */}
-              <div className="flex flex-wrap items-center gap-2 px-4 py-3 sm:px-5 sm:py-4">
-                <Badge variant={statusVariant} className="text-sm px-3 py-1">
-                  {statusLabel}
-                </Badge>
-                {log.latencyMs != null && (
-                  <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground bg-muted rounded-full px-2.5 py-0.5">
-                    <Gauge className="h-3 w-3" />
-                    {log.latencyMs}ms
-                  </span>
-                )}
-                {log.responseStatus && (
-                  <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground bg-muted rounded-full px-2.5 py-0.5">
-                    <Server className="h-3 w-3" />
-                    HTTP {log.responseStatus}
-                  </span>
-                )}
-              </div>
-
-              {/* Detail info: horizontal KV rows on mobile, grid on desktop */}
-              <div className="border-t divide-y sm:divide-y-0 sm:grid sm:grid-cols-2 md:grid-cols-4 sm:gap-4 sm:px-5 sm:py-4 text-sm">
-                <div className="flex items-center justify-between px-4 py-2.5 sm:p-0 sm:block min-w-0">
-                  <span className="text-muted-foreground shrink-0">端点</span>
-                  <span className="font-medium truncate ml-4 sm:ml-0 sm:mt-1 sm:block">
-                    {log.endpointName || '-'}
-                  </span>
-                </div>
-
-                <div className="flex items-start justify-between px-4 py-2.5 sm:p-0 sm:block min-w-0">
-                  <span className="text-muted-foreground shrink-0 leading-6">渠道</span>
-                  <div className="ml-4 sm:ml-0 sm:mt-1 min-w-0">
-                    <div className="font-medium inline-flex items-center gap-1.5">
-                      {log.channelType && (
-                        <ChannelIcon
-                          type={log.channelType as ChannelType}
-                          size="sm"
-                        />
-                      )}
-                      <span className="truncate">{log.channelName || '-'}</span>
-                    </div>
-                    {log.channelType && (
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {CHANNEL_TYPES[log.channelType as ChannelType]?.label}
-                      </p>
+          <Card className="gap-0 py-0">
+            <CardContent className="p-5">
+              <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div
+                    className={cn(
+                      'flex size-11 shrink-0 items-center justify-center rounded-lg',
+                      log.status === 'success' &&
+                        'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+                      log.status === 'failed' && 'bg-destructive/10 text-destructive',
+                      log.status === 'pending' &&
+                        'bg-amber-500/10 text-amber-600 dark:text-amber-400'
                     )}
+                  >
+                    {log.status === 'success' ? (
+                      <CheckCircle2 className="size-5" />
+                    ) : log.status === 'failed' ? (
+                      <XCircle className="size-5" />
+                    ) : (
+                      <LoaderCircle className="size-5 animate-spin" />
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="text-base font-semibold">消息投递{statusLabel}</h2>
+                      <Badge variant={statusVariant}>{statusLabel}</Badge>
+                    </div>
+                    <p className="mt-1 truncate text-sm text-muted-foreground">
+                      {log.endpointName || '未知端点'} · {log.channelName || '未知渠道'}
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between px-4 py-2.5 sm:p-0 sm:block min-w-0">
-                  <span className="text-muted-foreground shrink-0">来源 IP</span>
-                  <span className="font-mono text-xs ml-4 sm:ml-0 sm:mt-1 sm:block">
-                    {log.requestIp || '-'}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between px-4 py-2.5 sm:p-0 sm:block min-w-0">
-                  <span className="text-muted-foreground shrink-0">时间</span>
-                  <span className="text-xs ml-4 sm:ml-0 sm:mt-1 sm:block">
-                    {new Date(log.createdAt).toLocaleString('zh-CN')}
-                  </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  {log.latencyMs != null && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
+                      <Gauge className="size-3.5" />
+                      {log.latencyMs}ms
+                    </span>
+                  )}
+                  {log.responseStatus && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
+                      <Server className="size-3.5" />
+                      HTTP {log.responseStatus}
+                    </span>
+                  )}
                 </div>
               </div>
             </CardContent>
+
+            <div className="grid grid-cols-1 divide-y border-t bg-muted/20 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
+              <div className="min-w-0 px-5 py-4">
+                <span className="text-xs font-medium text-muted-foreground">端点</span>
+                <span className="mt-1 block truncate text-sm font-medium">
+                  {log.endpointName || '-'}
+                </span>
+              </div>
+
+              <div className="min-w-0 px-5 py-4">
+                <span className="text-xs font-medium text-muted-foreground">渠道</span>
+                <div className="mt-1 min-w-0">
+                  <div className="inline-flex max-w-full items-center gap-1.5 text-sm font-medium">
+                    {log.channelType && (
+                      <ChannelIcon type={log.channelType as ChannelType} size="sm" />
+                    )}
+                    <span className="truncate">{log.channelName || '-'}</span>
+                  </div>
+                  {log.channelType && (
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      {CHANNEL_TYPES[log.channelType as ChannelType]?.label}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="min-w-0 px-5 py-4">
+                <span className="text-xs font-medium text-muted-foreground">来源 IP</span>
+                <span className="mt-1 block truncate font-mono text-xs">
+                  {log.requestIp || '-'}
+                </span>
+              </div>
+
+              <div className="min-w-0 px-5 py-4">
+                <span className="text-xs font-medium text-muted-foreground">记录时间</span>
+                <span className="mt-1 block text-xs">
+                  {new Date(log.createdAt).toLocaleString('zh-CN')}
+                </span>
+              </div>
+            </div>
           </Card>
         </motion.div>
 
         {/* 错误信息 */}
         {log.errorMessage && (
           <motion.div variants={fadeUp} custom={1}>
-            <Card className="border-destructive/30">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-destructive flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4" />
+            <Card className="gap-0 border-destructive/30 py-0">
+              <CardHeader className="px-5 pt-5 pb-3">
+                <CardTitle className="flex items-center gap-2 text-sm font-medium text-destructive">
+                  <AlertTriangle className="size-4" />
                   错误信息
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <pre className="rounded-md bg-destructive/5 p-3 text-xs font-mono whitespace-pre-wrap text-destructive">
+              <CardContent className="px-5 pb-5">
+                <pre className="max-h-72 overflow-auto rounded-lg border border-destructive/15 bg-destructive/5 p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap text-destructive">
                   {log.errorMessage}
                 </pre>
               </CardContent>
@@ -204,16 +238,18 @@ function LogDetailPage() {
         {/* 发送消息（markdown 渲染 / 原文切换） */}
         {log.resolvedMessage && (
           <motion.div variants={fadeUp} custom={log.errorMessage ? 2 : 1}>
-            <Card>
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium">
-                    发送消息
-                  </CardTitle>
-                  <div className="inline-flex items-center rounded-md bg-muted p-0.5 text-muted-foreground">
+            <Card className="gap-0 py-0">
+              <CardHeader className="px-5 pt-5 pb-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <CardTitle className="text-sm font-medium">发送消息</CardTitle>
+                    <p className="mt-1 text-xs text-muted-foreground">最终发送到渠道的消息内容</p>
+                  </div>
+                  <div className="inline-flex items-center rounded-md border bg-muted/40 p-0.5 text-muted-foreground">
                     <button
                       type="button"
                       onClick={() => setRenderMarkdown(true)}
+                      aria-pressed={renderMarkdown}
                       className={`inline-flex items-center gap-1 rounded-sm px-2 py-1 text-xs font-medium transition-colors ${
                         renderMarkdown
                           ? 'bg-background text-foreground shadow-sm'
@@ -226,6 +262,7 @@ function LogDetailPage() {
                     <button
                       type="button"
                       onClick={() => setRenderMarkdown(false)}
+                      aria-pressed={!renderMarkdown}
                       className={`inline-flex items-center gap-1 rounded-sm px-2 py-1 text-xs font-medium transition-colors ${
                         !renderMarkdown
                           ? 'bg-background text-foreground shadow-sm'
@@ -238,15 +275,15 @@ function LogDetailPage() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-5 pb-5">
                 {renderMarkdown ? (
                   <div
-                    className="prose prose-sm dark:prose-invert max-w-none rounded-md bg-muted/50 p-4 [&_img]:cursor-zoom-in [&_img]:rounded-md [&_img]:transition-opacity [&_img]:hover:opacity-90"
+                    className="prose prose-sm dark:prose-invert max-w-none rounded-lg border bg-muted/30 p-4 [&_img]:cursor-zoom-in [&_img]:rounded-md [&_img]:transition-opacity [&_img]:hover:opacity-90"
                     onClick={handleMarkdownClick}
                     dangerouslySetInnerHTML={{ __html: renderedHtml }}
                   />
                 ) : (
-                  <pre className="rounded-md bg-muted/50 p-4 text-xs font-mono whitespace-pre-wrap overflow-x-auto">
+                  <pre className="max-h-96 overflow-auto rounded-lg border bg-muted/30 p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap">
                     {log.resolvedMessage}
                   </pre>
                 )}
@@ -255,31 +292,79 @@ function LogDetailPage() {
           </motion.div>
         )}
 
-        {/* 请求信息 */}
+        {/* 原始请求 */}
         <motion.div variants={fadeUp} custom={log.errorMessage ? 3 : 2}>
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <MonitorSmartphone className="h-4 w-4" />
-                请求信息
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <Card className="gap-0 py-0">
+            <CardHeader className="px-5 pt-5 pb-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <p className="text-muted-foreground mb-1">User Agent</p>
-                  <p className="font-mono text-xs break-all">{log.userAgent || '-'}</p>
+                  <CardTitle className="flex items-center gap-2 text-sm font-medium">
+                    <Braces className="size-4" />
+                    原始请求
+                  </CardTitle>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    调用端点时记录的请求体和来源信息
+                  </p>
                 </div>
-                <div>
-                  <p className="text-muted-foreground mb-1">来源</p>
-                  <div className="space-y-1 text-xs">
+                {requestBody && (
+                  <div className="flex items-center gap-1">
+                    <div className="inline-flex items-center rounded-md border bg-muted/40 p-0.5 text-muted-foreground">
+                      <button
+                        type="button"
+                        onClick={() => setFormatRequest(true)}
+                        aria-pressed={formatRequest}
+                        className={`rounded-sm px-2 py-1 text-xs font-medium transition-colors ${
+                          formatRequest
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'hover:text-foreground'
+                        }`}
+                      >
+                        格式化
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setFormatRequest(false)}
+                        aria-pressed={!formatRequest}
+                        className={`rounded-sm px-2 py-1 text-xs font-medium transition-colors ${
+                          !formatRequest
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'hover:text-foreground'
+                        }`}
+                      >
+                        原文
+                      </button>
+                    </div>
+                    <CopyButton value={requestBody} className="size-7" />
+                  </div>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4 px-5 pb-5">
+              <pre className="max-h-96 overflow-auto rounded-lg border bg-muted/30 p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words">
+                {requestBody
+                  ? formatRequest
+                    ? formattedRequestBody
+                    : requestBody
+                  : '未记录请求体'}
+              </pre>
+
+              <div className="grid grid-cols-1 gap-4 rounded-lg bg-muted/30 p-4 text-sm md:grid-cols-2">
+                <div className="min-w-0">
+                  <p className="mb-1.5 text-xs font-medium text-muted-foreground">User Agent</p>
+                  <p className="break-all font-mono text-xs leading-relaxed">
+                    {log.requestUserAgent || '-'}
+                  </p>
+                </div>
+                <div className="min-w-0">
+                  <p className="mb-1.5 text-xs font-medium text-muted-foreground">请求来源</p>
+                  <div className="space-y-1.5 text-xs">
                     <div className="flex items-center gap-2">
-                      <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                      <span>{new Date(log.createdAt).toLocaleString('zh-CN')}</span>
+                      <MonitorSmartphone className="size-3.5 shrink-0 text-muted-foreground" />
+                      <span className="font-mono">{log.requestIp || '-'}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Bot className="h-3.5 w-3.5 text-muted-foreground" />
-                      <span>{log.triggerType || '-'}</span>
+                      <Clock className="size-3.5 shrink-0 text-muted-foreground" />
+                      <span>{new Date(log.createdAt).toLocaleString('zh-CN')}</span>
                     </div>
                   </div>
                 </div>

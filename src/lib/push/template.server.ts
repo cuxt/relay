@@ -1,5 +1,5 @@
 import vm from 'node:vm'
-import dayjs from 'dayjs'
+import { format } from 'date-fns'
 import type {
   ResolveContext,
   AiResolver,
@@ -59,8 +59,8 @@ export async function evaluate(
     payload: ctx.payload,
     ip: ctx.ip || '',
     ua: ctx.userAgent || '',
-    // 时间库
-    dayjs,
+    // date-fns 时间格式化
+    format,
     // AI 函数
     ai,
     // 安全内置

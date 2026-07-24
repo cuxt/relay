@@ -1,8 +1,14 @@
 import crypto from 'node:crypto'
 import type { SendContext, SendResult } from '../types'
+import type { DingtalkParams } from '../request-params'
 import type { DingtalkConfig } from './dingtalk'
 
-export async function sendDingtalk({ message, config, endpoint }: SendContext<DingtalkConfig>): Promise<SendResult> {
+export async function sendDingtalk({
+  message,
+  config,
+  params,
+  endpoint,
+}: SendContext<DingtalkConfig, DingtalkParams>): Promise<SendResult> {
   if (!config.webhook) {
     return { success: false, errorMessage: '未配置 Webhook 地址' }
   }
@@ -18,20 +24,24 @@ export async function sendDingtalk({ message, config, endpoint }: SendContext<Di
     url += `&timestamp=${timestamp}&sign=${sign}`
   }
 
-  const messageType = endpoint.messageType || 'text'
   const lines = message.split('\n')
-  const title = lines[0] || '通知'
+  const title = params.title || lines[0] || '通知'
+  const at = {
+    atMobiles: params.atMobiles,
+    atUserIds: params.atUserIds,
+    isAtAll: params.isAtAll ?? false,
+  }
 
   const body =
-    messageType === 'markdown'
-      ? { msgtype: 'markdown', markdown: { title, text: message } }
-      : { msgtype: 'text', text: { content: message } }
+    (params.format ?? endpoint.messageType ?? 'text') === 'markdown'
+      ? { msgtype: 'markdown', markdown: { title, text: message }, at }
+      : { msgtype: 'text', text: { content: message }, at }
 
   try {
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     })
 
     const resBody = await res.text()
@@ -41,7 +51,7 @@ export async function sendDingtalk({ message, config, endpoint }: SendContext<Di
       success: json.errcode === 0,
       responseBody: resBody,
       responseStatus: res.status,
-      errorMessage: json.errcode !== 0 ? json.errmsg : undefined
+      errorMessage: json.errcode !== 0 ? json.errmsg : undefined,
     }
   } catch (err: any) {
     return { success: false, errorMessage: err.message }

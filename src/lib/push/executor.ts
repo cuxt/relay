@@ -1,26 +1,37 @@
+import { and, eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { endpoints } from '@/lib/db/schema/endpoints'
-import { channels } from '@/lib/db/schema/channels'
-import { pushLogs } from '@/lib/db/schema/push-logs'
 import { aiPresets } from '@/lib/db/schema/ai-presets'
-import { eq, and } from 'drizzle-orm'
-import { sendMessage } from '@/lib/channels/sender.server'
-import { evaluate } from './template.server'
-import type { AiResolver, AiCallMeta } from './template'
+import { channels } from '@/lib/db/schema/channels'
+import { endpointChannels, endpoints } from '@/lib/db/schema/endpoints'
+import { pushLogs } from '@/lib/db/schema/push-logs'
 import { processMessageWithAi } from '@/lib/ai/process'
-import type { ChannelType } from '@/lib/channels/registry'
+import { getChannelMeta, type ChannelType } from '@/lib/channels/registry'
+import { sendMessage } from '@/lib/channels/sender.server'
+import type { AiCallMeta, AiResolver } from './template'
+import { evaluate } from './template.server'
 
 interface PushRequest {
   token: string
-  body: unknown
+  payload: unknown
+  params: Record<string, unknown>
+  rawBody: string
   ip?: string
   userAgent?: string
+}
+
+interface DeliveryResult {
+  channelId: string
+  channelName: string
+  channelType: ChannelType
+  success: boolean
+  message: string
+  logId: string
 }
 
 interface PushResponse {
   success: boolean
   message: string
-  logId?: string
+  results: DeliveryResult[]
 }
 
 function buildAiLogFields(aiMeta: AiCallMeta[]) {
@@ -29,61 +40,63 @@ function buildAiLogFields(aiMeta: AiCallMeta[]) {
       aiPresetId: null,
       aiProcessedMessage: null,
       aiLatencyMs: null,
-      aiError: null
+      aiError: null,
     }
   }
 
-  const totalLatency = aiMeta.reduce((sum, m) => sum + m.latencyMs, 0)
   const errors = aiMeta
-    .filter(m => m.error)
-    .map(m => `${m.presetKey}: ${m.error}`)
-
+    .filter((meta) => meta.error)
+    .map((meta) => `${meta.presetKey}: ${meta.error}`)
   return {
     aiPresetId: null,
     aiProcessedMessage: JSON.stringify(aiMeta),
-    aiLatencyMs: totalLatency,
-    aiError: errors.length > 0 ? errors.join('; ') : null
+    aiLatencyMs: aiMeta.reduce((sum, meta) => sum + meta.latencyMs, 0),
+    aiError: errors.length > 0 ? errors.join('; ') : null,
   }
 }
 
+function readChannelParams(params: Record<string, unknown>, channelId: string) {
+  const value = params[channelId]
+  if (value === undefined) return {}
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error(`params.${channelId} 必须是 JSON 对象`)
+  }
+  return value as Record<string, unknown>
+}
+
 export async function executePush(req: PushRequest): Promise<PushResponse> {
-  // 查找端点
-  const [ep] = await db
-    .select()
-    .from(endpoints)
-    .where(eq(endpoints.token, req.token))
+  const [endpoint] = await db.select().from(endpoints).where(eq(endpoints.token, req.token))
 
-  if (!ep) {
-    return { success: false, message: '端点不存在' }
+  if (!endpoint) {
+    return { success: false, message: '端点不存在', results: [] }
+  }
+  if (!endpoint.enabled) {
+    return { success: false, message: '端点已禁用', results: [] }
   }
 
-  if (!ep.enabled) {
-    return { success: false, message: '端点已禁用' }
+  const boundChannels = await db
+    .select({
+      id: channels.id,
+      name: channels.name,
+      type: channels.type,
+      enabled: channels.enabled,
+      config: channels.config,
+    })
+    .from(endpointChannels)
+    .innerJoin(channels, eq(endpointChannels.channelId, channels.id))
+    .where(eq(endpointChannels.endpointId, endpoint.id))
+    .orderBy(endpointChannels.createdAt)
+
+  if (boundChannels.length === 0) {
+    return { success: false, message: '端点未绑定渠道', results: [] }
   }
 
-  // 查找渠道
-  const [ch] = await db
-    .select()
-    .from(channels)
-    .where(eq(channels.id, ep.channelId))
-
-  if (!ch) {
-    return { success: false, message: '渠道不存在' }
-  }
-
-  if (!ch.enabled) {
-    return { success: false, message: '渠道已禁用' }
-  }
-
-  // 构建消息
-  const bodyStr =
-    typeof req.body === 'string' ? req.body : JSON.stringify(req.body)
-
+  const payloadText =
+    typeof req.payload === 'string' ? req.payload : JSON.stringify(req.payload ?? null)
   let message: string
   let aiMeta: AiCallMeta[] = []
 
-  if (ep.messageTemplate) {
-    // 构建 aiResolver
+  if (endpoint.messageTemplate) {
     const presetCache = new Map<string, string>()
     const aiResolver: AiResolver = async (presetKey, input) => {
       let presetId = presetCache.get(presetKey)
@@ -91,78 +104,123 @@ export async function executePush(req: PushRequest): Promise<PushResponse> {
         const [found] = await db
           .select({ id: aiPresets.id })
           .from(aiPresets)
-          .where(
-            and(eq(aiPresets.key, presetKey), eq(aiPresets.userId, ep.userId))
-          )
+          .where(and(eq(aiPresets.key, presetKey), eq(aiPresets.userId, endpoint.userId)))
         if (!found) throw new Error(`AI 预设 "${presetKey}" 不存在`)
         presetId = found.id
         presetCache.set(presetKey, presetId)
       }
       const result = await processMessageWithAi(presetId, input)
-      if (result.success && result.processedMessage)
-        return result.processedMessage
+      if (result.success && result.processedMessage) return result.processedMessage
       throw new Error(result.errorMessage || 'AI 处理失败')
     }
 
     const resolved = await evaluate(
-      ep.messageTemplate,
-      { payload: req.body, ip: req.ip, userAgent: req.userAgent },
+      endpoint.messageTemplate,
+      { payload: req.payload, ip: req.ip, userAgent: req.userAgent },
       aiResolver
     )
     message = resolved.message
     aiMeta = resolved.aiMeta
   } else {
-    // 无模板：用 body.content 或整个 body
-    const bodyObj =
-      typeof req.body === 'object' && req.body !== null
-        ? (req.body as Record<string, unknown>)
+    const payload =
+      typeof req.payload === 'object' && req.payload !== null
+        ? (req.payload as Record<string, unknown>)
         : null
-    if (bodyObj?.content && typeof bodyObj.content === 'string') {
-      message = bodyObj.content
-    } else {
-      message = bodyStr
-    }
+    message = typeof payload?.content === 'string' ? payload.content : payloadText
   }
 
-  // 日志 + 发送 + 更新
   const aiLogFields = buildAiLogFields(aiMeta)
-  const [log] = await db
-    .insert(pushLogs)
-    .values({
-      endpointId: ep.id,
-      channelId: ch.id,
-      userId: ep.userId,
-      requestBody: bodyStr,
-      requestIp: req.ip || null,
-      requestUserAgent: req.userAgent || null,
-      resolvedMessage: message,
-      status: 'pending',
-      ...aiLogFields
+  const results = await Promise.all(
+    boundChannels.map(async (channel) => {
+      const channelType = channel.type as ChannelType
+      const [log] = await db
+        .insert(pushLogs)
+        .values({
+          endpointId: endpoint.id,
+          channelId: channel.id,
+          userId: endpoint.userId,
+          requestBody: req.rawBody,
+          requestIp: req.ip || null,
+          requestUserAgent: req.userAgent || null,
+          resolvedMessage: message,
+          status: 'pending',
+          ...aiLogFields,
+        })
+        .returning()
+
+      const fail = async (errorMessage: string, responseStatus = 400) => {
+        await db
+          .update(pushLogs)
+          .set({ status: 'failed', responseStatus, errorMessage })
+          .where(eq(pushLogs.id, log.id))
+        return {
+          channelId: channel.id,
+          channelName: channel.name,
+          channelType,
+          success: false,
+          message: errorMessage,
+          logId: log.id,
+        }
+      }
+
+      if (!channel.enabled) return fail('渠道已禁用')
+
+      let requestParams: Record<string, unknown>
+      try {
+        requestParams = readChannelParams(req.params, channel.id)
+      } catch (error) {
+        return fail(error instanceof Error ? error.message : '渠道参数格式错误')
+      }
+
+      const parsed = getChannelMeta(channelType).requestSchema.safeParse(requestParams)
+      if (!parsed.success) {
+        return fail(
+          parsed.error.issues
+            .map(
+              (issue) => `params.${channel.id}.${issue.path.join('.') || 'value'}: ${issue.message}`
+            )
+            .join('; ')
+        )
+      }
+
+      const startedAt = Date.now()
+      const result = await sendMessage(channelType, {
+        message,
+        config: channel.config,
+        params: parsed.data as Record<string, unknown>,
+        endpoint,
+      })
+      const latencyMs = Date.now() - startedAt
+
+      await db
+        .update(pushLogs)
+        .set({
+          status: result.success ? 'success' : 'failed',
+          responseBody: result.responseBody || null,
+          responseStatus: result.responseStatus || null,
+          errorMessage: result.errorMessage || null,
+          latencyMs,
+        })
+        .where(eq(pushLogs.id, log.id))
+
+      return {
+        channelId: channel.id,
+        channelName: channel.name,
+        channelType,
+        success: result.success,
+        message: result.success ? '推送成功' : result.errorMessage || '推送失败',
+        logId: log.id,
+      }
     })
-    .returning()
+  )
 
-  const startTime = Date.now()
-  const result = await sendMessage(ch.type as ChannelType, {
-    message,
-    config: (ch.config as Record<string, unknown>) || {},
-    endpoint: ep
-  })
-  const latencyMs = Date.now() - startTime
-
-  await db
-    .update(pushLogs)
-    .set({
-      status: result.success ? 'success' : 'failed',
-      responseBody: result.responseBody || null,
-      responseStatus: result.responseStatus || null,
-      errorMessage: result.errorMessage || null,
-      latencyMs
-    })
-    .where(eq(pushLogs.id, log.id))
-
+  const successCount = results.filter((result) => result.success).length
   return {
-    success: result.success,
-    message: result.success ? '推送成功' : result.errorMessage || '推送失败',
-    logId: log.id
+    success: successCount === results.length,
+    message:
+      successCount === results.length
+        ? `已成功推送到 ${successCount} 个渠道`
+        : `成功 ${successCount} 个，失败 ${results.length - successCount} 个`,
+    results,
   }
 }

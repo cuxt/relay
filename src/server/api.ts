@@ -10,7 +10,6 @@ import { endpointRoutes } from './routes/endpoints'
 import { logRoutes } from './routes/logs'
 import { aiPresetRoutes } from './routes/ai-presets'
 import { aiProviderRoutes } from './routes/ai-providers'
-import { apiKeyRoutes } from './routes/api-keys'
 import { telegramRoutes } from './routes/telegram'
 import { pushRoutes } from './routes/push'
 
@@ -26,6 +25,5 @@ export const api = new Elysia()
   .use(logRoutes)
   .use(aiPresetRoutes)
   .use(aiProviderRoutes)
-  .use(apiKeyRoutes)
   .use(telegramRoutes)
   .use(pushRoutes)

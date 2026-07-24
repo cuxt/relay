@@ -1,5 +1,5 @@
 /**
- * 业务令牌生成（端点 token / API key）。
+ * 端点令牌生成。
  * 从 relay 旧 src/lib/utils.ts 恢复——模板骨架的 utils.ts 只保留 cn()，
  * 这些业务函数独立成文件，避免污染模板骨架 utils.ts（上游同步时零冲突）。
  */
@@ -16,8 +16,4 @@ export function generateToken(prefix: string, length = 32): string {
 
 export function generateEndpointToken(): string {
   return generateToken('rlk_')
-}
-
-export function generateApiKey(): string {
-  return generateToken('relay_sk_')
 }

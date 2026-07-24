@@ -58,9 +58,9 @@ export const TEMPLATE_TOKENS: TemplateToken[] = [
     category: 'builtin'
   },
   {
-    token: "${dayjs().format('YYYY-MM-DD HH:mm:ss')}",
-    label: 'dayjs()',
-    description: '时间库，如 dayjs().format()',
+    token: "${format(new Date(), 'yyyy-MM-dd HH:mm:ss')}",
+    label: 'format()',
+    description: "date-fns 时间格式化，如 ${format(new Date(payload.time), 'yyyy-MM-dd')}",
     category: 'builtin'
   },
   {

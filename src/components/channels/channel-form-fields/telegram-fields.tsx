@@ -7,7 +7,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '@/components/ui/select'
 import { Loader2, Search } from 'lucide-react'
 import { toast } from 'sonner'
@@ -35,7 +35,7 @@ export function TelegramFields({ config, onChange, errors, disabled }: ChannelFi
       const res = await fetch('/api/telegram/get-updates', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ botToken })
+        body: JSON.stringify({ botToken }),
       })
       const json = await res.json()
 
@@ -74,35 +74,33 @@ export function TelegramFields({ config, onChange, errors, disabled }: ChannelFi
           placeholder="123456:ABC-DEF..."
           className="font-mono"
           value={botToken}
-          onChange={e => onChange('config.botToken', e.target.value)}
+          onChange={(e) => onChange('config.botToken', e.target.value)}
           disabled={disabled}
           aria-invalid={!!errors['config.botToken']}
         />
         <p className="text-[0.8rem] text-muted-foreground">通过 @BotFather 获取的 Bot Token</p>
         {errors['config.botToken'] && (
-          <p className="text-[0.8rem] font-medium text-destructive">
-            {errors['config.botToken']}
-          </p>
+          <p className="text-[0.8rem] font-medium text-destructive">{errors['config.botToken']}</p>
         )}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor={chatIdId}>
-          Chat ID
+          默认 Chat ID
           <span className="text-red-500 ml-1">*</span>
         </Label>
         <div className="flex gap-2">
           {telegramChats.length > 1 ? (
             <Select
               value={chatId}
-              onValueChange={v => onChange('config.chatId', v ?? '')}
+              onValueChange={(v) => onChange('config.chatId', v ?? '')}
               disabled={disabled}
             >
               <SelectTrigger>
                 <SelectValue placeholder="选择聊天" />
               </SelectTrigger>
               <SelectContent>
-                {telegramChats.map(chat => (
+                {telegramChats.map((chat) => (
                   <SelectItem key={chat.id} value={String(chat.id)}>
                     {chat.title} ({chat.type})
                   </SelectItem>
@@ -114,7 +112,7 @@ export function TelegramFields({ config, onChange, errors, disabled }: ChannelFi
               id={chatIdId}
               placeholder="聊天 ID"
               value={chatId}
-              onChange={e => onChange('config.chatId', e.target.value)}
+              onChange={(e) => onChange('config.chatId', e.target.value)}
               disabled={disabled}
               aria-invalid={!!errors['config.chatId']}
             />
@@ -136,12 +134,10 @@ export function TelegramFields({ config, onChange, errors, disabled }: ChannelFi
           </Button>
         </div>
         <p className="text-[0.8rem] text-muted-foreground">
-          目标聊天/频道/群组的 ID — 点击「获取」自动查找
+          请求未传 chatId 时使用 — 点击「获取」自动查找
         </p>
         {errors['config.chatId'] && (
-          <p className="text-[0.8rem] font-medium text-destructive">
-            {errors['config.chatId']}
-          </p>
+          <p className="text-[0.8rem] font-medium text-destructive">{errors['config.chatId']}</p>
         )}
       </div>
     </>

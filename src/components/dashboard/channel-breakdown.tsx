@@ -7,6 +7,7 @@ import type { ChannelType } from '@/lib/channels/constants'
 interface ChannelBreakdownProps {
   distribution?: Array<{ type: string; count: number }>
   isLoading: boolean
+  isError?: boolean
 }
 
 function CustomTooltip({ active, payload }: any) {
@@ -29,7 +30,8 @@ function CustomTooltip({ active, payload }: any) {
 
 export function ChannelBreakdown({
   distribution,
-  isLoading
+  isLoading,
+  isError,
 }: ChannelBreakdownProps) {
   const chartData = (distribution || []).map(d => ({
     name: CHANNEL_TYPES[d.type as ChannelType]?.label || d.type,
@@ -47,6 +49,10 @@ export function ChannelBreakdown({
       <CardContent>
         {isLoading ? (
           <Skeleton className="h-75 w-full rounded-lg" />
+        ) : isError ? (
+          <div className="flex h-75 items-center justify-center text-sm text-destructive">
+            图表加载失败
+          </div>
         ) : chartData.length === 0 ? (
           <div className="flex items-center justify-center h-75 text-sm text-muted-foreground">
             暂无数据

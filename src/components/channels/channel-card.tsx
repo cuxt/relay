@@ -1,16 +1,10 @@
 import { motion } from 'framer-motion'
 import { Link } from '@tanstack/react-router'
-import { Pencil, Trash2, MoreVertical, Calendar } from 'lucide-react'
+import { Pencil, Trash2, Calendar, Settings2 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
 import { ChannelIcon } from '@/components/shared/channel-icon'
 import { CHANNEL_TYPES } from '@/lib/channels/constants'
 import type { ChannelType } from '@/lib/channels/constants'
@@ -66,7 +60,7 @@ export function ChannelCard({
   channel,
   onToggle,
   onDelete,
-  index
+  index,
 }: ChannelCardProps) {
   const meta = CHANNEL_TYPES[channel.type]
   const configPreview = getConfigPreview(channel.type, channel.config)
@@ -77,69 +71,43 @@ export function ChannelCard({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.3 }}
-      whileHover={{ y: -2, transition: { type: 'spring', stiffness: 300 } }}
     >
-      <Card className="relative transition-shadow hover:shadow-md h-full">
-        <CardContent className="p-5 flex flex-col h-full">
-          {/* Header: icon + name + actions */}
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3 min-w-0">
+      <Card className="h-full gap-0 py-0 transition-shadow hover:shadow-md">
+        <CardContent className="flex flex-1 flex-col p-5">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex min-w-0 items-center gap-3">
               <ChannelIcon type={channel.type} size="lg" showBackground />
               <div className="min-w-0">
-                <h3 className="font-semibold text-sm truncate">
-                  {channel.name}
-                </h3>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <h3 className="truncate text-base font-semibold">{channel.name}</h3>
+                <Badge variant="outline" className="mt-1 text-xs font-normal">
                   {meta?.label || channel.type}
-                </p>
+                </Badge>
               </div>
             </div>
 
-            <div className="flex items-center gap-1 shrink-0">
+            <div className="flex shrink-0 items-center gap-2 rounded-full border px-2.5 py-1.5">
+              <span className="text-xs text-muted-foreground">
+                {channel.enabled ? '已启用' : '已停用'}
+              </span>
               <Switch
+                aria-label={channel.enabled ? '停用渠道' : '启用渠道'}
                 checked={channel.enabled}
-                onCheckedChange={checked => onToggle(channel.id, checked)}
+                onCheckedChange={(checked) => onToggle(channel.id, checked)}
               />
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                    />
-                  }
-                >
-                  <MoreVertical className="h-4 w-4" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    render={
-                      <Link to="/channels/$id/edit" params={{ id: channel.id }} />
-                    }
-                  >
-                    <Pencil className="mr-2 h-4 w-4" />
-                    编辑
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="text-destructive"
-                    onClick={() => onDelete(channel.id)}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    删除
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
           </div>
 
-          {/* Config preview */}
-          {configPreview && (
+          <div className="mt-5 rounded-lg bg-muted/40 p-3">
+            <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+              <Settings2 className="size-3.5" />
+              连接信息
+            </div>
+            {configPreview ? (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger
                   render={
-                    <p className="text-xs font-mono text-muted-foreground mt-3 truncate cursor-default" />
+                      <p className="cursor-default truncate font-mono text-sm" />
                   }
                 >
                   {configPreview}
@@ -149,22 +117,39 @@ export function ChannelCard({
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          )}
-
-          {/* Footer: status + date */}
-          <div className="flex items-center justify-between mt-auto pt-4 border-t">
-            <Badge
-              variant={channel.enabled ? 'default' : 'secondary'}
-              className="text-xs"
-            >
-              {channel.enabled ? '已启用' : '已禁用'}
-            </Badge>
-            <span className="text-xs text-muted-foreground flex items-center gap-1">
-              <Calendar className="h-3 w-3" />
-              {createdDate}
-            </span>
+            ) : (
+              <p className="text-sm text-muted-foreground">已完成渠道配置</p>
+            )}
           </div>
         </CardContent>
+
+        <div className="flex items-center justify-between gap-3 border-t bg-muted/20 px-4 py-3">
+          <span className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
+            <Calendar className="size-3.5 shrink-0" />
+            {createdDate}
+          </span>
+          <div className="flex shrink-0 items-center gap-1">
+            <Button
+              nativeButton={false}
+              render={<Link to="/channels/$id/edit" params={{ id: channel.id }} />}
+              variant="ghost"
+              size="sm"
+              className="h-8 text-xs"
+            >
+              <Pencil className="mr-1.5 size-3" />
+              编辑
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onClick={() => onDelete(channel.id)}
+            >
+              <Trash2 className="mr-1.5 size-3" />
+              删除
+            </Button>
+          </div>
+        </div>
       </Card>
     </motion.div>
   )

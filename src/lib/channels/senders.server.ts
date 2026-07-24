@@ -17,7 +17,7 @@ import { barkDefinition } from './definitions/bark'
 
 type WildcardSendFn = (ctx: SendContext<Record<string, unknown>>) => Promise<SendResult>
 
-function asWildcard<T>(fn: SendFn<T>): WildcardSendFn {
+function asWildcard<TConfig, TParams>(fn: SendFn<TConfig, TParams>): WildcardSendFn {
   return fn as WildcardSendFn
 }
 
@@ -30,7 +30,7 @@ const senders: Record<ChannelType, WildcardSendFn> = {
   discord: asWildcard(discordDefinition.sendMessage),
   webhook: asWildcard(webhookDefinition.sendMessage),
   email: asWildcard(sendEmail),
-  bark: asWildcard(barkDefinition.sendMessage)
+  bark: asWildcard(barkDefinition.sendMessage),
 }
 
 export async function sendByChannelType(

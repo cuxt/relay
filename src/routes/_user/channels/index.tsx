@@ -64,7 +64,7 @@ function ChannelsPage() {
         open={!!deleteId}
         onOpenChange={open => !open && setDeleteId(null)}
         title="删除渠道"
-        description="确定要删除该渠道吗？关联的端点也会被一并删除，此操作不可撤销。"
+        description="确定要删除该渠道吗？关联端点中的渠道绑定将被移除，端点本身不会删除。此操作不可撤销。"
         confirmLabel="删除"
         variant="destructive"
         loading={deleteChannel.isPending}

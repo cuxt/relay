@@ -31,30 +31,32 @@ export function AiProvidersList() {
   return (
     <>
       {isLoading ? (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {Array.from({ length: 2 }).map((_, i) => (
-            <Skeleton key={i} className="h-14 w-full" />
+            <Skeleton key={i} className="h-16 w-full rounded-lg" />
           ))}
         </div>
       ) : !providers?.length ? (
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted mb-3">
-            <Server className="h-5 w-5 text-muted-foreground" />
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12 text-center">
+          <div className="mb-3 flex size-10 items-center justify-center rounded-full bg-muted">
+            <Server className="size-5 text-muted-foreground" />
           </div>
           <p className="text-sm text-muted-foreground">暂无 AI 服务</p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="mt-1 text-xs text-muted-foreground">
             添加一个 OpenAI 兼容的 AI 服务端点
           </p>
         </div>
       ) : (
-        <div className="divide-y">
+        <div className="space-y-2">
           {providers.map((p: any) => (
             <div
               key={p.id}
-              className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-muted/30 p-3"
             >
-              <div className="flex items-center gap-3 min-w-0">
-                <Server className="h-4 w-4 text-muted-foreground shrink-0" />
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-background text-muted-foreground ring-1 ring-border">
+                  <Server className="size-4" />
+                </div>
                 <div className="min-w-0">
                   <p className="text-sm font-medium truncate">{p.name}</p>
                   <p className="text-xs text-muted-foreground truncate">
@@ -62,31 +64,32 @@ export function AiProvidersList() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0 ml-4">
-                <span className="text-xs font-mono text-muted-foreground hidden sm:inline">
+              <div className="ml-auto flex shrink-0 items-center gap-2">
+                <span className="hidden max-w-28 truncate font-mono text-xs text-muted-foreground sm:inline">
                   {p.apiKey}
                 </span>
                 <Badge
                   variant={p.enabled ? 'default' : 'secondary'}
-                  className="text-xs"
+                  className="text-xs font-normal"
                 >
                   {p.enabled ? '启用' : '禁用'}
                 </Badge>
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
+                  size="icon-sm"
                   onClick={() => setEditProvider(p)}
+                  aria-label="编辑 AI 服务"
                 >
-                  <Pencil className="h-4 w-4" />
+                  <Pencil className="size-4" />
                 </Button>
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-destructive hover:text-destructive"
+                  size="icon-sm"
+                  className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                   onClick={() => setDeleteId(p.id)}
+                  aria-label="删除 AI 服务"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="size-4" />
                 </Button>
               </div>
             </div>

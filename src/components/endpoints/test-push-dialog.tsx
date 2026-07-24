@@ -5,12 +5,13 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter
+  DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { extractBodyPaths } from '@/lib/push/template'
+import { getChannelMeta, type ChannelType } from '@/lib/channels/registry'
 
 interface TestPushDialogProps {
   open: boolean
@@ -19,6 +20,7 @@ interface TestPushDialogProps {
     token: string
     name: string
     messageTemplate?: string | null
+    channels: Array<{ id: string; name: string; type: ChannelType }>
   } | null
 }
 
@@ -53,15 +55,17 @@ function generateExampleBody(template?: string | null): string {
   return JSON.stringify(result, null, 2)
 }
 
-export function TestPushDialog({
-  open,
-  onOpenChange,
-  endpoint
-}: TestPushDialogProps) {
-  const exampleBody = useMemo(
-    () => generateExampleBody(endpoint?.messageTemplate),
-    [endpoint?.messageTemplate]
-  )
+export function TestPushDialog({ open, onOpenChange, endpoint }: TestPushDialogProps) {
+  const exampleBody = useMemo(() => {
+    const payload = JSON.parse(generateExampleBody(endpoint?.messageTemplate))
+    const params = Object.fromEntries(
+      endpoint?.channels.map((channel) => [
+        channel.id,
+        getChannelMeta(channel.type).requestExample,
+      ]) ?? []
+    )
+    return JSON.stringify({ payload, params }, null, 2)
+  }, [endpoint?.channels, endpoint?.messageTemplate])
 
   const [body, setBody] = useState(exampleBody)
   const [loading, setLoading] = useState(false)
@@ -95,16 +99,16 @@ export function TestPushDialog({
       const res = await fetch(`/api/push/${endpoint.token}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body
+        body,
       })
       const json = await res.json()
 
       if (res.ok) {
-        setResult({ success: true, message: '推送成功' })
+        setResult({ success: json.success, message: json.message })
       } else {
         setResult({
           success: false,
-          message: json.error || '推送失败'
+          message: json.error || '推送失败',
         })
       }
     } catch (err: any) {
@@ -132,10 +136,10 @@ export function TestPushDialog({
           )}
 
           <div className="space-y-2">
-            <Label>请求体 (JSON)</Label>
+            <Label>请求体（payload + params）</Label>
             <Textarea
               value={body}
-              onChange={e => setBody(e.target.value)}
+              onChange={(e) => setBody(e.target.value)}
               rows={6}
               className="font-mono text-sm max-h-52"
               disabled={loading}
