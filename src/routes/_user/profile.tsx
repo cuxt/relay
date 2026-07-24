@@ -29,7 +29,7 @@ import { Label } from '@/components/ui/label'
 import { Avatar } from '@/components/x/avatar'
 import { uploadFile } from '@/lib/storage/upload'
 import { Input } from '@/components/x/input'
-import { AUTH, ROLES, ROUTES } from '@/constants'
+import { AUTH, ROLES, ROUTES, roleLabel } from '@/constants'
 import { authClient } from '@/lib/auth/client'
 import { sessionKey } from '@/lib/auth/session'
 
@@ -82,10 +82,7 @@ function ProfilePage() {
   })
 
   const canSubmitPass =
-    !!oldPass &&
-    !!newPass &&
-    newPass.length >= AUTH.PASSWORD_MIN_LENGTH &&
-    newPass === confirmPass
+    !!oldPass && !!newPass && newPass.length >= AUTH.PASSWORD_MIN_LENGTH && newPass === confirmPass
 
   const changeAvatar = useMutation({
     mutationFn: async (file: File) => {
@@ -159,9 +156,9 @@ function ProfilePage() {
           <div className="grid gap-2 py-5 md:grid-cols-[9rem_1fr]">
             <p className="text-sm text-muted-foreground">角色</p>
             <div>
-              <Badge variant={user.role === ROLES.ADMIN ? 'default' : 'secondary'}>
+              <Badge variant={user.role === ROLES.SUPER ? 'default' : 'secondary'}>
                 <Shield className="mr-1 h-3 w-3" />
-                {user.role === ROLES.ADMIN ? '管理员' : '普通用户'}
+                {roleLabel(user.role)}
               </Badge>
             </div>
           </div>
@@ -262,7 +259,10 @@ function ProfilePage() {
                     <Button variant="outline" onClick={() => setPassOpen(false)}>
                       取消
                     </Button>
-                    <Button onClick={() => changePass.mutate()} disabled={!canSubmitPass || changePass.isPending}>
+                    <Button
+                      onClick={() => changePass.mutate()}
+                      disabled={!canSubmitPass || changePass.isPending}
+                    >
                       {changePass.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                       更新密码
                     </Button>

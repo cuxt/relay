@@ -79,7 +79,7 @@ function ReleasePage() {
                 className="group relative pb-8 pl-8 last:pb-0"
               >
                 {index < releases.length - 1 && (
-                  <div className="absolute left-[7px] top-6 h-[calc(100%-24px)] w-px bg-border" />
+                  <div className="absolute left-1.75 top-6 h-[calc(100%-24px)] w-px bg-border" />
                 )}
                 <div className="absolute left-0 top-1.5 h-3.5 w-3.5 rounded-full bg-background ring-2 ring-border transition-colors group-hover:bg-primary/10 group-hover:ring-primary/30" />
 

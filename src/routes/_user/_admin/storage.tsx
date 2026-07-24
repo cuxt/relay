@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/x/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { type StorageConfig } from '@/constants'
+import { ROUTES, isSuper, type StorageConfig } from '@/constants'
 
 export const Route = createFileRoute('/_user/_admin/storage')({
+  beforeLoad: ({ context }) => {
+    if (!isSuper(context.user.role)) throw redirect({ to: ROUTES.DASHBOARD })
+  },
   component: StoragePage,
 })
 
@@ -69,10 +72,10 @@ function StoragePage() {
   return (
     <div className="mx-auto max-w-3xl space-y-12">
       <header className="border-b border-border pb-10">
-        <p className="text-sm text-muted-foreground">管理员</p>
-        <h1 className="mt-3 text-3xl font-semibold">对象存储</h1>
+        <h1 className="text-3xl font-semibold">对象存储</h1>
         <p className="mt-4 max-w-xl leading-7 text-muted-foreground">
-          配置系统对象存储，用于上传文件等场景。目前支持 S3 兼容服务（AWS S3 / MinIO / Cloudflare R2 / 阿里云 OSS S3 兼容端点）。
+          配置系统对象存储，用于上传文件等场景。目前支持 S3 兼容服务（AWS S3 / MinIO / Cloudflare R2
+          / 阿里云 OSS S3 兼容端点）。
         </p>
       </header>
 

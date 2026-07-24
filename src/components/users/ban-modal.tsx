@@ -3,12 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { authClient } from '@/lib/auth/client'
 import { Loader2 } from 'lucide-react'
-import {
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogDescription,
-} from '@/components/ui/dialog'
+import { DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
 import { Modal } from '@/components/x/modal'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
@@ -38,7 +33,7 @@ export function BanModal({ user, onClose, onSuccess }: UserModalProps) {
       onClose()
       onSuccess()
     },
-    onError: () => toast.error('封禁用户失败，请重试'),
+    onError: (error) => toast.error(error.message || '封禁用户失败，请重试'),
   })
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) => {

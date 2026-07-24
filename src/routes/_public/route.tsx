@@ -5,6 +5,7 @@ import { Logo } from '@/components/x/logo'
 import { siteConfig } from '@/config/site'
 import { authClient } from '@/lib/auth/client'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
+import { ThemePresetPicker } from '@/components/layout/theme-preset-picker'
 import { UserMenu } from '@/components/layout/user-menu'
 import { Button } from '@/components/ui/button'
 import { ROUTES } from '@/constants'
@@ -82,6 +83,7 @@ function PublicLayout() {
                 </Link>
               ))}
               <div className="bg-border/40 mx-2 h-4 w-px" />
+              <ThemePresetPicker />
               <ThemeToggle />
               {session ? (
                 <UserMenu user={session.user} impersonating={!!session.session.impersonatedBy} />

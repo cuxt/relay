@@ -1,10 +1,90 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { admin, openAPI } from 'better-auth/plugins'
+import { APIError, createAuthMiddleware, getAuthoritativeSessionFromCtx } from 'better-auth/api'
+import { and, count, eq, isNull, lt, or } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import * as schema from '@/lib/db/schema'
 import { send } from '@/lib/email/send'
-import { AUTH } from '@/constants'
+import { AUTH, ROLES, canManage, isActiveSuper, isRole } from '@/constants'
+import { authAccessControl, authRoles } from './access'
+
+const protectedPaths = new Set([
+  '/admin/update-user',
+  '/admin/list-user-sessions',
+  '/admin/unban-user',
+  '/admin/ban-user',
+  '/admin/impersonate-user',
+  '/admin/revoke-user-session',
+  '/admin/revoke-user-sessions',
+  '/admin/remove-user',
+  '/admin/set-user-password',
+])
+
+function getRole(ctx: { path: string; body?: Record<string, unknown> }): unknown {
+  if (ctx.path === '/admin/set-role' || ctx.path === '/admin/create-user') return ctx.body?.role
+  if (ctx.path === '/admin/update-user') {
+    const data = ctx.body?.data
+    return data && typeof data === 'object' ? (data as Record<string, unknown>).role : undefined
+  }
+  return undefined
+}
+
+function removesSuper(ctx: { path: string; body?: Record<string, unknown> }): boolean {
+  if (ctx.path === '/admin/remove-user' || ctx.path === '/admin/ban-user') return true
+  if (ctx.path === '/admin/set-role') {
+    const role = getRole(ctx)
+    return Array.isArray(role) ? !role.includes(ROLES.SUPER) : role !== ROLES.SUPER
+  }
+  if (ctx.path === '/admin/update-user') {
+    const data = ctx.body?.data
+    if (!data || typeof data !== 'object') return false
+    const update = data as Record<string, unknown>
+    if (update.banned === true) return true
+    if ('role' in update) {
+      const role = update.role
+      return Array.isArray(role) ? !role.includes(ROLES.SUPER) : role !== ROLES.SUPER
+    }
+  }
+  return false
+}
+
+async function getTarget(ctx: {
+  path: string
+  body?: Record<string, unknown>
+  context: {
+    internalAdapter: {
+      findUserById(userId: string): Promise<Record<string, unknown> | null>
+      findSession(token: string): Promise<{ user: Record<string, unknown> } | null>
+    }
+  }
+}) {
+  if (ctx.path === '/admin/revoke-user-session') {
+    const token = ctx.body?.sessionToken
+    return typeof token === 'string'
+      ? ((await ctx.context.internalAdapter.findSession(token))?.user ?? null)
+      : null
+  }
+  const userId = ctx.body?.userId
+  return typeof userId === 'string' ? await ctx.context.internalAdapter.findUserById(userId) : null
+}
+
+async function activeSuperCount(now = new Date()): Promise<number> {
+  const [result] = await db
+    .select({ value: count() })
+    .from(schema.user)
+    .where(
+      and(
+        eq(schema.user.role, ROLES.SUPER),
+        or(
+          eq(schema.user.banned, false),
+          isNull(schema.user.banned),
+          and(eq(schema.user.banned, true), lt(schema.user.banExpires, now))
+        )
+      )
+    )
+  return result?.value ?? 0
+}
 
 const makeEmailHtml = (title: string, message: string, buttonText: string, buttonUrl: string) => {
   return `<!DOCTYPE html>
@@ -144,5 +224,55 @@ export const auth = betterAuth({
       }
     },
   },
-  plugins: [admin(), openAPI({ disableDefaultReference: true })],
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      if (!ctx.path.startsWith('/admin/')) return
+
+      const session = await getAuthoritativeSessionFromCtx(ctx)
+      if (!session) return
+
+      const role = getRole(ctx)
+      if (role !== undefined && !isRole(role)) {
+        throw new APIError('BAD_REQUEST', { message: '角色值无效' })
+      }
+
+      if (session.user.role === ROLES.ADMIN) {
+        if (ctx.path === '/admin/set-role' || role !== undefined) {
+          throw new APIError('FORBIDDEN', { message: '只有超级管理员可以设置角色' })
+        }
+
+        if (protectedPaths.has(ctx.path)) {
+          const target = await getTarget(ctx)
+          if (target && !canManage(session.user.role, target.role)) {
+            throw new APIError('FORBIDDEN', { message: '管理员只能管理普通用户' })
+          }
+        }
+      }
+
+      if (session.user.role === ROLES.SUPER && removesSuper(ctx)) {
+        const target = await getTarget(ctx)
+        if (target && isActiveSuper(target) && (await activeSuperCount()) <= 1) {
+          throw new APIError('CONFLICT', { message: '必须至少保留一个可用的超级管理员' })
+        }
+      }
+    }),
+    after: createAuthMiddleware(async (ctx) => {
+      if (ctx.path !== '/admin/set-role' && ctx.path !== '/admin/update-user') return
+      if (getRole(ctx) === undefined) return
+
+      const userId = ctx.body?.userId
+      if (typeof userId === 'string') {
+        await ctx.context.internalAdapter.deleteUserSessions(userId)
+      }
+    }),
+  },
+  plugins: [
+    admin({
+      ac: authAccessControl,
+      roles: authRoles,
+      adminRoles: [ROLES.ADMIN, ROLES.SUPER],
+      defaultRole: ROLES.USER,
+    }),
+    openAPI({ disableDefaultReference: true }),
+  ],
 })

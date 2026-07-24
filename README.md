@@ -22,7 +22,7 @@
 - **仪表盘** — 推送统计、趋势图表、渠道分布与端点排名
 - **推送日志** — 端点/渠道维度过滤，详情页支持 Markdown 渲染与原文切换
 - **API Key 管理** — 创建和管理用于程序化访问的密钥
-- **多用户** — 内置认证、会话与 GitHub OAuth 登录（Better Auth）
+- **多用户与权限** — 内置认证、会话与 GitHub OAuth 登录，支持 user / admin / super 三级权限
 
 ## 技术栈
 
@@ -56,20 +56,23 @@ cp .env.example .env.local
 # 执行数据库迁移
 bun run db:migrate
 
+# 首次部署时初始化超级管理员
+bun run db:seed
+
 # 启动开发服务器
 bun run dev
 ```
 
 ### 环境变量
 
-| 变量 | 说明 |
-| --- | --- |
-| `DATABASE_URL` | PostgreSQL 连接字符串 |
-| `BETTER_AUTH_SECRET` | 会话签名密钥 |
-| `BETTER_AUTH_URL` | 服务访问地址（OAuth 回调与会话） |
-| `GITHUB_CLIENT_ID` | GitHub OAuth App Client ID（可选，启用 GitHub 登录） |
-| `GITHUB_CLIENT_SECRET` | GitHub OAuth App Secret（可选） |
-| `VITE_SITE_NAME` | 站点名称，用于 Logo、标题与版权（默认 `Relay`） |
+| 变量                   | 说明                                                 |
+| ---------------------- | ---------------------------------------------------- |
+| `DATABASE_URL`         | PostgreSQL 连接字符串                                |
+| `BETTER_AUTH_SECRET`   | 会话签名密钥                                         |
+| `BETTER_AUTH_URL`      | 服务访问地址（OAuth 回调与会话）                     |
+| `GITHUB_CLIENT_ID`     | GitHub OAuth App Client ID（可选，启用 GitHub 登录） |
+| `GITHUB_CLIENT_SECRET` | GitHub OAuth App Secret（可选）                      |
+| `VITE_SITE_NAME`       | 站点名称，用于 Logo、标题与版权（默认 `Relay`）      |
 
 ## 推送接口
 
@@ -98,13 +101,14 @@ node .output/server/index.mjs
 
 ## 脚本
 
-| 脚本 | 说明 |
-| --- | --- |
-| `bun run dev` | 启动开发服务器 |
-| `bun run build` | 迁移数据库并构建生产版本 |
-| `bun run preview` | 预览生产构建 |
-| `bun run typecheck` | TypeScript 类型检查 |
-| `bun run lint` | oxlint 检查 |
-| `bun run db:generate` | 生成 Drizzle 迁移 |
-| `bun run db:migrate` | 执行数据库迁移 |
-| `bun run db:push` | 直接推送 schema 到数据库 |
+| 脚本                  | 说明                     |
+| --------------------- | ------------------------ |
+| `bun run dev`         | 启动开发服务器           |
+| `bun run build`       | 迁移数据库并构建生产版本 |
+| `bun run preview`     | 预览生产构建             |
+| `bun run typecheck`   | TypeScript 类型检查      |
+| `bun run lint`        | oxlint 检查              |
+| `bun run db:generate` | 生成 Drizzle 迁移        |
+| `bun run db:migrate`  | 执行数据库迁移           |
+| `bun run db:push`     | 直接推送 schema 到数据库 |
+| `bun run db:seed`     | 初始化或补齐超级管理员   |

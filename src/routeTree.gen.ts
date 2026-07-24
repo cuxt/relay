@@ -9,42 +9,42 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as OpenapiRouteImport } from './routes/openapi'
-import { Route as UserRouteRouteImport } from './routes/_user/route'
 import { Route as PublicRouteRouteImport } from './routes/_public/route'
+import { Route as UserRouteRouteImport } from './routes/_user/route'
+import { Route as OpenapiRouteImport } from './routes/openapi'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
-import { Route as OpenapiSplatRouteImport } from './routes/openapi/$'
-import { Route as ApiSplatRouteImport } from './routes/api/$'
-import { Route as UserProfileRouteImport } from './routes/_user/profile'
-import { Route as PublicReleaseRouteImport } from './routes/_public/release'
-import { Route as PublicRegisterRouteImport } from './routes/_public/register'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
+import { Route as PublicRegisterRouteImport } from './routes/_public/register'
+import { Route as PublicReleaseRouteImport } from './routes/_public/release'
 import { Route as UserAdminRouteRouteImport } from './routes/_user/_admin/route'
-import { Route as UserSettingsIndexRouteImport } from './routes/_user/settings/index'
-import { Route as UserLogsIndexRouteImport } from './routes/_user/logs/index'
-import { Route as UserEndpointsIndexRouteImport } from './routes/_user/endpoints/index'
-import { Route as UserDashboardIndexRouteImport } from './routes/_user/dashboard/index'
-import { Route as UserChannelsIndexRouteImport } from './routes/_user/channels/index'
-import { Route as UserLogsIdRouteImport } from './routes/_user/logs/$id'
-import { Route as UserEndpointsNewRouteImport } from './routes/_user/endpoints/new'
-import { Route as UserChannelsNewRouteImport } from './routes/_user/channels/new'
-import { Route as UserAdminUsersRouteImport } from './routes/_user/_admin/users'
-import { Route as UserAdminStorageRouteImport } from './routes/_user/_admin/storage'
+import { Route as UserProfileRouteImport } from './routes/_user/profile'
+import { Route as ApiSplatRouteImport } from './routes/api/$'
+import { Route as OpenapiSplatRouteImport } from './routes/openapi/$'
 import { Route as UserAdminEmailRouteImport } from './routes/_user/_admin/email'
-import { Route as UserEndpointsIdEditRouteImport } from './routes/_user/endpoints/$id/edit'
+import { Route as UserAdminStorageRouteImport } from './routes/_user/_admin/storage'
+import { Route as UserAdminUsersRouteImport } from './routes/_user/_admin/users'
+import { Route as UserChannelsIndexRouteImport } from './routes/_user/channels/index'
+import { Route as UserChannelsNewRouteImport } from './routes/_user/channels/new'
+import { Route as UserDashboardIndexRouteImport } from './routes/_user/dashboard/index'
+import { Route as UserEndpointsIndexRouteImport } from './routes/_user/endpoints/index'
+import { Route as UserEndpointsNewRouteImport } from './routes/_user/endpoints/new'
+import { Route as UserLogsIndexRouteImport } from './routes/_user/logs/index'
+import { Route as UserLogsIdRouteImport } from './routes/_user/logs/$id'
+import { Route as UserSettingsIndexRouteImport } from './routes/_user/settings/index'
 import { Route as UserChannelsIdEditRouteImport } from './routes/_user/channels/$id/edit'
+import { Route as UserEndpointsIdEditRouteImport } from './routes/_user/endpoints/$id/edit'
 
-const OpenapiRoute = OpenapiRouteImport.update({
-  id: '/openapi',
-  path: '/openapi',
+const PublicRouteRoute = PublicRouteRouteImport.update({
+  id: '/_public',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UserRouteRoute = UserRouteRouteImport.update({
   id: '/_user',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PublicRouteRoute = PublicRouteRouteImport.update({
-  id: '/_public',
+const OpenapiRoute = OpenapiRouteImport.update({
+  id: '/openapi',
+  path: '/openapi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublicIndexRoute = PublicIndexRouteImport.update({
@@ -52,24 +52,9 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PublicRouteRoute,
 } as any)
-const OpenapiSplatRoute = OpenapiSplatRouteImport.update({
-  id: '/$',
-  path: '/$',
-  getParentRoute: () => OpenapiRoute,
-} as any)
-const ApiSplatRoute = ApiSplatRouteImport.update({
-  id: '/api/$',
-  path: '/api/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UserProfileRoute = UserProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => UserRouteRoute,
-} as any)
-const PublicReleaseRoute = PublicReleaseRouteImport.update({
-  id: '/release',
-  path: '/release',
+const PublicLoginRoute = PublicLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => PublicRouteRoute,
 } as any)
 const PublicRegisterRoute = PublicRegisterRouteImport.update({
@@ -77,58 +62,33 @@ const PublicRegisterRoute = PublicRegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => PublicRouteRoute,
 } as any)
-const PublicLoginRoute = PublicLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const PublicReleaseRoute = PublicReleaseRouteImport.update({
+  id: '/release',
+  path: '/release',
   getParentRoute: () => PublicRouteRoute,
 } as any)
 const UserAdminRouteRoute = UserAdminRouteRouteImport.update({
   id: '/_admin',
   getParentRoute: () => UserRouteRoute,
 } as any)
-const UserSettingsIndexRoute = UserSettingsIndexRouteImport.update({
-  id: '/settings/',
-  path: '/settings/',
+const UserProfileRoute = UserProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => UserRouteRoute,
 } as any)
-const UserLogsIndexRoute = UserLogsIndexRouteImport.update({
-  id: '/logs/',
-  path: '/logs/',
-  getParentRoute: () => UserRouteRoute,
+const ApiSplatRoute = ApiSplatRouteImport.update({
+  id: '/api/$',
+  path: '/api/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const UserEndpointsIndexRoute = UserEndpointsIndexRouteImport.update({
-  id: '/endpoints/',
-  path: '/endpoints/',
-  getParentRoute: () => UserRouteRoute,
+const OpenapiSplatRoute = OpenapiSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => OpenapiRoute,
 } as any)
-const UserDashboardIndexRoute = UserDashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => UserRouteRoute,
-} as any)
-const UserChannelsIndexRoute = UserChannelsIndexRouteImport.update({
-  id: '/channels/',
-  path: '/channels/',
-  getParentRoute: () => UserRouteRoute,
-} as any)
-const UserLogsIdRoute = UserLogsIdRouteImport.update({
-  id: '/logs/$id',
-  path: '/logs/$id',
-  getParentRoute: () => UserRouteRoute,
-} as any)
-const UserEndpointsNewRoute = UserEndpointsNewRouteImport.update({
-  id: '/endpoints/new',
-  path: '/endpoints/new',
-  getParentRoute: () => UserRouteRoute,
-} as any)
-const UserChannelsNewRoute = UserChannelsNewRouteImport.update({
-  id: '/channels/new',
-  path: '/channels/new',
-  getParentRoute: () => UserRouteRoute,
-} as any)
-const UserAdminUsersRoute = UserAdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
+const UserAdminEmailRoute = UserAdminEmailRouteImport.update({
+  id: '/email',
+  path: '/email',
   getParentRoute: () => UserAdminRouteRoute,
 } as any)
 const UserAdminStorageRoute = UserAdminStorageRouteImport.update({
@@ -136,19 +96,59 @@ const UserAdminStorageRoute = UserAdminStorageRouteImport.update({
   path: '/storage',
   getParentRoute: () => UserAdminRouteRoute,
 } as any)
-const UserAdminEmailRoute = UserAdminEmailRouteImport.update({
-  id: '/email',
-  path: '/email',
+const UserAdminUsersRoute = UserAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
   getParentRoute: () => UserAdminRouteRoute,
 } as any)
-const UserEndpointsIdEditRoute = UserEndpointsIdEditRouteImport.update({
-  id: '/endpoints/$id/edit',
-  path: '/endpoints/$id/edit',
+const UserChannelsIndexRoute = UserChannelsIndexRouteImport.update({
+  id: '/channels/',
+  path: '/channels/',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserChannelsNewRoute = UserChannelsNewRouteImport.update({
+  id: '/channels/new',
+  path: '/channels/new',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserDashboardIndexRoute = UserDashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserEndpointsIndexRoute = UserEndpointsIndexRouteImport.update({
+  id: '/endpoints/',
+  path: '/endpoints/',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserEndpointsNewRoute = UserEndpointsNewRouteImport.update({
+  id: '/endpoints/new',
+  path: '/endpoints/new',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserLogsIndexRoute = UserLogsIndexRouteImport.update({
+  id: '/logs/',
+  path: '/logs/',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserLogsIdRoute = UserLogsIdRouteImport.update({
+  id: '/logs/$id',
+  path: '/logs/$id',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserSettingsIndexRoute = UserSettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
   getParentRoute: () => UserRouteRoute,
 } as any)
 const UserChannelsIdEditRoute = UserChannelsIdEditRouteImport.update({
   id: '/channels/$id/edit',
   path: '/channels/$id/edit',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserEndpointsIdEditRoute = UserEndpointsIdEditRouteImport.update({
+  id: '/endpoints/$id/edit',
+  path: '/endpoints/$id/edit',
   getParentRoute: () => UserRouteRoute,
 } as any)
 
@@ -309,11 +309,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/openapi': {
-      id: '/openapi'
-      path: '/openapi'
-      fullPath: '/openapi'
-      preLoaderRoute: typeof OpenapiRouteImport
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PublicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_user': {
@@ -323,11 +323,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_public': {
-      id: '/_public'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof PublicRouteRouteImport
+    '/openapi': {
+      id: '/openapi'
+      path: '/openapi'
+      fullPath: '/openapi'
+      preLoaderRoute: typeof OpenapiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_public/': {
@@ -337,32 +337,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicIndexRouteImport
       parentRoute: typeof PublicRouteRoute
     }
-    '/openapi/$': {
-      id: '/openapi/$'
-      path: '/$'
-      fullPath: '/openapi/$'
-      preLoaderRoute: typeof OpenapiSplatRouteImport
-      parentRoute: typeof OpenapiRoute
-    }
-    '/api/$': {
-      id: '/api/$'
-      path: '/api/$'
-      fullPath: '/api/$'
-      preLoaderRoute: typeof ApiSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_user/profile': {
-      id: '/_user/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof UserProfileRouteImport
-      parentRoute: typeof UserRouteRoute
-    }
-    '/_public/release': {
-      id: '/_public/release'
-      path: '/release'
-      fullPath: '/release'
-      preLoaderRoute: typeof PublicReleaseRouteImport
+    '/_public/login': {
+      id: '/_public/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof PublicLoginRouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/_public/register': {
@@ -372,11 +351,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicRegisterRouteImport
       parentRoute: typeof PublicRouteRoute
     }
-    '/_public/login': {
-      id: '/_public/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof PublicLoginRouteImport
+    '/_public/release': {
+      id: '/_public/release'
+      path: '/release'
+      fullPath: '/release'
+      preLoaderRoute: typeof PublicReleaseRouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/_user/_admin': {
@@ -386,67 +365,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserAdminRouteRouteImport
       parentRoute: typeof UserRouteRoute
     }
-    '/_user/settings/': {
-      id: '/_user/settings/'
-      path: '/settings'
-      fullPath: '/settings/'
-      preLoaderRoute: typeof UserSettingsIndexRouteImport
+    '/_user/profile': {
+      id: '/_user/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof UserProfileRouteImport
       parentRoute: typeof UserRouteRoute
     }
-    '/_user/logs/': {
-      id: '/_user/logs/'
-      path: '/logs'
-      fullPath: '/logs/'
-      preLoaderRoute: typeof UserLogsIndexRouteImport
-      parentRoute: typeof UserRouteRoute
+    '/api/$': {
+      id: '/api/$'
+      path: '/api/$'
+      fullPath: '/api/$'
+      preLoaderRoute: typeof ApiSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_user/endpoints/': {
-      id: '/_user/endpoints/'
-      path: '/endpoints'
-      fullPath: '/endpoints/'
-      preLoaderRoute: typeof UserEndpointsIndexRouteImport
-      parentRoute: typeof UserRouteRoute
+    '/openapi/$': {
+      id: '/openapi/$'
+      path: '/$'
+      fullPath: '/openapi/$'
+      preLoaderRoute: typeof OpenapiSplatRouteImport
+      parentRoute: typeof OpenapiRoute
     }
-    '/_user/dashboard/': {
-      id: '/_user/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof UserDashboardIndexRouteImport
-      parentRoute: typeof UserRouteRoute
-    }
-    '/_user/channels/': {
-      id: '/_user/channels/'
-      path: '/channels'
-      fullPath: '/channels/'
-      preLoaderRoute: typeof UserChannelsIndexRouteImport
-      parentRoute: typeof UserRouteRoute
-    }
-    '/_user/logs/$id': {
-      id: '/_user/logs/$id'
-      path: '/logs/$id'
-      fullPath: '/logs/$id'
-      preLoaderRoute: typeof UserLogsIdRouteImport
-      parentRoute: typeof UserRouteRoute
-    }
-    '/_user/endpoints/new': {
-      id: '/_user/endpoints/new'
-      path: '/endpoints/new'
-      fullPath: '/endpoints/new'
-      preLoaderRoute: typeof UserEndpointsNewRouteImport
-      parentRoute: typeof UserRouteRoute
-    }
-    '/_user/channels/new': {
-      id: '/_user/channels/new'
-      path: '/channels/new'
-      fullPath: '/channels/new'
-      preLoaderRoute: typeof UserChannelsNewRouteImport
-      parentRoute: typeof UserRouteRoute
-    }
-    '/_user/_admin/users': {
-      id: '/_user/_admin/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof UserAdminUsersRouteImport
+    '/_user/_admin/email': {
+      id: '/_user/_admin/email'
+      path: '/email'
+      fullPath: '/email'
+      preLoaderRoute: typeof UserAdminEmailRouteImport
       parentRoute: typeof UserAdminRouteRoute
     }
     '/_user/_admin/storage': {
@@ -456,18 +400,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserAdminStorageRouteImport
       parentRoute: typeof UserAdminRouteRoute
     }
-    '/_user/_admin/email': {
-      id: '/_user/_admin/email'
-      path: '/email'
-      fullPath: '/email'
-      preLoaderRoute: typeof UserAdminEmailRouteImport
+    '/_user/_admin/users': {
+      id: '/_user/_admin/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof UserAdminUsersRouteImport
       parentRoute: typeof UserAdminRouteRoute
     }
-    '/_user/endpoints/$id/edit': {
-      id: '/_user/endpoints/$id/edit'
-      path: '/endpoints/$id/edit'
-      fullPath: '/endpoints/$id/edit'
-      preLoaderRoute: typeof UserEndpointsIdEditRouteImport
+    '/_user/channels/': {
+      id: '/_user/channels/'
+      path: '/channels'
+      fullPath: '/channels/'
+      preLoaderRoute: typeof UserChannelsIndexRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/channels/new': {
+      id: '/_user/channels/new'
+      path: '/channels/new'
+      fullPath: '/channels/new'
+      preLoaderRoute: typeof UserChannelsNewRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/dashboard/': {
+      id: '/_user/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof UserDashboardIndexRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/endpoints/': {
+      id: '/_user/endpoints/'
+      path: '/endpoints'
+      fullPath: '/endpoints/'
+      preLoaderRoute: typeof UserEndpointsIndexRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/endpoints/new': {
+      id: '/_user/endpoints/new'
+      path: '/endpoints/new'
+      fullPath: '/endpoints/new'
+      preLoaderRoute: typeof UserEndpointsNewRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/logs/': {
+      id: '/_user/logs/'
+      path: '/logs'
+      fullPath: '/logs/'
+      preLoaderRoute: typeof UserLogsIndexRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/logs/$id': {
+      id: '/_user/logs/$id'
+      path: '/logs/$id'
+      fullPath: '/logs/$id'
+      preLoaderRoute: typeof UserLogsIdRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/settings/': {
+      id: '/_user/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof UserSettingsIndexRouteImport
       parentRoute: typeof UserRouteRoute
     }
     '/_user/channels/$id/edit': {
@@ -475,6 +468,13 @@ declare module '@tanstack/react-router' {
       path: '/channels/$id/edit'
       fullPath: '/channels/$id/edit'
       preLoaderRoute: typeof UserChannelsIdEditRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/endpoints/$id/edit': {
+      id: '/_user/endpoints/$id/edit'
+      path: '/endpoints/$id/edit'
+      fullPath: '/endpoints/$id/edit'
+      preLoaderRoute: typeof UserEndpointsIdEditRouteImport
       parentRoute: typeof UserRouteRoute
     }
   }

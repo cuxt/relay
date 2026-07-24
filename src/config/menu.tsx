@@ -8,7 +8,7 @@ export interface MenuItem {
   icon?: ReactNode
   to?: string
   children?: MenuItem[]
-  role?: Role
+  roles?: readonly Role[]
   external?: boolean
   group?: string
 }
@@ -71,14 +71,14 @@ export const mainMenuItems: MenuItem[] = [
   {
     key: 'group-admin',
     label: '管理员',
-    role: ROLES.ADMIN,
+    roles: [ROLES.ADMIN, ROLES.SUPER],
     children: [
       {
         key: 'settings-users',
         label: '用户管理',
         icon: <Users className="h-4 w-4" />,
         to: ROUTES.USERS,
-        role: ROLES.ADMIN,
+        roles: [ROLES.ADMIN, ROLES.SUPER],
         group: '管理员',
       },
       {
@@ -86,7 +86,7 @@ export const mainMenuItems: MenuItem[] = [
         label: '邮件设置',
         icon: <Mail className="h-4 w-4" />,
         to: ROUTES.EMAIL,
-        role: ROLES.ADMIN,
+        roles: [ROLES.SUPER],
         group: '管理员',
       },
       {
@@ -94,7 +94,7 @@ export const mainMenuItems: MenuItem[] = [
         label: '对象存储',
         icon: <HardDrive className="h-4 w-4" />,
         to: ROUTES.STORAGE,
-        role: ROLES.ADMIN,
+        roles: [ROLES.SUPER],
         group: '管理员',
       },
     ],
@@ -103,7 +103,9 @@ export const mainMenuItems: MenuItem[] = [
 
 export function filterMenuByRole(items: MenuItem[], userRole?: string): MenuItem[] {
   return items
-    .filter((item) => !item.role || item.role === userRole)
+    .filter(
+      (item) => !item.roles || (userRole !== undefined && item.roles.includes(userRole as Role))
+    )
     .map((item) => ({
       ...item,
       children: item.children ? filterMenuByRole(item.children, userRole) : undefined,

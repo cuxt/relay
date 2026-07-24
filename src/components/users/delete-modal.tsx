@@ -25,7 +25,7 @@ export function DeleteModal({ user, onClose, onSuccess }: UserModalProps) {
       onClose()
       onSuccess()
     },
-    onError: () => toast.error('删除用户失败，请重试'),
+    onError: (error) => toast.error(error.message || '删除用户失败，请重试'),
   })
 
   return (
@@ -38,7 +38,9 @@ export function DeleteModal({ user, onClose, onSuccess }: UserModalProps) {
               <>
                 确定要删除用户 <strong>{user.name}</strong> ({user.email}) 吗？
                 <br />
-                <span className="text-destructive">此操作不可撤销，用户的所有数据将被永久删除。</span>
+                <span className="text-destructive">
+                  此操作不可撤销，用户的所有数据将被永久删除。
+                </span>
               </>
             ) : (
               '确定要删除该用户吗？'
