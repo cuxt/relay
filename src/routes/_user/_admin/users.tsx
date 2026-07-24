@@ -42,8 +42,15 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ROLES, ROUTES, UI, type Role } from '@/constants'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { ROLES, ROUTES, UI, canManage, isSuper, roleLabel, type Role } from '@/constants'
 import { authClient } from '@/lib/auth/client'
 import { sessionKey, type Session } from '@/lib/auth/session'
 
@@ -55,6 +62,7 @@ type UserRecord = Session['user']
 
 function UsersPage() {
   const { user: currentUser } = Route.useRouteContext()
+  const canSetRole = isSuper(currentUser.role)
   const navigate = useNavigate()
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -122,10 +130,17 @@ function UsersPage() {
       const res = await authClient.admin.setRole({ userId, role })
       if (res.error) throw res.error
     },
-    onSuccess: () => {
+    onSuccess: async (_, variables) => {
       toast.success('角色已更新')
       invalidateUsers()
+      if (variables.userId === currentUser.id) {
+        await authClient.signOut()
+        queryClient.removeQueries({ queryKey: sessionKey })
+        await router.invalidate()
+        await navigate({ to: ROUTES.LOGIN })
+      }
     },
+    onError: (error) => toast.error(error.message || '角色更新失败'),
   })
 
   function invalidateUsers() {
@@ -200,10 +215,16 @@ function UsersPage() {
                       </TableCell>
                       <TableCell className="hidden sm:table-cell">
                         <Badge
-                          variant={record.role === ROLES.ADMIN ? 'default' : 'secondary'}
+                          variant={
+                            record.role === ROLES.SUPER
+                              ? 'default'
+                              : record.role === ROLES.ADMIN
+                                ? 'outline'
+                                : 'secondary'
+                          }
                           className="shrink-0"
                         >
-                          {record.role === ROLES.ADMIN ? '管理员' : '用户'}
+                          {roleLabel(record.role)}
                         </Badge>
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">
@@ -240,6 +261,8 @@ function UsersPage() {
                         <UserActions
                           user={record}
                           currentUserId={currentUser.id}
+                          manageable={canManage(currentUser.role, record.role)}
+                          canSetRole={canSetRole}
                           setRole={(role) => setRole.mutate({ userId: record.id, role })}
                           impersonate={() => impersonate.mutate(record.id)}
                           unban={() => unban.mutate(record.id)}
@@ -288,6 +311,7 @@ function UsersPage() {
         open={createOpen}
         onClose={() => setCreateOpen(false)}
         onSuccess={invalidateUsers}
+        canSetRole={canSetRole}
       />
       <EditModal user={editUser} onClose={() => setEditUser(null)} onSuccess={invalidateUsers} />
       <BanModal user={banUser} onClose={() => setBanUser(null)} onSuccess={invalidateUsers} />
@@ -297,7 +321,11 @@ function UsersPage() {
         onSuccess={invalidateUsers}
       />
       <SessionsModal user={sessionsUser} onClose={() => setSessionsUser(null)} />
-      <ResetPasswordModal user={resetUser} onClose={() => setResetUser(null)} onSuccess={invalidateUsers} />
+      <ResetPasswordModal
+        user={resetUser}
+        onClose={() => setResetUser(null)}
+        onSuccess={invalidateUsers}
+      />
     </>
   )
 }
@@ -305,6 +333,8 @@ function UsersPage() {
 function UserActions({
   user,
   currentUserId,
+  manageable,
+  canSetRole,
   setRole,
   impersonate,
   unban,
@@ -316,6 +346,8 @@ function UserActions({
 }: {
   user: UserRecord
   currentUserId: string
+  manageable: boolean
+  canSetRole: boolean
   setRole: (role: Role) => void
   impersonate: () => void
   unban: () => void
@@ -327,7 +359,9 @@ function UserActions({
 }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8" />}>
+      <DropdownMenuTrigger
+        render={<Button variant="ghost" size="icon" className="h-8 w-8" disabled={!manageable} />}
+      >
         <MoreHorizontal className="h-4 w-4" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -335,23 +369,26 @@ function UserActions({
           <Pencil className="mr-2 h-4 w-4" />
           编辑资料
         </DropdownMenuItem>
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger className="whitespace-nowrap">
-            <Shield className="mr-2 h-4 w-4" />
-            切换角色
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup
-              value={user.role || ROLES.USER}
-              onValueChange={(role) => {
-                if (role !== (user.role || ROLES.USER)) setRole(role as Role)
-              }}
-            >
-              <DropdownMenuRadioItem value={ROLES.USER}>用户</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value={ROLES.ADMIN}>管理员</DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
+        {canSetRole && (
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="whitespace-nowrap">
+              <Shield className="mr-2 h-4 w-4" />
+              切换角色
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuRadioGroup
+                value={user.role || ROLES.USER}
+                onValueChange={(role) => {
+                  if (role !== (user.role || ROLES.USER)) setRole(role as Role)
+                }}
+              >
+                <DropdownMenuRadioItem value={ROLES.USER}>普通用户</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value={ROLES.ADMIN}>管理员</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value={ROLES.SUPER}>超级管理员</DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+        )}
         <DropdownMenuItem onClick={() => setResetUser(user)}>
           <KeyRound className="mr-2 h-4 w-4" />
           重置密码

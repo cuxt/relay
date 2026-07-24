@@ -2,24 +2,20 @@ import { Elysia, t } from 'elysia'
 import { EMAIL_CONFIG_KEY, EmailConfigSchema, type EmailConfig } from '@/constants'
 import { get, set } from '@/lib/config/kv'
 import { send } from '@/lib/email/send'
-import { requireAdmin } from '@/server/guards'
+import { requireSuper } from '@/server/guards'
 
 export const emailRoutes = new Elysia({ name: 'email' })
-  .use(requireAdmin)
-  .get(
-    '/api/email/config',
-    async () => (await get<EmailConfig>(EMAIL_CONFIG_KEY)) ?? {},
-    {
-      detail: {
-        tags: ['邮箱'],
-        summary: '获取邮件配置',
-      },
-      requireAdmin: true,
-      response: {
-        200: t.Union([EmailConfigSchema, t.Object({})]),
-      },
-    }
-  )
+  .use(requireSuper)
+  .get('/api/email/config', async () => (await get<EmailConfig>(EMAIL_CONFIG_KEY)) ?? {}, {
+    detail: {
+      tags: ['邮箱'],
+      summary: '获取邮件配置',
+    },
+    requireSuper: true,
+    response: {
+      200: t.Union([EmailConfigSchema, t.Object({})]),
+    },
+  })
   .put(
     '/api/email/config',
     async ({ body }) => {
@@ -31,7 +27,7 @@ export const emailRoutes = new Elysia({ name: 'email' })
         tags: ['邮箱'],
         summary: '保存邮件配置',
       },
-      requireAdmin: true,
+      requireSuper: true,
       body: EmailConfigSchema,
       response: {
         200: EmailConfigSchema,
@@ -55,7 +51,7 @@ export const emailRoutes = new Elysia({ name: 'email' })
         summary: '发送邮件',
         description: '使用当前邮件配置发送一封邮件，失败将抛错。',
       },
-      requireAdmin: true,
+      requireSuper: true,
       body: t.Object({
         to: t.String(),
         subject: t.String(),

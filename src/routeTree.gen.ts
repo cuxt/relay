@@ -9,33 +9,33 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as OpenapiRouteImport } from './routes/openapi'
-import { Route as UserRouteRouteImport } from './routes/_user/route'
 import { Route as PublicRouteRouteImport } from './routes/_public/route'
+import { Route as UserRouteRouteImport } from './routes/_user/route'
+import { Route as OpenapiRouteImport } from './routes/openapi'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
-import { Route as OpenapiSplatRouteImport } from './routes/openapi/$'
-import { Route as ApiSplatRouteImport } from './routes/api/$'
-import { Route as UserProfileRouteImport } from './routes/_user/profile'
-import { Route as UserDashboardRouteImport } from './routes/_user/dashboard'
-import { Route as PublicReleaseRouteImport } from './routes/_public/release'
-import { Route as PublicRegisterRouteImport } from './routes/_public/register'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
+import { Route as PublicRegisterRouteImport } from './routes/_public/register'
+import { Route as PublicReleaseRouteImport } from './routes/_public/release'
 import { Route as UserAdminRouteRouteImport } from './routes/_user/_admin/route'
-import { Route as UserAdminUsersRouteImport } from './routes/_user/_admin/users'
-import { Route as UserAdminStorageRouteImport } from './routes/_user/_admin/storage'
+import { Route as UserDashboardRouteImport } from './routes/_user/dashboard'
+import { Route as UserProfileRouteImport } from './routes/_user/profile'
+import { Route as ApiSplatRouteImport } from './routes/api/$'
+import { Route as OpenapiSplatRouteImport } from './routes/openapi/$'
 import { Route as UserAdminEmailRouteImport } from './routes/_user/_admin/email'
+import { Route as UserAdminStorageRouteImport } from './routes/_user/_admin/storage'
+import { Route as UserAdminUsersRouteImport } from './routes/_user/_admin/users'
 
-const OpenapiRoute = OpenapiRouteImport.update({
-  id: '/openapi',
-  path: '/openapi',
+const PublicRouteRoute = PublicRouteRouteImport.update({
+  id: '/_public',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UserRouteRoute = UserRouteRouteImport.update({
   id: '/_user',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PublicRouteRoute = PublicRouteRouteImport.update({
-  id: '/_public',
+const OpenapiRoute = OpenapiRouteImport.update({
+  id: '/openapi',
+  path: '/openapi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublicIndexRoute = PublicIndexRouteImport.update({
@@ -43,29 +43,9 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PublicRouteRoute,
 } as any)
-const OpenapiSplatRoute = OpenapiSplatRouteImport.update({
-  id: '/$',
-  path: '/$',
-  getParentRoute: () => OpenapiRoute,
-} as any)
-const ApiSplatRoute = ApiSplatRouteImport.update({
-  id: '/api/$',
-  path: '/api/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UserProfileRoute = UserProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => UserRouteRoute,
-} as any)
-const UserDashboardRoute = UserDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => UserRouteRoute,
-} as any)
-const PublicReleaseRoute = PublicReleaseRouteImport.update({
-  id: '/release',
-  path: '/release',
+const PublicLoginRoute = PublicLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => PublicRouteRoute,
 } as any)
 const PublicRegisterRoute = PublicRegisterRouteImport.update({
@@ -73,18 +53,38 @@ const PublicRegisterRoute = PublicRegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => PublicRouteRoute,
 } as any)
-const PublicLoginRoute = PublicLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const PublicReleaseRoute = PublicReleaseRouteImport.update({
+  id: '/release',
+  path: '/release',
   getParentRoute: () => PublicRouteRoute,
 } as any)
 const UserAdminRouteRoute = UserAdminRouteRouteImport.update({
   id: '/_admin',
   getParentRoute: () => UserRouteRoute,
 } as any)
-const UserAdminUsersRoute = UserAdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
+const UserDashboardRoute = UserDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserProfileRoute = UserProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const ApiSplatRoute = ApiSplatRouteImport.update({
+  id: '/api/$',
+  path: '/api/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpenapiSplatRoute = OpenapiSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => OpenapiRoute,
+} as any)
+const UserAdminEmailRoute = UserAdminEmailRouteImport.update({
+  id: '/email',
+  path: '/email',
   getParentRoute: () => UserAdminRouteRoute,
 } as any)
 const UserAdminStorageRoute = UserAdminStorageRouteImport.update({
@@ -92,9 +92,9 @@ const UserAdminStorageRoute = UserAdminStorageRouteImport.update({
   path: '/storage',
   getParentRoute: () => UserAdminRouteRoute,
 } as any)
-const UserAdminEmailRoute = UserAdminEmailRouteImport.update({
-  id: '/email',
-  path: '/email',
+const UserAdminUsersRoute = UserAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
   getParentRoute: () => UserAdminRouteRoute,
 } as any)
 
@@ -201,11 +201,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/openapi': {
-      id: '/openapi'
-      path: '/openapi'
-      fullPath: '/openapi'
-      preLoaderRoute: typeof OpenapiRouteImport
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PublicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_user': {
@@ -215,11 +215,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_public': {
-      id: '/_public'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof PublicRouteRouteImport
+    '/openapi': {
+      id: '/openapi'
+      path: '/openapi'
+      fullPath: '/openapi'
+      preLoaderRoute: typeof OpenapiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_public/': {
@@ -229,39 +229,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicIndexRouteImport
       parentRoute: typeof PublicRouteRoute
     }
-    '/openapi/$': {
-      id: '/openapi/$'
-      path: '/$'
-      fullPath: '/openapi/$'
-      preLoaderRoute: typeof OpenapiSplatRouteImport
-      parentRoute: typeof OpenapiRoute
-    }
-    '/api/$': {
-      id: '/api/$'
-      path: '/api/$'
-      fullPath: '/api/$'
-      preLoaderRoute: typeof ApiSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_user/profile': {
-      id: '/_user/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof UserProfileRouteImport
-      parentRoute: typeof UserRouteRoute
-    }
-    '/_user/dashboard': {
-      id: '/_user/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof UserDashboardRouteImport
-      parentRoute: typeof UserRouteRoute
-    }
-    '/_public/release': {
-      id: '/_public/release'
-      path: '/release'
-      fullPath: '/release'
-      preLoaderRoute: typeof PublicReleaseRouteImport
+    '/_public/login': {
+      id: '/_public/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof PublicLoginRouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/_public/register': {
@@ -271,11 +243,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicRegisterRouteImport
       parentRoute: typeof PublicRouteRoute
     }
-    '/_public/login': {
-      id: '/_public/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof PublicLoginRouteImport
+    '/_public/release': {
+      id: '/_public/release'
+      path: '/release'
+      fullPath: '/release'
+      preLoaderRoute: typeof PublicReleaseRouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/_user/_admin': {
@@ -285,11 +257,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserAdminRouteRouteImport
       parentRoute: typeof UserRouteRoute
     }
-    '/_user/_admin/users': {
-      id: '/_user/_admin/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof UserAdminUsersRouteImport
+    '/_user/dashboard': {
+      id: '/_user/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof UserDashboardRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/profile': {
+      id: '/_user/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof UserProfileRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/api/$': {
+      id: '/api/$'
+      path: '/api/$'
+      fullPath: '/api/$'
+      preLoaderRoute: typeof ApiSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/openapi/$': {
+      id: '/openapi/$'
+      path: '/$'
+      fullPath: '/openapi/$'
+      preLoaderRoute: typeof OpenapiSplatRouteImport
+      parentRoute: typeof OpenapiRoute
+    }
+    '/_user/_admin/email': {
+      id: '/_user/_admin/email'
+      path: '/email'
+      fullPath: '/email'
+      preLoaderRoute: typeof UserAdminEmailRouteImport
       parentRoute: typeof UserAdminRouteRoute
     }
     '/_user/_admin/storage': {
@@ -299,11 +299,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserAdminStorageRouteImport
       parentRoute: typeof UserAdminRouteRoute
     }
-    '/_user/_admin/email': {
-      id: '/_user/_admin/email'
-      path: '/email'
-      fullPath: '/email'
-      preLoaderRoute: typeof UserAdminEmailRouteImport
+    '/_user/_admin/users': {
+      id: '/_user/_admin/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof UserAdminUsersRouteImport
       parentRoute: typeof UserAdminRouteRoute
     }
   }

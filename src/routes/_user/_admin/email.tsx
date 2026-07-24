@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -13,9 +13,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-import { type EmailConfig, type EmailTransport } from '@/constants'
+import { ROUTES, isSuper, type EmailConfig, type EmailTransport } from '@/constants'
 
 export const Route = createFileRoute('/_user/_admin/email')({
+  beforeLoad: ({ context }) => {
+    if (!isSuper(context.user.role)) throw redirect({ to: ROUTES.DASHBOARD })
+  },
   component: EmailPage,
 })
 
@@ -101,10 +104,10 @@ function EmailPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-12">
       <header className="border-b border-border pb-10">
-        <p className="text-sm text-muted-foreground">管理员</p>
-        <h1 className="mt-3 text-3xl font-semibold">邮件设置</h1>
+        <h1 className="text-3xl font-semibold">邮件设置</h1>
         <p className="mt-4 max-w-xl leading-7 text-muted-foreground">
-          配置系统发送验证邮件所需的邮件服务。支持 SMTP 与 Resend 两种传输方式，配置后用于注册验证、邮箱变更等场景。
+          配置系统发送验证邮件所需的邮件服务。支持 SMTP 与 Resend
+          两种传输方式，配置后用于注册验证、邮箱变更等场景。
         </p>
       </header>
 

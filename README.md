@@ -25,10 +25,10 @@
 ## 功能
 
 - 认证系统 — 邮箱注册/登录、邮箱验证、会话管理、管理员冒充登录
-- 角色权限 — user / admin 角色区分，路由级中间件保护
+- 角色权限 — user / admin / super 三级权限，路由与 API 双重保护
 - 侧边栏布局 — 可折叠侧边栏，支持 inset / icon / offcanvas 模式
 - 主题切换 — 浅色/深色/跟随系统，CSS 变量驱动，View Transition 动画
-- 用户管理 — 管理员可创建/编辑/封禁/删除用户、查看会话、重置密码、冒充登录
+- 用户管理 — 管理员管理普通用户，超级管理员管理全部用户、角色和系统配置
 - 更新日志 — 本地版本发布记录页面
 - 60+ UI 组件 — shadcn/ui 全套组件
 - SSR — TanStack Start 服务端渲染
@@ -130,13 +130,13 @@ cp .env.example .env
 # 推送 Schema 到数据库
 bun run db:push
 
-# 初始化种子数据（创建管理员账户）
+# 初始化种子数据（创建超级管理员账户）
 bun run db:seed
 ```
 
-种子脚本会在数据库中不存在管理员时创建管理员账户：
+种子脚本会先检查系统中是否存在 `super`：已有超级管理员时不做任何修改；尚无超级管理员时，优先将最早创建的现有 `admin` 提升为 `super`，没有管理员时才创建新的超级管理员账号：
 
-- 邮箱：`admin@example.com`
+- 邮箱：`admin@xbxin.com`
 - 密码：`12345678`
 
 > 请在生产环境中立即修改默认密码。
@@ -178,31 +178,33 @@ bun run preview
 
 ## 路由
 
-| 路径         | 页面     | 权限     |
-| ------------ | -------- | -------- |
-| `/`          | 首页     | 公开     |
-| `/login`     | 登录     | 公开     |
-| `/register`  | 注册     | 公开     |
-| `/release`   | 更新日志 | 公开     |
-| `/dashboard` | 概述     | 登录用户 |
-| `/profile`   | 个人设置 | 登录用户 |
-| `/users`     | 用户管理 | 管理员   |
+| 路径         | 页面     | 权限               |
+| ------------ | -------- | ------------------ |
+| `/`          | 首页     | 公开               |
+| `/login`     | 登录     | 公开               |
+| `/register`  | 注册     | 公开               |
+| `/release`   | 更新日志 | 公开               |
+| `/dashboard` | 概述     | 登录用户           |
+| `/profile`   | 个人设置 | 登录用户           |
+| `/users`     | 用户管理 | 管理员、超级管理员 |
+| `/email`     | 邮件设置 | 超级管理员         |
+| `/storage`   | 对象存储 | 超级管理员         |
 
 ## 数据库 Schema
 
 ### user
 
-| 字段          | 类型          | 说明                 |
-| ------------- | ------------- | -------------------- |
-| id            | text (PK)     | 用户 ID              |
-| name          | text          | 用户名               |
-| email         | text (unique) | 邮箱                 |
-| emailVerified | boolean       | 邮箱是否验证         |
-| image         | text          | 头像 URL             |
-| role          | text          | 角色（admin / user） |
-| banned        | boolean       | 是否封禁             |
-| banReason     | text          | 封禁原因             |
-| banExpires    | timestamp     | 封禁到期时间         |
+| 字段          | 类型          | 说明                         |
+| ------------- | ------------- | ---------------------------- |
+| id            | text (PK)     | 用户 ID                      |
+| name          | text          | 用户名                       |
+| email         | text (unique) | 邮箱                         |
+| emailVerified | boolean       | 邮箱是否验证                 |
+| image         | text          | 头像 URL                     |
+| role          | text          | 角色（user / admin / super） |
+| banned        | boolean       | 是否封禁                     |
+| banReason     | text          | 封禁原因                     |
+| banExpires    | timestamp     | 封禁到期时间                 |
 
 ### session / account / verification
 

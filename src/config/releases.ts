@@ -8,6 +8,19 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.10.0',
+    date: '2026-07-24',
+    type: 'minor',
+    title: '新增超级管理员与三级权限',
+    changes: [
+      '新增 super 超级管理员角色，形成普通用户、管理员、超级管理员三级权限体系',
+      '管理员仅管理普通用户，邮件设置、对象存储和角色管理仅向超级管理员开放',
+      '增加服务端越权拦截、角色变更会话失效以及最后一个可用超级管理员保护',
+      '优化超级管理员初始化：已有 super 时跳过，否则优先提升现有 admin，无管理员时才创建新账号',
+      '角色与种子策略测试统一迁移至独立 tests 目录',
+    ],
+  },
+  {
     version: '1.9.0',
     date: '2026-07-20',
     type: 'minor',
@@ -60,9 +73,7 @@ export const releases: Release[] = [
     date: '2026-07-04',
     type: 'patch',
     title: '通知提示优化',
-    changes: [
-      '通知提示按类型显示不同颜色，并支持手动关闭',
-    ],
+    changes: ['通知提示按类型显示不同颜色，并支持手动关闭'],
   },
   {
     version: '1.7.0',
