@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { Link } from '@tanstack/react-router'
 import { Pencil, Trash2, Calendar, Settings2 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'

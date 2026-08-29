@@ -17,8 +17,8 @@ export const user = pgTable('user', {
     .defaultNow()
     .$onUpdate(() => new Date())
     .notNull(),
-  role: text('role'),
-  banned: boolean('banned').default(false),
+  role: text('role').notNull().default('user'),
+  banned: boolean('banned').notNull().default(false),
   banReason: text('ban_reason'),
   banExpires: timestamp('ban_expires'),
 })
@@ -52,6 +52,7 @@ export const account = pgTable(
     userId: text('user_id')
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
+    issuer: text('issuer').notNull(),
     accessToken: text('access_token'),
     refreshToken: text('refresh_token'),
     idToken: text('id_token'),

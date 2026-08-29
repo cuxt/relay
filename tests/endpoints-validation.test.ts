@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, test } from 'vitest'
 import { createEndpointSchema, updateEndpointSchema } from '@/lib/endpoints/validation'
 
 describe('endpoint channel bindings', () => {

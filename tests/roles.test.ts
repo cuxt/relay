@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, test } from 'vitest'
 import { ROLES, canManage, isActiveSuper, isAdmin, isSuper, roleLabel } from '@/constants'
 import { authRoles } from '@/lib/auth/access'
 

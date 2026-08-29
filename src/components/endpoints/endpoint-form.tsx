@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useDeferredValue } from 'react'
 import { useNavigate } from '@tanstack/react-router'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { ChevronLeft, ChevronRight, ChevronsUpDown, Loader2, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'

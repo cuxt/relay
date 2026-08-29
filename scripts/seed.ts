@@ -1,7 +1,7 @@
 /**
  * 数据库种子脚本 - 初始化超级管理员
  *
- * 运行方式: bun run db:seed
+ * 运行方式: pnpm db:seed
  */
 
 import { client, db } from '../src/lib/db'

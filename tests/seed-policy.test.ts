@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, test } from 'vitest'
 import { decideSeed } from '../scripts/seed-policy'
 
 describe('super seed policy', () => {

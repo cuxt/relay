@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, test } from 'vitest'
 import { channelMeta } from '@/lib/channels/registry'
 import { emailParamsSchema, telegramParamsSchema } from '@/lib/channels/request-params'
 import { resolveEmailParams } from '@/lib/channels/definitions/email.server'

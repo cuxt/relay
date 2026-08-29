@@ -71,6 +71,20 @@
       "when": 1784875817991,
       "tag": "0009_strange_rumiko_fujikawa",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1788018664584,
+      "tag": "0010_lively_moondragon",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1788019604963,
+      "tag": "0011_white_cammi",
+      "breakpoints": true
     }
   ]
 }

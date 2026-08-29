@@ -7,13 +7,16 @@ import { toast } from 'sonner'
 
 export function LinkedAccounts() {
   const [githubLinked, setGithubLinked] = useState(false)
+  const [githubAccountId, setGithubAccountId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
 
   useEffect(() => {
     authClient.listAccounts().then((res) => {
       if (res.data) {
-        setGithubLinked(res.data.some((account) => account.providerId === 'github'))
+        const githubAccount = res.data.find((account) => account.providerId === 'github')
+        setGithubLinked(Boolean(githubAccount))
+        setGithubAccountId(githubAccount?.accountId ?? null)
       }
       setLoading(false)
     })
@@ -28,13 +31,15 @@ export function LinkedAccounts() {
   }
 
   const handleUnlink = async () => {
+    if (!githubAccountId) return
     setActionLoading(true)
     try {
-      const res = await authClient.unlinkAccount({ providerId: 'github' })
+      const res = await authClient.unlinkAccount({ accountId: githubAccountId })
       if (res.error) {
         toast.error(res.error.message || '解绑失败')
       } else {
         setGithubLinked(false)
+        setGithubAccountId(null)
         toast.success('已解绑 GitHub')
       }
     } catch {

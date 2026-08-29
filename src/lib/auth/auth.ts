@@ -1,5 +1,5 @@
 import { betterAuth } from 'better-auth'
-import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { drizzleAdapter } from '@better-auth/drizzle-adapter'
 import { admin, openAPI } from 'better-auth/plugins'
 import { APIError, createAuthMiddleware, getAuthoritativeSessionFromCtx } from 'better-auth/api'
 import { and, count, eq, isNull, lt, or } from 'drizzle-orm'

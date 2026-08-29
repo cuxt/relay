@@ -12,3 +12,5 @@ dist-ssr
 count.txt
 todos.json
 worktrees/
+
+.claude

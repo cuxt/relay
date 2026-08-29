@@ -8,6 +8,22 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '2.1.0',
+    date: '2026-08-30',
+    type: 'minor',
+    title: '依赖升级与 Better Auth / pnpm 集成修复',
+    changes: [
+      '包管理器从 Bun 迁移到 pnpm：删除 Bun runtime 依赖，测试改用 vitest，seed 脚本改走 tsx，README / scripts / .cta.json 同步',
+      'framer-motion 替换为 motion（导入统一改为 motion/react 子路径）',
+      '修复 Better Auth 1.7+ account.issuer 字段缺失导致的登录报 “User not found” 问题（迁移 0010）',
+      'Better Auth drizzle adapter 切换到官方独立包 @better-auth/drizzle-adapter',
+      'user 表 role / banned 字段加 NOT NULL + default，存量 NULL 行自动收敛为默认值（迁移 0011）',
+      '修复 settings.linked-accounts 解绑 GitHub：unlinkAccount 调用改用 accountId 而非 providerId',
+      '推送模板 vm 沙箱加固：sandbox 改 null-prototype，切断原型链逃逸',
+      '删除无引用的 AnimatedOutlet 组件（dead code）'
+    ],
+  },
+  {
     version: '2.0.0',
     date: '2026-07-24',
     type: 'major',

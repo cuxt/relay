@@ -1,7 +1,7 @@
 import { useMemo, useState, type MouseEvent } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { createMarkdownExit } from 'markdown-exit'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { PageContainer } from '@/components/layout/page-container'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -340,7 +340,7 @@ function LogDetailPage() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4 px-5 pb-5">
-              <pre className="max-h-96 overflow-auto rounded-lg border bg-muted/30 p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words">
+              <pre className="max-h-96 overflow-auto rounded-lg border bg-muted/30 p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap wrap-break-word">
                 {requestBody
                   ? formatRequest
                     ? formattedRequestBody

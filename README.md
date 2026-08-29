@@ -26,7 +26,7 @@
 
 ## 技术栈
 
-- **运行时**：[Bun](https://bun.sh)
+- **运行时**：[Node.js](https://nodejs.org) >= 20（Nitro 输出）
 - **框架**：[TanStack Start](https://tanstack.com/start)（React 19 + SSR）
 - **路由**：[TanStack Router](https://tanstack.com/router)（基于文件）
 - **后端**：[ElysiaJS](https://elysia.dev)
@@ -40,27 +40,28 @@
 
 ### 前置要求
 
-- [Bun](https://bun.sh) >= 1.0
+- [Node.js](https://nodejs.org) >= 20
+- [pnpm](https://pnpm.io) >= 11
 - PostgreSQL
 
 ### 安装
 
 ```bash
 # 安装依赖
-bun install
+pnpm install
 
 # 配置环境变量
 cp .env.example .env.local
 # 编辑 .env.local，填写数据库连接等配置
 
 # 执行数据库迁移
-bun run db:migrate
+pnpm db:migrate
 
 # 首次部署时初始化超级管理员
-bun run db:seed
+pnpm db:seed
 
 # 启动开发服务器
-bun run dev
+pnpm dev
 ```
 
 ### 环境变量
@@ -90,10 +91,10 @@ curl -X POST https://your-domain/api/push/{endpoint-token} \
 
 ```bash
 # 构建生产版本（会先跑数据库迁移）
-bun run build
+pnpm build
 
 # 预览生产构建
-bun run preview
+pnpm preview
 
 # 生产启动（nitro 输出）
 node .output/server/index.mjs
@@ -103,12 +104,13 @@ node .output/server/index.mjs
 
 | 脚本                  | 说明                     |
 | --------------------- | ------------------------ |
-| `bun run dev`         | 启动开发服务器           |
-| `bun run build`       | 迁移数据库并构建生产版本 |
-| `bun run preview`     | 预览生产构建             |
-| `bun run typecheck`   | TypeScript 类型检查      |
-| `bun run lint`        | oxlint 检查              |
-| `bun run db:generate` | 生成 Drizzle 迁移        |
-| `bun run db:migrate`  | 执行数据库迁移           |
-| `bun run db:push`     | 直接推送 schema 到数据库 |
-| `bun run db:seed`     | 初始化或补齐超级管理员   |
+| `pnpm dev`           | 启动开发服务器           |
+| `pnpm build`         | 迁移数据库并构建生产版本 |
+| `pnpm preview`       | 预览生产构建             |
+| `pnpm typecheck`     | TypeScript 类型检查      |
+| `pnpm lint`          | oxlint 检查              |
+| `pnpm db:generate`   | 生成 Drizzle 迁移        |
+| `pnpm db:migrate`    | 执行数据库迁移           |
+| `pnpm db:push`       | 直接推送 schema 到数据库 |
+| `pnpm db:seed`       | 初始化或补齐超级管理员   |
+| `pnpm test`          | 运行 vitest 测试套件     |
