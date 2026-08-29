@@ -23,7 +23,7 @@
     "@aws-sdk/client-s3": "^3.1090.0",
     "@aws-sdk/s3-request-presigner": "^3.1090.0",
     "@base-ui/react": "^1.6.0",
-    "@better-auth/drizzle-adapter": "^1.6.23",
+    "@better-auth/drizzle-adapter": "^1.6.25",
     "@elysia/openapi": "^1.4.15",
     "@hookform/resolvers": "^5.4.0",
     "@icons-pack/react-simple-icons": "^13.13.0",
