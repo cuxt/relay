@@ -8,6 +8,15 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '2.1.1',
+    date: '2026-08-30',
+    type: 'patch',
+    title: '修复生产 SSR 启动报错',
+    changes: [
+      '修复生产部署 SSR 启动时 __exportAll$1 is not a function 报错',
+    ],
+  },
+  {
     version: '2.1.0',
     date: '2026-08-30',
     type: 'minor',

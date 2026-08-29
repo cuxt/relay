@@ -24,4 +24,15 @@ export default defineConfig({
     }),
     viteReact(),
   ],
+  environments: {
+    ssr: {
+      build: {
+        rolldownOptions: {
+          output: {
+            inlineDynamicImports: true,
+          },
+        },
+      },
+    },
+  },
 })
