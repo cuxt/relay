@@ -27,7 +27,7 @@
     "@elysia/openapi": "^1.4.15",
     "@hookform/resolvers": "^5.9.1",
     "@icons-pack/react-simple-icons": "^13.15.1",
-    "@shadcn/react": "^0.3.0",
+    "@shadcn/react": "^0.3.1",
     "@tailwindcss/typography": "^0.5.20",
     "@tanstack/match-sorter-utils": "^9.1.2",
     "@tanstack/react-form": "^1.33.5",
